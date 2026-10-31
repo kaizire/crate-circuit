@@ -124,61 +124,73 @@ async function loadDashboard() {
   }
 }
 
+function initials(name) {
+  const parts = String(name || "A").trim().split(/\s+/).slice(0, 2);
+  return parts.map((part) => part.charAt(0).toUpperCase()).join("") || "A";
+}
+
+function studentMarkup() {
+  const students = groupedStudents(dash.visits);
+  if (!students.length) return `<p class="muted-note">No students yet.</p>`;
+  return students.map((student) => {
+    const best = percentOf(student.best);
+    return `
+      <article class="student-row">
+        <div class="avatar">${escapeHtml(initials(student.name))}</div>
+        <div class="student-copy">
+          <div class="visit-name">${escapeHtml(student.name)}</div>
+          <p class="muted-note">${student.attempts} ${student.attempts === 1 ? "try" : "tries"} · ${student.finished} finished</p>
+        </div>
+        <div class="score-chip">${best === null ? "—" : best + "%"}</div>
+      </article>
+    `;
+  }).join("");
+}
+
+function attemptMarkup() {
+  const shown = filteredVisits();
+  if (!shown.length) return `<p class="muted-note">No visits match this search.</p>`;
+  return shown.map((visit) => {
+    const percent = percentOf(visit);
+    const tone = visit.status === "finished" ? (percent >= 70 ? "pass" : "fail") : "wait";
+    return `
+      <article class="attempt ${tone}">
+        <div class="avatar">${escapeHtml(initials(visit.name || "A"))}</div>
+        <div class="attempt-copy">
+          <div class="visit-top">
+            <div class="visit-name">${escapeHtml(visit.name || "Anonymous")}</div>
+            <span class="pill-tag">${visit.status === "finished" ? "Finished" : "In progress"}</span>
+          </div>
+          <p class="muted-note">${escapeHtml(formatWhen(visit.startedAt))} · ${escapeHtml(visit.length ?? "—")} questions</p>
+          ${percent === null ? "" : `<div class="bar"><span style="width:${Math.max(percent, 4)}%"></span></div>`}
+        </div>
+        <div class="score-chip">${percent === null ? "—" : percent + "%"}</div>
+      </article>
+    `;
+  }).join("");
+}
+
+function renderLists() {
+  const students = document.getElementById("student-list");
+  const attempts = document.getElementById("attempt-list");
+  if (students) students.innerHTML = studentMarkup();
+  if (attempts) attempts.innerHTML = attemptMarkup();
+}
+
 function renderDashboard() {
   const all = dash.visits;
   const finished = all.filter((visit) => visit.status === "finished");
   const started = all.filter((visit) => visit.status !== "finished");
   const avg = averagePercent(finished);
-  const students = groupedStudents(all);
-  const shown = filteredVisits();
-
   document.getElementById("who-label").textContent = all.length + " visits";
-
-  const studentRows = students.length
-    ? students.map((student) => {
-      const best = percentOf(student.best);
-      return `
-        <article class="student-row">
-          <div>
-            <div class="visit-name">${escapeHtml(student.name)}</div>
-            <p class="muted-note">${student.attempts} ${student.attempts === 1 ? "try" : "tries"} · ${student.finished} finished</p>
-          </div>
-          <div class="score-chip">${best === null ? "No score" : best + "%"}</div>
-        </article>
-      `;
-    }).join("")
-    : `<p class="muted-note">No students yet.</p>`;
-
-  const attemptRows = shown.length
-    ? shown.map((visit) => {
-      const percent = percentOf(visit);
-      const tone = visit.status === "finished"
-        ? (percent >= 70 ? "right" : "wrong")
-        : "";
-      return `
-        <article class="visit ${tone}">
-          <div class="visit-top">
-            <div class="visit-name">${escapeHtml(visit.name || "Anonymous")}</div>
-            <span class="tag">${visit.status === "finished" ? "Finished" : "In progress"}</span>
-          </div>
-          ${percent === null ? "" : `<div class="bar"><span style="width:${Math.max(percent, 3)}%"></span></div>`}
-          <dl>
-            <div><dt>Score</dt><dd>${escapeHtml(scoreLabel(visit))}</dd></div>
-            <div><dt>Questions</dt><dd>${escapeHtml(visit.length ?? "—")}</dd></div>
-            <div><dt>Started</dt><dd>${escapeHtml(formatWhen(visit.startedAt))}</dd></div>
-            <div><dt>Finished</dt><dd>${escapeHtml(formatWhen(visit.finishedAt))}</dd></div>
-          </dl>
-        </article>
-      `;
-    }).join("")
-    : `<p class="muted-note">No visits match this search.</p>`;
 
   app.innerHTML = `
     <section class="dash">
       <div class="log-head">
         <div>
-          <h2>Dashboard</h2>
-          <p class="lede">Who took CrateCircuit, how they scored, and how often they tried.</p>
+          <p class="kicker ink">Overview</p>
+          <h2>Quiz activity</h2>
+          <p class="lede">Names, attempts, and scores from CrateCircuit.</p>
         </div>
         <div class="dash-actions">
           <button class="ghost" id="reload" type="button">Refresh</button>
@@ -186,33 +198,33 @@ function renderDashboard() {
         </div>
       </div>
       <div class="stats">
-        <article class="stat"><span>Visits</span><strong>${all.length}</strong></article>
-        <article class="stat"><span>Students</span><strong>${uniqueNames(all)}</strong></article>
+        <article class="stat tone-amber"><span>Visits</span><strong>${all.length}</strong></article>
+        <article class="stat tone-green"><span>Students</span><strong>${uniqueNames(all)}</strong></article>
         <article class="stat"><span>Finished</span><strong>${finished.length}</strong></article>
         <article class="stat"><span>In progress</span><strong>${started.length}</strong></article>
-        <article class="stat"><span>Average score</span><strong>${avg === null ? "—" : avg + "%"}</strong></article>
+        <article class="stat tone-amber"><span>Average</span><strong>${avg === null ? "—" : avg + "%"}</strong></article>
       </div>
       <div class="dash-grid">
-        <div>
+        <section class="panel">
           <h3 class="dash-title">Students</h3>
-          <div class="visit-list">${studentRows}</div>
-        </div>
-        <div>
+          <div class="visit-list" id="student-list">${studentMarkup()}</div>
+        </section>
+        <section class="panel">
           <h3 class="dash-title">Attempts</h3>
           <div class="filters">
             <input id="search" type="text" maxlength="40" placeholder="Search by name" value="${escapeHtml(dash.query)}">
-            <select id="filter">
-              <option value="all"${dash.filter === "all" ? " selected" : ""}>All</option>
-              <option value="finished"${dash.filter === "finished" ? " selected" : ""}>Finished</option>
-              <option value="started"${dash.filter === "started" ? " selected" : ""}>In progress</option>
-            </select>
-            <select id="sort">
-              <option value="newest"${dash.sort === "newest" ? " selected" : ""}>Newest</option>
-              <option value="score"${dash.sort === "score" ? " selected" : ""}>Highest score</option>
-            </select>
+            <div class="pills" id="filters">
+              <button type="button" class="pill${dash.filter === "all" ? " picked" : ""}" data-filter="all">All</button>
+              <button type="button" class="pill${dash.filter === "finished" ? " picked" : ""}" data-filter="finished">Finished</button>
+              <button type="button" class="pill${dash.filter === "started" ? " picked" : ""}" data-filter="started">In progress</button>
+            </div>
+            <div class="pills" id="sorts">
+              <button type="button" class="pill${dash.sort === "newest" ? " picked" : ""}" data-sort="newest">Newest</button>
+              <button type="button" class="pill${dash.sort === "score" ? " picked" : ""}" data-sort="score">Top score</button>
+            </div>
           </div>
-          <div class="visit-list">${attemptRows}</div>
-        </div>
+          <div class="visit-list" id="attempt-list">${attemptMarkup()}</div>
+        </section>
       </div>
     </section>
   `;
@@ -221,21 +233,23 @@ function renderDashboard() {
     sessionStorage.removeItem(AUTH_KEY);
     showGate();
   });
-  const search = document.getElementById("search");
-  search.addEventListener("input", (event) => {
+  document.getElementById("search").addEventListener("input", (event) => {
     dash.query = event.target.value;
-    renderDashboard();
-    const next = document.getElementById("search");
-    next.focus();
-    next.setSelectionRange(dash.query.length, dash.query.length);
+    renderLists();
   });
-  document.getElementById("filter").addEventListener("change", (event) => {
-    dash.filter = event.target.value;
-    renderDashboard();
+  document.getElementById("filters").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-filter]");
+    if (!button) return;
+    dash.filter = button.getAttribute("data-filter");
+    document.querySelectorAll("#filters .pill").forEach((node) => node.classList.toggle("picked", node === button));
+    renderLists();
   });
-  document.getElementById("sort").addEventListener("change", (event) => {
-    dash.sort = event.target.value;
-    renderDashboard();
+  document.getElementById("sorts").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-sort]");
+    if (!button) return;
+    dash.sort = button.getAttribute("data-sort");
+    document.querySelectorAll("#sorts .pill").forEach((node) => node.classList.toggle("picked", node === button));
+    renderLists();
   });
 }
 
