@@ -142,6 +142,7 @@ function studentMarkup() {
           <p class="muted-note">${student.attempts} ${student.attempts === 1 ? "try" : "tries"} · ${student.finished} finished</p>
         </div>
         <div class="score-chip">${best === null ? "—" : best + "%"}</div>
+        <button class="ghost danger" type="button" data-delete-name="${escapeHtml(student.name)}">Delete</button>
       </article>
     `;
   }).join("");
@@ -165,6 +166,7 @@ function attemptMarkup() {
           ${percent === null ? "" : `<div class="bar"><span style="width:${Math.max(percent, 4)}%"></span></div>`}
         </div>
         <div class="score-chip">${percent === null ? "—" : percent + "%"}</div>
+        ${visit._id ? `<button class="ghost danger" type="button" data-delete="${escapeHtml(visit._id)}" data-name="${escapeHtml(visit.name || "this student")}">Delete</button>` : ""}
       </article>
     `;
   }).join("");
@@ -251,6 +253,45 @@ function renderDashboard() {
     document.querySelectorAll("#sorts .pill").forEach((node) => node.classList.toggle("picked", node === button));
     renderLists();
   });
+  document.getElementById("attempt-list").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-delete]");
+    if (!button) return;
+    removeAttempt(button.getAttribute("data-delete"), button.getAttribute("data-name"), button);
+  });
+  document.getElementById("student-list").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-delete-name]");
+    if (!button) return;
+    removeStudent(button.getAttribute("data-delete-name"), button);
+  });
+}
+
+async function removeAttempt(id, name, button) {
+  if (!id) return;
+  if (!window.confirm("Delete this quiz by " + (name || "this student") + "?")) return;
+  button.disabled = true;
+  try {
+    await deleteVisit(id);
+    await loadDashboard();
+  } catch (error) {
+    button.disabled = false;
+    window.alert("Could not delete that quiz. Try refresh, then delete again.");
+  }
+}
+
+async function removeStudent(name, button) {
+  const visits = dash.visits.filter((visit) => samePlayerName(visit.name, name) && visit._id);
+  if (!visits.length) return;
+  if (!window.confirm("Delete all " + visits.length + " quizzes for " + name + "?")) return;
+  button.disabled = true;
+  try {
+    for (const visit of visits) {
+      await deleteVisit(visit._id);
+    }
+    await loadDashboard();
+  } catch (error) {
+    button.disabled = false;
+    window.alert("Could not delete those quizzes. Try refresh, then delete again.");
+  }
 }
 
 if (sessionStorage.getItem(AUTH_KEY) === "1") loadDashboard();

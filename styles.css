@@ -688,6 +688,7 @@ input:focus {
 .student-row,
 .attempt {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   border: 1px solid var(--line);
@@ -718,6 +719,18 @@ input:focus {
   padding: 8px 10px;
   font-family: var(--display);
   font-weight: 700;
+}
+
+.danger {
+  color: var(--red);
+  border-color: #ecc4bf;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.danger:hover {
+  background: var(--red-soft);
+  border-color: var(--red);
 }
 
 @media (max-width: 900px) {

@@ -66,6 +66,16 @@ function samePlayerName(a, b) {
   return clean(a) && clean(a) === clean(b);
 }
 
+async function deleteVisit(id) {
+  if (!id) throw new Error("Missing visit id");
+  const response = await fetch(CONFIG.storeUrl + "/" + encodeURIComponent(id), {
+    method: "DELETE"
+  });
+  if (!response.ok && response.status !== 204) {
+    throw new Error("Could not delete visit");
+  }
+}
+
 async function loadVisitsByName(name) {
   const visits = await loadVisits();
   return visits.filter((visit) => samePlayerName(visit.name, name));
