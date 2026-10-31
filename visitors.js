@@ -60,3 +60,33 @@ async function loadVisits() {
     return bTime - aTime;
   });
 }
+
+function samePlayerName(a, b) {
+  const clean = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+  return clean(a) && clean(a) === clean(b);
+}
+
+async function loadVisitsByName(name) {
+  const visits = await loadVisits();
+  return visits.filter((visit) => samePlayerName(visit.name, name));
+}
+
+function formatWhen(iso) {
+  if (!iso) return "—";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return String(iso);
+  return date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short"
+  });
+}
+
+function scoreLabel(visit) {
+  if (typeof visit.score === "number" && typeof visit.total === "number") {
+    const percent = typeof visit.percent === "number" ? visit.percent + "%" : "";
+    return visit.score + "/" + visit.total + (percent ? " · " + percent : "");
+  }
+  if (visit.status === "started") return "In progress";
+  if (visit.status === "view") return "Opened page";
+  return "No score yet";
+}

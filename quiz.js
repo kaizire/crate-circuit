@@ -31,12 +31,16 @@ function showStart() {
   app.innerHTML = `
     <section class="intro">
       <h2>Open the case.<br>Choose the function.</h2>
-      <p class="lede">Enter your name, then you can study the parts before the quiz. Each quiz question shows the picture and name. You choose the correct function.</p>
+      <p class="lede">Enter the same name each time so you can look up your other quizzes. You can study first, then choose the function for each part.</p>
       <label for="player">Your name</label>
       <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}">
       <label>How many questions</label>
       <div class="lengths" id="lengths"></div>
-      <button class="primary" id="continue" type="button">Continue</button>
+      <div class="row start-actions">
+        <button class="primary" id="continue" type="button">Continue</button>
+        <button class="ghost" id="history" type="button">My quizzes</button>
+      </div>
+      <p class="muted-note" id="history-note" hidden></p>
     </section>
   `;
   const box = document.getElementById("lengths");
@@ -59,6 +63,16 @@ function showStart() {
     state.name = state.name.trim() || "Player";
     showReady();
   });
+  document.getElementById("history").addEventListener("click", () => {
+    const name = state.name.trim();
+    const note = document.getElementById("history-note");
+    if (!name) {
+      note.hidden = false;
+      note.textContent = "Type the same name you used on the quiz, then tap My quizzes.";
+      return;
+    }
+    showMyQuizzes(name);
+  });
 }
 
 function showReady() {
@@ -72,11 +86,15 @@ function showReady() {
         <button class="primary" id="study" type="button">Study</button>
         <button class="ghost" id="start" type="button">Go to quiz</button>
       </div>
-      <button class="ghost" id="home" type="button">Back</button>
+      <div class="row start-actions">
+        <button class="ghost" id="history" type="button">My quizzes</button>
+        <button class="ghost" id="home" type="button">Back</button>
+      </div>
     </section>
   `;
   document.getElementById("study").addEventListener("click", () => showStudy(0));
   document.getElementById("start").addEventListener("click", startQuiz);
+  document.getElementById("history").addEventListener("click", () => showMyQuizzes(state.name));
   document.getElementById("home").addEventListener("click", showStart);
 }
 
@@ -247,12 +265,72 @@ function showScore() {
         </div>
       </div>
       <div class="review">${review}</div>
-      <button class="primary" id="again" type="button">Try another round</button>
+      <div class="row start-actions">
+        <button class="primary" id="again" type="button">Try another round</button>
+        <button class="ghost" id="history" type="button">My quizzes</button>
+      </div>
     </section>
   `;
   document.getElementById("again").addEventListener("click", showStart);
+  document.getElementById("history").addEventListener("click", () => showMyQuizzes(state.name));
   app.scrollIntoView({ behavior: "smooth", block: "start" });
   logVisitScore(correct, total, percent);
+}
+
+async function showMyQuizzes(name) {
+  const player = (name || "").trim();
+  setLed("on");
+  who.textContent = player;
+  app.innerHTML = `
+    <section>
+      <h2>Quizzes for ${escapeHtml(player)}</h2>
+      <p class="lede">Loading scores saved under this name…</p>
+    </section>
+  `;
+  try {
+    const visits = await loadVisitsByName(player);
+    const rows = visits.length
+      ? visits.map((visit) => `
+          <article class="visit ${visit.status === "finished" ? "right" : ""}">
+            <div class="visit-name">${escapeHtml(scoreLabel(visit))}</div>
+            <dl>
+              <div><dt>Started</dt><dd>${escapeHtml(formatWhen(visit.startedAt))}</dd></div>
+              <div><dt>Questions</dt><dd>${escapeHtml(visit.length ?? "—")}</dd></div>
+              <div><dt>Finished</dt><dd>${escapeHtml(formatWhen(visit.finishedAt))}</dd></div>
+              <div><dt>Status</dt><dd>${escapeHtml(visit.status || "saved")}</dd></div>
+            </dl>
+          </article>
+        `).join("")
+      : `<p class="muted-note">No quizzes found for this name. Use the exact name you typed when you started.</p>`;
+    app.innerHTML = `
+      <section>
+        <div class="log-head">
+          <div>
+            <h2>${escapeHtml(player)}</h2>
+            <p class="lede">${visits.length} saved ${visits.length === 1 ? "quiz" : "quizzes"}.</p>
+          </div>
+          <button class="ghost" id="reload" type="button">Refresh</button>
+        </div>
+        <div class="visit-list">${rows}</div>
+        <div class="row start-actions">
+          <button class="primary" id="again" type="button">Take the quiz</button>
+          <button class="ghost" id="home" type="button">Back</button>
+        </div>
+      </section>
+    `;
+    document.getElementById("reload").addEventListener("click", () => showMyQuizzes(player));
+    document.getElementById("again").addEventListener("click", showReady);
+    document.getElementById("home").addEventListener("click", showStart);
+  } catch (error) {
+    app.innerHTML = `
+      <section>
+        <h2>Could not load quizzes</h2>
+        <p class="lede">Try again in a moment.</p>
+        <button class="primary" id="retry" type="button">Try again</button>
+      </section>
+    `;
+    document.getElementById("retry").addEventListener("click", () => showMyQuizzes(player));
+  }
 }
 
 function escapeHtml(value) {
