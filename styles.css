@@ -1,0 +1,305 @@
+:root {
+  --steel: #171a16;
+  --steel-2: #242822;
+  --paper: #f3ecdf;
+  --ink: #1b1914;
+  --muted: #5e584e;
+  --amber: #e1841a;
+  --amber-deep: #a85a09;
+  --green: #1f7a45;
+  --green-soft: #e5f4ea;
+  --red: #a33b32;
+  --red-soft: #f8e8e5;
+  --line: #d9d0c0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: "Segoe UI", Candara, sans-serif;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(225, 132, 26, 0.16), transparent 28%),
+    linear-gradient(160deg, #10120e 0%, #1c2118 48%, #121510 100%);
+}
+
+.case {
+  width: min(920px, calc(100% - 28px));
+  margin: 28px auto 40px;
+  background: var(--steel);
+  border: 1px solid #3a4034;
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.bezel {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 22px;
+  background: linear-gradient(#2c3228, #1d211b);
+  color: #f6f1e6;
+  border-bottom: 3px solid var(--amber);
+}
+
+.brand { display: flex; gap: 12px; align-items: center; }
+
+.led {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #5b6570;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.led.on {
+  background: #3dde7a;
+  box-shadow: 0 0 12px #3dde7a;
+}
+
+.led.warn {
+  background: var(--amber);
+  box-shadow: 0 0 12px var(--amber);
+}
+
+.kicker {
+  margin: 0;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #c8c0b0;
+}
+
+h1 {
+  margin: 0;
+  font-family: Bahnschrift, "Segoe UI", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.who { margin: 0; color: #d7d0c3; font-size: 14px; }
+
+.bay {
+  margin: 16px;
+  background: var(--paper);
+  border-radius: 16px;
+  padding: 28px 26px 24px;
+  min-height: 460px;
+}
+
+.intro h2 {
+  margin: 0 0 8px;
+  font-family: Bahnschrift, "Segoe UI", sans-serif;
+  font-size: 40px;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.lede {
+  max-width: 58ch;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+label { display: block; font-weight: 650; margin: 18px 0 8px; }
+
+input[type="text"] {
+  width: min(360px, 100%);
+  border: 1.5px solid #c9bfae;
+  background: #fffdf8;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 16px;
+}
+
+.lengths { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.lengths button, .primary, .ghost {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.lengths button {
+  border: 1.5px solid #c9bfae;
+  background: #fffdf8;
+  padding: 8px 14px;
+}
+
+.lengths button.picked {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.primary {
+  margin-top: 22px;
+  border: 0;
+  background: var(--amber);
+  color: #1b1206;
+  font-weight: 750;
+  padding: 12px 22px;
+  font-size: 16px;
+}
+
+.primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ghost {
+  border: 1.5px solid #c9bfae;
+  background: transparent;
+  padding: 12px 18px;
+  font-weight: 650;
+}
+
+.progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.track {
+  height: 6px;
+  background: #e4dccb;
+  border-radius: 99px;
+  margin: 10px 0 18px;
+  overflow: hidden;
+}
+
+.track span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--amber-deep), var(--amber));
+}
+
+.prompt {
+  margin: 0 0 16px;
+  font-size: 26px;
+  line-height: 1.25;
+  font-family: Bahnschrift, "Segoe UI", sans-serif;
+}
+
+.choices { display: grid; gap: 10px; }
+
+.choice {
+  text-align: left;
+  width: 100%;
+  border: 1.5px solid #d5ccbc;
+  background: #fffdf8;
+  border-radius: 12px;
+  padding: 14px 14px 14px 16px;
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.choice:hover { border-color: #b7aa94; }
+
+.choice.selected {
+  border-color: var(--amber-deep);
+  background: #fff4e4;
+  box-shadow: inset 4px 0 0 var(--amber);
+}
+
+.mark {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--steel-2);
+  color: #f6f1e6;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.row { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; }
+
+.score-hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.readout {
+  min-width: 132px;
+  background: #121510;
+  color: #d8ffe4;
+  border-radius: 14px;
+  padding: 14px 16px 12px;
+  text-align: center;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.readout strong {
+  display: block;
+  font-size: 42px;
+  letter-spacing: -0.04em;
+  color: #7dffa8;
+}
+
+.readout span { color: #b7c4b8; font-size: 13px; }
+
+.score-hero h2 { margin: 0 0 4px; font-size: 32px; font-family: Bahnschrift, "Segoe UI", sans-serif; }
+.score-hero p { margin: 0; color: var(--muted); }
+
+.review { display: grid; gap: 10px; }
+
+.item {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fffdf8;
+}
+
+.item.right { background: var(--green-soft); border-color: #b7dfc4; }
+.item.wrong { background: var(--red-soft); border-color: #ecc4bf; }
+
+.item h3 { margin: 0 0 8px; font-size: 16px; line-height: 1.35; }
+
+.item p { margin: 3px 0; font-size: 14px; }
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 750;
+  margin-bottom: 6px;
+}
+
+.right .tag { color: var(--green); }
+.wrong .tag { color: var(--red); }
+
+.why { color: var(--muted); }
+
+@media (max-width: 640px) {
+  .case { width: min(100% - 16px, 920px); margin: 10px auto 20px; }
+  .bay { margin: 10px; padding: 18px 14px; }
+  .bezel { align-items: flex-start; }
+  .who { display: none; }
+  .intro h2, .prompt { font-size: 24px; }
+  .score-hero { grid-template-columns: 1fr; }
+  .row { flex-direction: column-reverse; }
+  .row button { width: 100%; }
+}
