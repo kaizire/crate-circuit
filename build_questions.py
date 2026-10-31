@@ -73,9 +73,71 @@ NAMES = {
     60: "Slot Bracket",
 }
 
-PROMPTS = {
-    "PCI Slot": "In this picture, what are the long white slots called?",
-    "AGP Slot": "In this picture, what is the brown slot above the white slots called?",
+FUNCTIONS = {
+    "System Case": "Houses and protects the internal parts and helps keep them cool.",
+    "CPU": "Processes instructions and runs programs; it is the brain of the computer.",
+    "CPU Socket": "Holds the processor on the motherboard and connects it electrically.",
+    "Motherboard": "The main circuit board that connects all parts so they can work together.",
+    "RAM": "Temporarily stores data and programs the computer is using right now.",
+    "RAM Slot": "Holds the RAM modules and connects them to the motherboard.",
+    "Power Supply": "Converts AC from the wall into DC power for the parts.",
+    "Hard Disk Drive": "Stores files and the operating system on spinning disks even when power is off.",
+    "SATA Cable": "Carries data between a SATA storage drive and the motherboard.",
+    "CD-ROM": "Reads data stored on compact discs.",
+    "Heat Sink": "Pulls heat away from the CPU or GPU to help prevent overheating.",
+    "Peripheral Connectors": "Provide ports so external devices can connect to the computer.",
+    "IDE Cable": "An older ribbon cable that connects hard drives or optical drives to the motherboard.",
+    "IDE Port": "The motherboard connector for older IDE storage drives.",
+    "Sound Card": "Processes and outputs sound, and can take microphone or instrument input.",
+    "LAN Card": "Lets the computer connect to a wired network or the internet.",
+    "LAN Port": "The Ethernet jack that plugs a network cable into the computer.",
+    "PS/2 Ports": "Older round ports used to connect a keyboard and mouse.",
+    "VGA Port": "Sends analog video from the computer to a monitor.",
+    "Graphics Card": "Renders images, video, and games for the display.",
+    "CMOS Battery": "Keeps the date, time, and BIOS settings when the computer is off.",
+    "North Bridge": "On older boards, manages fast links among the CPU, RAM, and graphics.",
+    "South Bridge": "On older boards, manages slower devices such as storage, USB, and audio.",
+    "SSD": "Stores files in flash memory; faster and tougher than a hard disk drive.",
+    "Cooling Fan": "Moves air through the case to remove heat from the parts.",
+    "USB Port": "Lets you plug in flash drives, printers, keyboards, and phones.",
+    "HDMI Port": "Sends high-quality video and audio to a monitor or TV on one cable.",
+    "Expansion Slot": "Lets you install extra cards such as graphics, sound, or network cards.",
+    "BIOS Chip": "Stores firmware that starts the computer and checks the hardware.",
+    "Thermal Paste": "Fills tiny gaps so heat can pass from the CPU to the heat sink.",
+    "ATX Power Connector": "The 24-pin plug that delivers main power to the motherboard.",
+    "Front Panel Connectors": "Attach the power button, reset button, and case lights to the board.",
+    "Drive Bay": "A space in the case that holds a hard drive, SSD cage, or optical drive.",
+    "I/O Shield": "The metal plate at the back of the case that lines up with the motherboard ports.",
+    "Jumpers": "Small caps on pins that set hardware options such as clearing CMOS.",
+    "Standoffs": "Metal spacers that hold the motherboard above the case to prevent shorts.",
+    "Internal Speaker": "Makes beep codes during startup to help diagnose hardware problems.",
+    "Cache Memory": "Very fast memory near the CPU for frequently used data.",
+    "ROM": "Stores permanent startup instructions that stay even when power is off.",
+    "SATA Power Cable": "Brings electricity from the power supply to a SATA drive.",
+    "Floppy Disk Drive": "Reads and writes small files on floppy disks in older systems.",
+    "DisplayPort": "Sends high-quality video and audio to a monitor, often used on PCs.",
+    "CPU Fan": "Sits on the CPU heat sink and blows air across the processor.",
+    "PCI Slot": "An older long expansion slot for cards such as sound, network, or modem.",
+    "AGP Slot": "An older slot used only for a graphics card; newer boards use PCIe.",
+    "SATA Port": "The L-shaped motherboard connector where a SATA data cable plugs in.",
+    "DVD Drive": "An optical drive that reads DVDs and CDs.",
+    "NVMe SSD": "A small fast storage board that plugs into the M.2 slot.",
+    "Modem Card": "An older expansion card that connected to the internet through a phone line.",
+    "Power Button": "Turns the computer on or tells it to shut down.",
+    "Front USB Ports": "USB jacks on the front of the case for easy plug-in.",
+    "Molex Connector": "A 4-pin power plug for older drives and some fans.",
+    "PCIe Power Plug": "Extra 6-pin or 8-pin power from the PSU to a graphics card.",
+    "Audio Jacks": "Colored round ports for microphone, speakers, and line input.",
+    "Serial Port": "A 9-pin COM port that sends data one bit at a time.",
+    "DVI Port": "Sends digital video from the computer to a monitor.",
+    "eSATA Port": "Connects an external SATA drive to the system unit.",
+    "FireWire Port": "A fast IEEE 1394 port used for cameras and external drives.",
+    "Slot Bracket": "The metal plate on an expansion card, or a cover for an empty slot.",
+    "Capacitors": "Store and smooth electricity on the motherboard and in the power supply.",
+    "Berg Connector": "The small 4-pin power plug for a floppy disk drive.",
+    "Floppy Cable": "A ribbon cable that carries data to the floppy disk drive.",
+    "Parallel Port": "An older LPT port used mainly to connect a printer.",
+    "PSU Switch": "The rocker on the back of the power supply that turns wall power on or off.",
 }
 
 
@@ -136,7 +198,7 @@ def main():
         items.append({
             "part": name,
             "image": "images/" + filename,
-            "q": PROMPTS.get(name, "Which part of the system unit is shown in the picture?"),
+            "function": FUNCTIONS[name],
             "why": clean_why(chunks, name),
         })
 
@@ -160,23 +222,29 @@ def main():
     for name, src, prompt, why in extras:
         filename = slug(name) + ".jpg"
         save_image(src.read_bytes(), OUT / filename)
-        items.append({"part": name, "image": "images/" + filename, "q": prompt, "why": why})
+        items.append({
+            "part": name,
+            "image": "images/" + filename,
+            "function": FUNCTIONS[name],
+            "why": why,
+        })
 
-    names = [item["part"] for item in items]
+    functions = [item["function"] for item in items]
     questions = []
     for index, item in enumerate(items):
-        choices = [item["part"]]
-        step = 1
+        choices = [item["function"]]
+        step = 3
         while len(choices) < 4:
-            other = names[(index + step) % len(names)]
-            step += 1
+            other = functions[(index + step) % len(functions)]
+            step += 5
             if other not in choices:
                 choices.append(other)
         questions.append({
-            "q": item["q"],
+            "part": item["part"],
+            "q": "What is the correct function of this part?",
             "image": item["image"],
             "choices": choices,
-            "answer": item["part"],
+            "answer": item["function"],
             "why": item["why"],
         })
 

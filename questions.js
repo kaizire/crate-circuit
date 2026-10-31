@@ -1,770 +1,834 @@
 const QUESTIONS = [
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "System Case",
+    "q": "What is the correct function of this part?",
     "image": "images/system-case.jpg",
     "choices": [
-      "System Case",
-      "CPU",
-      "CPU Socket",
-      "Motherboard"
+      "Houses and protects the internal parts and helps keep them cool.",
+      "The main circuit board that connects all parts so they can work together.",
+      "Carries data between a SATA storage drive and the motherboard.",
+      "The motherboard connector for older IDE storage drives."
     ],
-    "answer": "System Case",
-    "why": "It houses and protects all internal components, provides cooling, and organizes the hardware for easy access and maintenance."
+    "answer": "Houses and protects the internal parts and helps keep them cool.",
+    "why": "Houses and protects the internal parts and helps keep them cool."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "CPU",
+    "q": "What is the correct function of this part?",
     "image": "images/cpu.jpg",
     "choices": [
-      "CPU",
-      "CPU Socket",
-      "Motherboard",
-      "RAM"
+      "Processes instructions and runs programs; it is the brain of the computer.",
+      "Temporarily stores data and programs the computer is using right now.",
+      "Reads data stored on compact discs.",
+      "Processes and outputs sound, and can take microphone or instrument input."
     ],
-    "answer": "CPU",
-    "why": "The CPU is the “brain” of the computer. It processes instructions, performs calculations, and manages tasks to run programs and control hardware."
+    "answer": "Processes instructions and runs programs; it is the brain of the computer.",
+    "why": "Processes instructions and runs programs; it is the brain of the computer."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "CPU Socket",
+    "q": "What is the correct function of this part?",
     "image": "images/cpu-socket.jpg",
     "choices": [
-      "CPU Socket",
-      "Motherboard",
-      "RAM",
-      "RAM Slot"
+      "Holds the processor on the motherboard and connects it electrically.",
+      "Holds the RAM modules and connects them to the motherboard.",
+      "Pulls heat away from the CPU or GPU to help prevent overheating.",
+      "Lets the computer connect to a wired network or the internet."
     ],
-    "answer": "CPU Socket",
-    "why": "It holds the processor in place on the and provides the electrical and physical connection between the CPU and the motherboard, allowing data and power to flow."
+    "answer": "Holds the processor on the motherboard and connects it electrically.",
+    "why": "Holds the processor on the motherboard and connects it electrically."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Motherboard",
+    "q": "What is the correct function of this part?",
     "image": "images/motherboard.jpg",
     "choices": [
-      "Motherboard",
-      "RAM",
-      "RAM Slot",
-      "Power Supply"
+      "The main circuit board that connects all parts so they can work together.",
+      "Converts AC from the wall into DC power for the parts.",
+      "Provide ports so external devices can connect to the computer.",
+      "The Ethernet jack that plugs a network cable into the computer."
     ],
-    "answer": "Motherboard",
-    "why": "The Motherboard is the main circuit board that connects all computer components, including the CPU, RAM, storage, and peripherals. It allows them to communicate and work together, acting as the backbone of the computer system."
+    "answer": "The main circuit board that connects all parts so they can work together.",
+    "why": "The main circuit board that connects all parts so they can work together."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "RAM",
+    "q": "What is the correct function of this part?",
     "image": "images/ram.jpg",
     "choices": [
-      "RAM",
-      "RAM Slot",
-      "Power Supply",
-      "Hard Disk Drive"
+      "Temporarily stores data and programs the computer is using right now.",
+      "Stores files and the operating system on spinning disks even when power is off.",
+      "An older ribbon cable that connects hard drives or optical drives to the motherboard.",
+      "Older round ports used to connect a keyboard and mouse."
     ],
-    "answer": "RAM",
-    "why": "RAM temporarily stores data and programs that the computer is currently using, allowing the CPU to access information quickly."
+    "answer": "Temporarily stores data and programs the computer is using right now.",
+    "why": "Temporarily stores data and programs the computer is using right now."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "RAM Slot",
+    "q": "What is the correct function of this part?",
     "image": "images/ram-slot.jpg",
     "choices": [
-      "RAM Slot",
-      "Power Supply",
-      "Hard Disk Drive",
-      "SATA Cable"
+      "Holds the RAM modules and connects them to the motherboard.",
+      "Carries data between a SATA storage drive and the motherboard.",
+      "The motherboard connector for older IDE storage drives.",
+      "Sends analog video from the computer to a monitor."
     ],
-    "answer": "RAM Slot",
-    "why": "A RAM slot holds the memory modules (RAM) on the and provides the connection for data transfer between the RAM and the CPU."
+    "answer": "Holds the RAM modules and connects them to the motherboard.",
+    "why": "Holds the RAM modules and connects them to the motherboard."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Power Supply",
+    "q": "What is the correct function of this part?",
     "image": "images/power-supply.jpg",
     "choices": [
-      "Power Supply",
-      "Hard Disk Drive",
-      "SATA Cable",
-      "CD-ROM"
+      "Converts AC from the wall into DC power for the parts.",
+      "Reads data stored on compact discs.",
+      "Processes and outputs sound, and can take microphone or instrument input.",
+      "Renders images, video, and games for the display."
     ],
-    "answer": "Power Supply",
-    "why": "A power supply converts AC to DC, regulates and distributes power to all components."
+    "answer": "Converts AC from the wall into DC power for the parts.",
+    "why": "Converts AC from the wall into DC power for the parts."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Hard Disk Drive",
+    "q": "What is the correct function of this part?",
     "image": "images/hard-disk-drive.jpg",
     "choices": [
-      "Hard Disk Drive",
-      "SATA Cable",
-      "CD-ROM",
-      "Heat Sink"
+      "Stores files and the operating system on spinning disks even when power is off.",
+      "Pulls heat away from the CPU or GPU to help prevent overheating.",
+      "Lets the computer connect to a wired network or the internet.",
+      "Keeps the date, time, and BIOS settings when the computer is off."
     ],
-    "answer": "Hard Disk Drive",
-    "why": "A hard drive stores all your computer’s data your files, photos, videos, apps, and even the operating system. It keeps everything saved even when the computer is turned off."
+    "answer": "Stores files and the operating system on spinning disks even when power is off.",
+    "why": "Stores files and the operating system on spinning disks even when power is off."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "SATA Cable",
+    "q": "What is the correct function of this part?",
     "image": "images/sata-cable.jpg",
     "choices": [
-      "SATA Cable",
-      "CD-ROM",
-      "Heat Sink",
-      "Peripheral Connectors"
+      "Carries data between a SATA storage drive and the motherboard.",
+      "Provide ports so external devices can connect to the computer.",
+      "The Ethernet jack that plugs a network cable into the computer.",
+      "On older boards, manages fast links among the CPU, RAM, and graphics."
     ],
-    "answer": "SATA Cable",
-    "why": "It connects storage devices like HDDs or SSD."
+    "answer": "Carries data between a SATA storage drive and the motherboard.",
+    "why": "Carries data between a SATA storage drive and the motherboard."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "CD-ROM",
+    "q": "What is the correct function of this part?",
     "image": "images/cd-rom.jpg",
     "choices": [
-      "CD-ROM",
-      "Heat Sink",
-      "Peripheral Connectors",
-      "IDE Cable"
+      "Reads data stored on compact discs.",
+      "An older ribbon cable that connects hard drives or optical drives to the motherboard.",
+      "Older round ports used to connect a keyboard and mouse.",
+      "On older boards, manages slower devices such as storage, USB, and audio."
     ],
-    "answer": "CD-ROM",
-    "why": "It reads data stored on CDs, allowing the computer to access software, music, or files from the disc."
+    "answer": "Reads data stored on compact discs.",
+    "why": "Reads data stored on compact discs."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Heat Sink",
+    "q": "What is the correct function of this part?",
     "image": "images/heat-sink.jpg",
     "choices": [
-      "Heat Sink",
-      "Peripheral Connectors",
-      "IDE Cable",
-      "IDE Port"
+      "Pulls heat away from the CPU or GPU to help prevent overheating.",
+      "The motherboard connector for older IDE storage drives.",
+      "Sends analog video from the computer to a monitor.",
+      "Stores files in flash memory; faster and tougher than a hard disk drive."
     ],
-    "answer": "Heat Sink",
-    "why": "It removes heat from the CPU, GPU, or other components, helping prevent overheating and keeping the system cool."
+    "answer": "Pulls heat away from the CPU or GPU to help prevent overheating.",
+    "why": "Pulls heat away from the CPU or GPU to help prevent overheating."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Peripheral Connectors",
+    "q": "What is the correct function of this part?",
     "image": "images/peripheral-connectors.jpg",
     "choices": [
-      "Peripheral Connectors",
-      "IDE Cable",
-      "IDE Port",
-      "Sound Card"
+      "Provide ports so external devices can connect to the computer.",
+      "Processes and outputs sound, and can take microphone or instrument input.",
+      "Renders images, video, and games for the display.",
+      "Moves air through the case to remove heat from the parts."
     ],
-    "answer": "Peripheral Connectors",
-    "why": "Provide ports for external devices (like keyboard, mouse, printer, or USB devices) to connect and communicate with the computer."
+    "answer": "Provide ports so external devices can connect to the computer.",
+    "why": "Provide ports so external devices can connect to the computer."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "IDE Cable",
+    "q": "What is the correct function of this part?",
     "image": "images/ide-cable.jpg",
     "choices": [
-      "IDE Cable",
-      "IDE Port",
-      "Sound Card",
-      "LAN Card"
+      "An older ribbon cable that connects hard drives or optical drives to the motherboard.",
+      "Lets the computer connect to a wired network or the internet.",
+      "Keeps the date, time, and BIOS settings when the computer is off.",
+      "Lets you plug in flash drives, printers, keyboards, and phones."
     ],
-    "answer": "IDE Cable",
-    "why": "It connects storage devices like hard drives and optical drives to the , allowing data transfer between them."
+    "answer": "An older ribbon cable that connects hard drives or optical drives to the motherboard.",
+    "why": "An older ribbon cable that connects hard drives or optical drives to the motherboard."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "IDE Port",
+    "q": "What is the correct function of this part?",
     "image": "images/ide-port.jpg",
     "choices": [
-      "IDE Port",
-      "Sound Card",
-      "LAN Card",
-      "LAN Port"
+      "The motherboard connector for older IDE storage drives.",
+      "The Ethernet jack that plugs a network cable into the computer.",
+      "On older boards, manages fast links among the CPU, RAM, and graphics.",
+      "Sends high-quality video and audio to a monitor or TV on one cable."
     ],
-    "answer": "IDE Port",
-    "why": "The IDE Port is used to connect older storage devices to the , such as: Hard Disk Drives/Optical drives."
+    "answer": "The motherboard connector for older IDE storage drives.",
+    "why": "The motherboard connector for older IDE storage drives."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Sound Card",
+    "q": "What is the correct function of this part?",
     "image": "images/sound-card.jpg",
     "choices": [
-      "Sound Card",
-      "LAN Card",
-      "LAN Port",
-      "PS/2 Ports"
+      "Processes and outputs sound, and can take microphone or instrument input.",
+      "Older round ports used to connect a keyboard and mouse.",
+      "On older boards, manages slower devices such as storage, USB, and audio.",
+      "Lets you install extra cards such as graphics, sound, or network cards."
     ],
-    "answer": "Sound Card",
-    "why": "It processes and outputs sound, allowing the computer to play music, sounds, and recordings, and often provides inputs for microphones or musical instruments."
+    "answer": "Processes and outputs sound, and can take microphone or instrument input.",
+    "why": "Processes and outputs sound, and can take microphone or instrument input."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "LAN Card",
+    "q": "What is the correct function of this part?",
     "image": "images/lan-card.jpg",
     "choices": [
-      "LAN Card",
-      "LAN Port",
-      "PS/2 Ports",
-      "VGA Port"
+      "Lets the computer connect to a wired network or the internet.",
+      "Sends analog video from the computer to a monitor.",
+      "Stores files in flash memory; faster and tougher than a hard disk drive.",
+      "Stores firmware that starts the computer and checks the hardware."
     ],
-    "answer": "LAN Card",
-    "why": "It allows a computer to connect to a local area network (LAN) or the internet, enabling data communication with other devices."
+    "answer": "Lets the computer connect to a wired network or the internet.",
+    "why": "Lets the computer connect to a wired network or the internet."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "LAN Port",
+    "q": "What is the correct function of this part?",
     "image": "images/lan-port.jpg",
     "choices": [
-      "LAN Port",
-      "PS/2 Ports",
-      "VGA Port",
-      "Graphics Card"
+      "The Ethernet jack that plugs a network cable into the computer.",
+      "Renders images, video, and games for the display.",
+      "Moves air through the case to remove heat from the parts.",
+      "Fills tiny gaps so heat can pass from the CPU to the heat sink."
     ],
-    "answer": "LAN Port",
-    "why": "It connects a computer to a network or the internet, enabling fast, stable communication and data sharing with other devices."
+    "answer": "The Ethernet jack that plugs a network cable into the computer.",
+    "why": "The Ethernet jack that plugs a network cable into the computer."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "PS/2 Ports",
+    "q": "What is the correct function of this part?",
     "image": "images/ps-2-ports.jpg",
     "choices": [
-      "PS/2 Ports",
-      "VGA Port",
-      "Graphics Card",
-      "CMOS Battery"
+      "Older round ports used to connect a keyboard and mouse.",
+      "Keeps the date, time, and BIOS settings when the computer is off.",
+      "Lets you plug in flash drives, printers, keyboards, and phones.",
+      "The 24-pin plug that delivers main power to the motherboard."
     ],
-    "answer": "PS/2 Ports",
-    "why": "Allow a computer to connect a keyboard and mouse, enabling input for typing, navigation, and control."
+    "answer": "Older round ports used to connect a keyboard and mouse.",
+    "why": "Older round ports used to connect a keyboard and mouse."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "VGA Port",
+    "q": "What is the correct function of this part?",
     "image": "images/vga-port.jpg",
     "choices": [
-      "VGA Port",
-      "Graphics Card",
-      "CMOS Battery",
-      "North Bridge"
+      "Sends analog video from the computer to a monitor.",
+      "On older boards, manages fast links among the CPU, RAM, and graphics.",
+      "Sends high-quality video and audio to a monitor or TV on one cable.",
+      "Attach the power button, reset button, and case lights to the board."
     ],
-    "answer": "VGA Port",
-    "why": "It transmits video signals from the computer to a monitor or display, allowing you to see the visual output."
+    "answer": "Sends analog video from the computer to a monitor.",
+    "why": "Sends analog video from the computer to a monitor."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Graphics Card",
+    "q": "What is the correct function of this part?",
     "image": "images/graphics-card.jpg",
     "choices": [
-      "Graphics Card",
-      "CMOS Battery",
-      "North Bridge",
-      "South Bridge"
+      "Renders images, video, and games for the display.",
+      "On older boards, manages slower devices such as storage, USB, and audio.",
+      "Lets you install extra cards such as graphics, sound, or network cards.",
+      "A space in the case that holds a hard drive, SSD cage, or optical drive."
     ],
-    "answer": "Graphics Card",
-    "why": "It processes and renders images, videos, and animations, improving visual performance for gaming, design, and multimedia applications."
+    "answer": "Renders images, video, and games for the display.",
+    "why": "Renders images, video, and games for the display."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "CMOS Battery",
+    "q": "What is the correct function of this part?",
     "image": "images/cmos-battery.jpg",
     "choices": [
-      "CMOS Battery",
-      "North Bridge",
-      "South Bridge",
-      "SSD"
+      "Keeps the date, time, and BIOS settings when the computer is off.",
+      "Stores files in flash memory; faster and tougher than a hard disk drive.",
+      "Stores firmware that starts the computer and checks the hardware.",
+      "The metal plate at the back of the case that lines up with the motherboard ports."
     ],
-    "answer": "CMOS Battery",
-    "why": "It provides power to the ’s CMOS chip, preserving system settings like date, time, and hardware configuration when the computer is turned off."
+    "answer": "Keeps the date, time, and BIOS settings when the computer is off.",
+    "why": "Keeps the date, time, and BIOS settings when the computer is off."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "North Bridge",
+    "q": "What is the correct function of this part?",
     "image": "images/north-bridge.jpg",
     "choices": [
-      "North Bridge",
-      "South Bridge",
-      "SSD",
-      "Cooling Fan"
+      "On older boards, manages fast links among the CPU, RAM, and graphics.",
+      "Moves air through the case to remove heat from the parts.",
+      "Fills tiny gaps so heat can pass from the CPU to the heat sink.",
+      "Small caps on pins that set hardware options such as clearing CMOS."
     ],
-    "answer": "North Bridge",
-    "why": "The North Bridge is a part of older chipsets that manages high-speed communication between the CPU, RAM, graphics card, and the front-side bus, ensuring fast data transfer among these key components."
+    "answer": "On older boards, manages fast links among the CPU, RAM, and graphics.",
+    "why": "On older boards, manages fast links among the CPU, RAM, and graphics."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "South Bridge",
+    "q": "What is the correct function of this part?",
     "image": "images/south-bridge.jpg",
     "choices": [
-      "South Bridge",
-      "SSD",
-      "Cooling Fan",
-      "USB Port"
+      "On older boards, manages slower devices such as storage, USB, and audio.",
+      "Lets you plug in flash drives, printers, keyboards, and phones.",
+      "The 24-pin plug that delivers main power to the motherboard.",
+      "Metal spacers that hold the motherboard above the case to prevent shorts."
     ],
-    "answer": "South Bridge",
-    "why": "The South Bridge is part of older chipsets that manages slower I/O functions, handling communication between the CPU and devices like storage drives, USB and PS/2 ports, PCI slots, BIOS/CMOS, audio, networking, and system timers."
+    "answer": "On older boards, manages slower devices such as storage, USB, and audio.",
+    "why": "On older boards, manages slower devices such as storage, USB, and audio."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "SSD",
+    "q": "What is the correct function of this part?",
     "image": "images/ssd.jpg",
     "choices": [
-      "SSD",
-      "Cooling Fan",
-      "USB Port",
-      "HDMI Port"
+      "Stores files in flash memory; faster and tougher than a hard disk drive.",
+      "Sends high-quality video and audio to a monitor or TV on one cable.",
+      "Attach the power button, reset button, and case lights to the board.",
+      "Makes beep codes during startup to help diagnose hardware problems."
     ],
-    "answer": "SSD",
-    "why": "A Solid State Drive stores data using flash memory. It is faster and more durable than a hard disk drive, and it keeps your files and operating system even when the computer is turned off."
+    "answer": "Stores files in flash memory; faster and tougher than a hard disk drive.",
+    "why": "Stores files in flash memory; faster and tougher than a hard disk drive."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Cooling Fan",
+    "q": "What is the correct function of this part?",
     "image": "images/cooling-fan.jpg",
     "choices": [
-      "Cooling Fan",
-      "USB Port",
-      "HDMI Port",
-      "Expansion Slot"
+      "Moves air through the case to remove heat from the parts.",
+      "Lets you install extra cards such as graphics, sound, or network cards.",
+      "A space in the case that holds a hard drive, SSD cage, or optical drive.",
+      "Very fast memory near the CPU for frequently used data."
     ],
-    "answer": "Cooling Fan",
-    "why": "A cooling fan moves air through the computer case to remove heat from the CPU, GPU, and other parts, helping prevent overheating and keeping the system stable."
+    "answer": "Moves air through the case to remove heat from the parts.",
+    "why": "Moves air through the case to remove heat from the parts."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "USB Port",
+    "q": "What is the correct function of this part?",
     "image": "images/usb-port.jpg",
     "choices": [
-      "USB Port",
-      "HDMI Port",
-      "Expansion Slot",
-      "BIOS Chip"
+      "Lets you plug in flash drives, printers, keyboards, and phones.",
+      "Stores firmware that starts the computer and checks the hardware.",
+      "The metal plate at the back of the case that lines up with the motherboard ports.",
+      "Stores permanent startup instructions that stay even when power is off."
     ],
-    "answer": "USB Port",
-    "why": "A USB port lets you connect external devices such as flash drives, printers, keyboards, and phones so they can transfer data and sometimes receive power from the computer."
+    "answer": "Lets you plug in flash drives, printers, keyboards, and phones.",
+    "why": "Lets you plug in flash drives, printers, keyboards, and phones."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "HDMI Port",
+    "q": "What is the correct function of this part?",
     "image": "images/hdmi-port.jpg",
     "choices": [
-      "HDMI Port",
-      "Expansion Slot",
-      "BIOS Chip",
-      "Thermal Paste"
+      "Sends high-quality video and audio to a monitor or TV on one cable.",
+      "Fills tiny gaps so heat can pass from the CPU to the heat sink.",
+      "Small caps on pins that set hardware options such as clearing CMOS.",
+      "Brings electricity from the power supply to a SATA drive."
     ],
-    "answer": "HDMI Port",
-    "why": "An HDMI port sends high-quality video and audio from the computer to a monitor, TV, or projector through a single cable."
+    "answer": "Sends high-quality video and audio to a monitor or TV on one cable.",
+    "why": "Sends high-quality video and audio to a monitor or TV on one cable."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Expansion Slot",
+    "q": "What is the correct function of this part?",
     "image": "images/expansion-slot.jpg",
     "choices": [
-      "Expansion Slot",
-      "BIOS Chip",
-      "Thermal Paste",
-      "ATX Power Connector"
+      "Lets you install extra cards such as graphics, sound, or network cards.",
+      "The 24-pin plug that delivers main power to the motherboard.",
+      "Metal spacers that hold the motherboard above the case to prevent shorts.",
+      "Reads and writes small files on floppy disks in older systems."
     ],
-    "answer": "Expansion Slot",
-    "why": "An expansion slot (such as PCIe ) on the lets you install extra cards like a graphics card, sound card, or network card to add or improve features."
+    "answer": "Lets you install extra cards such as graphics, sound, or network cards.",
+    "why": "Lets you install extra cards such as graphics, sound, or network cards."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "BIOS Chip",
+    "q": "What is the correct function of this part?",
     "image": "images/bios-chip.jpg",
     "choices": [
-      "BIOS Chip",
-      "Thermal Paste",
-      "ATX Power Connector",
-      "Front Panel Connectors"
+      "Stores firmware that starts the computer and checks the hardware.",
+      "Attach the power button, reset button, and case lights to the board.",
+      "Makes beep codes during startup to help diagnose hardware problems.",
+      "Sends high-quality video and audio to a monitor, often used on PCs."
     ],
-    "answer": "BIOS Chip",
-    "why": "The BIOS (or UEFI) chip stores firmware that starts the computer, checks hardware during boot, and helps load the operating system."
+    "answer": "Stores firmware that starts the computer and checks the hardware.",
+    "why": "Stores firmware that starts the computer and checks the hardware."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Thermal Paste",
+    "q": "What is the correct function of this part?",
     "image": "images/thermal-paste.jpg",
     "choices": [
-      "Thermal Paste",
-      "ATX Power Connector",
-      "Front Panel Connectors",
-      "Drive Bay"
+      "Fills tiny gaps so heat can pass from the CPU to the heat sink.",
+      "A space in the case that holds a hard drive, SSD cage, or optical drive.",
+      "Very fast memory near the CPU for frequently used data.",
+      "Sits on the CPU heat sink and blows air across the processor."
     ],
-    "answer": "Thermal Paste",
-    "why": "Thermal paste is a heat-transfer compound placed between the CPU and the heat sink. It fills tiny gaps so heat can leave the processor and keep it from overheating."
+    "answer": "Fills tiny gaps so heat can pass from the CPU to the heat sink.",
+    "why": "Fills tiny gaps so heat can pass from the CPU to the heat sink."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "ATX Power Connector",
+    "q": "What is the correct function of this part?",
     "image": "images/atx-power-connector.jpg",
     "choices": [
-      "ATX Power Connector",
-      "Front Panel Connectors",
-      "Drive Bay",
-      "I/O Shield"
+      "The 24-pin plug that delivers main power to the motherboard.",
+      "The metal plate at the back of the case that lines up with the motherboard ports.",
+      "Stores permanent startup instructions that stay even when power is off.",
+      "An older long expansion slot for cards such as sound, network, or modem."
     ],
-    "answer": "ATX Power Connector",
-    "why": "The 24-pin ATX power connector is the main power plug from the power supply to the . It delivers electricity so the board and its parts can turn on and run."
+    "answer": "The 24-pin plug that delivers main power to the motherboard.",
+    "why": "The 24-pin plug that delivers main power to the motherboard."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Front Panel Connectors",
+    "q": "What is the correct function of this part?",
     "image": "images/front-panel-connectors.jpg",
     "choices": [
-      "Front Panel Connectors",
-      "Drive Bay",
-      "I/O Shield",
-      "Jumpers"
+      "Attach the power button, reset button, and case lights to the board.",
+      "Small caps on pins that set hardware options such as clearing CMOS.",
+      "Brings electricity from the power supply to a SATA drive.",
+      "An older slot used only for a graphics card; newer boards use PCIe."
     ],
-    "answer": "Front Panel Connectors",
-    "why": "Front panel connectors attach the case power button, reset button, and LED lights to the so you can turn the computer on and see power or drive activity."
+    "answer": "Attach the power button, reset button, and case lights to the board.",
+    "why": "Attach the power button, reset button, and case lights to the board."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Drive Bay",
+    "q": "What is the correct function of this part?",
     "image": "images/drive-bay.jpg",
     "choices": [
-      "Drive Bay",
-      "I/O Shield",
-      "Jumpers",
-      "Standoffs"
+      "A space in the case that holds a hard drive, SSD cage, or optical drive.",
+      "Metal spacers that hold the motherboard above the case to prevent shorts.",
+      "Reads and writes small files on floppy disks in older systems.",
+      "The L-shaped motherboard connector where a SATA data cable plugs in."
     ],
-    "answer": "Drive Bay",
-    "why": "A drive bay is a space inside the system unit that holds storage devices such as a hard drive, SSD cage, floppy drive, or optical drive in place."
+    "answer": "A space in the case that holds a hard drive, SSD cage, or optical drive.",
+    "why": "A space in the case that holds a hard drive, SSD cage, or optical drive."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "I/O Shield",
+    "q": "What is the correct function of this part?",
     "image": "images/i-o-shield.jpg",
     "choices": [
-      "I/O Shield",
-      "Jumpers",
-      "Standoffs",
-      "Internal Speaker"
+      "The metal plate at the back of the case that lines up with the motherboard ports.",
+      "Makes beep codes during startup to help diagnose hardware problems.",
+      "Sends high-quality video and audio to a monitor, often used on PCs.",
+      "An optical drive that reads DVDs and CDs."
     ],
-    "answer": "I/O Shield",
-    "why": "The I/O shield is the metal plate at the back of the case. It lines up with the ports and protects the openings while giving access to USB, video, audio, and network ports."
+    "answer": "The metal plate at the back of the case that lines up with the motherboard ports.",
+    "why": "The metal plate at the back of the case that lines up with the motherboard ports."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Jumpers",
+    "q": "What is the correct function of this part?",
     "image": "images/jumpers.jpg",
     "choices": [
-      "Jumpers",
-      "Standoffs",
-      "Internal Speaker",
-      "Cache Memory"
+      "Small caps on pins that set hardware options such as clearing CMOS.",
+      "Very fast memory near the CPU for frequently used data.",
+      "Sits on the CPU heat sink and blows air across the processor.",
+      "A small fast storage board that plugs into the M.2 slot."
     ],
-    "answer": "Jumpers",
-    "why": "Jumpers are small plastic caps placed on pins. They set hardware options such as clearing CMOS settings or changing older drive and BIOS configurations."
+    "answer": "Small caps on pins that set hardware options such as clearing CMOS.",
+    "why": "Small caps on pins that set hardware options such as clearing CMOS."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Standoffs",
+    "q": "What is the correct function of this part?",
     "image": "images/standoffs.jpg",
     "choices": [
-      "Standoffs",
-      "Internal Speaker",
-      "Cache Memory",
-      "ROM"
+      "Metal spacers that hold the motherboard above the case to prevent shorts.",
+      "Stores permanent startup instructions that stay even when power is off.",
+      "An older long expansion slot for cards such as sound, network, or modem.",
+      "An older expansion card that connected to the internet through a phone line."
     ],
-    "answer": "Standoffs",
-    "why": "Standoffs are metal spacers that hold the above the case. They prevent short circuits and keep the board securely mounted inside the system unit."
+    "answer": "Metal spacers that hold the motherboard above the case to prevent shorts.",
+    "why": "Metal spacers that hold the motherboard above the case to prevent shorts."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Internal Speaker",
+    "q": "What is the correct function of this part?",
     "image": "images/internal-speaker.jpg",
     "choices": [
-      "Internal Speaker",
-      "Cache Memory",
-      "ROM",
-      "SATA Power Cable"
+      "Makes beep codes during startup to help diagnose hardware problems.",
+      "Brings electricity from the power supply to a SATA drive.",
+      "An older slot used only for a graphics card; newer boards use PCIe.",
+      "Turns the computer on or tells it to shut down."
     ],
-    "answer": "Internal Speaker",
-    "why": "The internal speaker or buzzer is a small speaker on or connected to the . It makes beep codes that help diagnose hardware problems during startup."
+    "answer": "Makes beep codes during startup to help diagnose hardware problems.",
+    "why": "Makes beep codes during startup to help diagnose hardware problems."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Cache Memory",
+    "q": "What is the correct function of this part?",
     "image": "images/cache-memory.jpg",
     "choices": [
-      "Cache Memory",
-      "ROM",
-      "SATA Power Cable",
-      "Floppy Disk Drive"
+      "Very fast memory near the CPU for frequently used data.",
+      "Reads and writes small files on floppy disks in older systems.",
+      "The L-shaped motherboard connector where a SATA data cable plugs in.",
+      "USB jacks on the front of the case for easy plug-in."
     ],
-    "answer": "Cache Memory",
-    "why": "Cache memory is very fast memory inside or near the CPU. It stores frequently used data and instructions so the processor can work faster than using RAM alone."
+    "answer": "Very fast memory near the CPU for frequently used data.",
+    "why": "Very fast memory near the CPU for frequently used data."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "ROM",
+    "q": "What is the correct function of this part?",
     "image": "images/rom.jpg",
     "choices": [
-      "ROM",
-      "SATA Power Cable",
-      "Floppy Disk Drive",
-      "DisplayPort"
+      "Stores permanent startup instructions that stay even when power is off.",
+      "Sends high-quality video and audio to a monitor, often used on PCs.",
+      "An optical drive that reads DVDs and CDs.",
+      "A 4-pin power plug for older drives and some fans."
     ],
-    "answer": "ROM",
-    "why": "ROM, or Read-Only Memory, stores permanent startup instructions. The computer can read this firmware to boot and test hardware, and the data stays even when power is off."
+    "answer": "Stores permanent startup instructions that stay even when power is off.",
+    "why": "Stores permanent startup instructions that stay even when power is off."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "SATA Power Cable",
+    "q": "What is the correct function of this part?",
     "image": "images/sata-power-cable.jpg",
     "choices": [
-      "SATA Power Cable",
-      "Floppy Disk Drive",
-      "DisplayPort",
-      "CPU Fan"
+      "Brings electricity from the power supply to a SATA drive.",
+      "Sits on the CPU heat sink and blows air across the processor.",
+      "A small fast storage board that plugs into the M.2 slot.",
+      "Extra 6-pin or 8-pin power from the PSU to a graphics card."
     ],
-    "answer": "SATA Power Cable",
-    "why": "A SATA power cable comes from the power supply and plugs into a hard drive, SSD, or optical drive to give it the electricity it needs to operate."
+    "answer": "Brings electricity from the power supply to a SATA drive.",
+    "why": "Brings electricity from the power supply to a SATA drive."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Floppy Disk Drive",
+    "q": "What is the correct function of this part?",
     "image": "images/floppy-disk-drive.jpg",
     "choices": [
-      "Floppy Disk Drive",
-      "DisplayPort",
-      "CPU Fan",
-      "PCI Slot"
+      "Reads and writes small files on floppy disks in older systems.",
+      "An older long expansion slot for cards such as sound, network, or modem.",
+      "An older expansion card that connected to the internet through a phone line.",
+      "Colored round ports for microphone, speakers, and line input."
     ],
-    "answer": "Floppy Disk Drive",
-    "why": "A floppy disk drive reads and writes data on floppy disks. It was used in older system units for saving small files and installing programs."
+    "answer": "Reads and writes small files on floppy disks in older systems.",
+    "why": "Reads and writes small files on floppy disks in older systems."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "DisplayPort",
+    "q": "What is the correct function of this part?",
     "image": "images/displayport.jpg",
     "choices": [
-      "DisplayPort",
-      "CPU Fan",
-      "PCI Slot",
-      "AGP Slot"
+      "Sends high-quality video and audio to a monitor, often used on PCs.",
+      "An older slot used only for a graphics card; newer boards use PCIe.",
+      "Turns the computer on or tells it to shut down.",
+      "A 9-pin COM port that sends data one bit at a time."
     ],
-    "answer": "DisplayPort",
-    "why": "A DisplayPort sends high-quality video and audio from the computer to a monitor, similar to HDMI but often used on PCs."
+    "answer": "Sends high-quality video and audio to a monitor, often used on PCs.",
+    "why": "Sends high-quality video and audio to a monitor, often used on PCs."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "CPU Fan",
+    "q": "What is the correct function of this part?",
     "image": "images/cpu-fan.jpg",
     "choices": [
-      "CPU Fan",
-      "PCI Slot",
-      "AGP Slot",
-      "SATA Port"
+      "Sits on the CPU heat sink and blows air across the processor.",
+      "The L-shaped motherboard connector where a SATA data cable plugs in.",
+      "USB jacks on the front of the case for easy plug-in.",
+      "Sends digital video from the computer to a monitor."
     ],
-    "answer": "CPU Fan",
-    "why": "The CPU fan sits on the processor heat sink inside the system unit. It blows air across the CPU so the processor does not overheat while the computer is running."
+    "answer": "Sits on the CPU heat sink and blows air across the processor.",
+    "why": "Sits on the CPU heat sink and blows air across the processor."
   },
   {
-    "q": "In this picture, what are the long white slots called?",
+    "part": "PCI Slot",
+    "q": "What is the correct function of this part?",
     "image": "images/pci-slot.jpg",
     "choices": [
-      "PCI Slot",
-      "AGP Slot",
-      "SATA Port",
-      "DVD Drive"
+      "An older long expansion slot for cards such as sound, network, or modem.",
+      "An optical drive that reads DVDs and CDs.",
+      "A 4-pin power plug for older drives and some fans.",
+      "Connects an external SATA drive to the system unit."
     ],
-    "answer": "PCI Slot",
-    "why": "A PCI slot is a long expansion slot on the . In this picture the white slots are PCI slots. They hold older cards such as a sound card, network card, or modem."
+    "answer": "An older long expansion slot for cards such as sound, network, or modem.",
+    "why": "An older long expansion slot for cards such as sound, network, or modem."
   },
   {
-    "q": "In this picture, what is the brown slot above the white slots called?",
+    "part": "AGP Slot",
+    "q": "What is the correct function of this part?",
     "image": "images/agp-slot.jpg",
     "choices": [
-      "AGP Slot",
-      "SATA Port",
-      "DVD Drive",
-      "NVMe SSD"
+      "An older slot used only for a graphics card; newer boards use PCIe.",
+      "A small fast storage board that plugs into the M.2 slot.",
+      "Extra 6-pin or 8-pin power from the PSU to a graphics card.",
+      "A fast IEEE 1394 port used for cameras and external drives."
     ],
-    "answer": "AGP Slot",
-    "why": "An AGP slot was used only for a graphics card on older s. In this picture it is the brown slot above the white PCI slots. Newer computers use a PCIe slot instead."
+    "answer": "An older slot used only for a graphics card; newer boards use PCIe.",
+    "why": "An older slot used only for a graphics card; newer boards use PCIe."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "SATA Port",
+    "q": "What is the correct function of this part?",
     "image": "images/sata-port.jpg",
     "choices": [
-      "SATA Port",
-      "DVD Drive",
-      "NVMe SSD",
-      "Modem Card"
+      "The L-shaped motherboard connector where a SATA data cable plugs in.",
+      "An older expansion card that connected to the internet through a phone line.",
+      "Colored round ports for microphone, speakers, and line input.",
+      "The metal plate on an expansion card, or a cover for an empty slot."
     ],
-    "answer": "SATA Port",
-    "why": "A SATA port is the L-shaped connector on the where a SATA data cable plugs in. It links a hard drive, SSD, or optical drive so data can move through the system unit."
+    "answer": "The L-shaped motherboard connector where a SATA data cable plugs in.",
+    "why": "The L-shaped motherboard connector where a SATA data cable plugs in."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "DVD Drive",
+    "q": "What is the correct function of this part?",
     "image": "images/dvd-drive.jpg",
     "choices": [
-      "DVD Drive",
-      "NVMe SSD",
-      "Modem Card",
-      "Power Button"
+      "An optical drive that reads DVDs and CDs.",
+      "Turns the computer on or tells it to shut down.",
+      "A 9-pin COM port that sends data one bit at a time.",
+      "Store and smooth electricity on the motherboard and in the power supply."
     ],
-    "answer": "DVD Drive",
-    "why": "A DVD drive is an optical drive mounted in the system unit. It reads DVDs and CDs. The drive in the picture is a Blu-ray drive, which can also read DVDs."
+    "answer": "An optical drive that reads DVDs and CDs.",
+    "why": "An optical drive that reads DVDs and CDs."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "NVMe SSD",
+    "q": "What is the correct function of this part?",
     "image": "images/nvme-ssd.jpg",
     "choices": [
-      "NVMe SSD",
-      "Modem Card",
-      "Power Button",
-      "Front USB Ports"
+      "A small fast storage board that plugs into the M.2 slot.",
+      "USB jacks on the front of the case for easy plug-in.",
+      "Sends digital video from the computer to a monitor.",
+      "The small 4-pin power plug for a floppy disk drive."
     ],
-    "answer": "NVMe SSD",
-    "why": "An NVMe SSD is a small storage board that plugs into the M.2 slot on the . It keeps your files and operating system when the power is off, and it is much faster than a hard disk drive."
+    "answer": "A small fast storage board that plugs into the M.2 slot.",
+    "why": "A small fast storage board that plugs into the M.2 slot."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Modem Card",
+    "q": "What is the correct function of this part?",
     "image": "images/modem-card.jpg",
     "choices": [
-      "Modem Card",
-      "Power Button",
-      "Front USB Ports",
-      "Molex Connector"
+      "An older expansion card that connected to the internet through a phone line.",
+      "A 4-pin power plug for older drives and some fans.",
+      "Connects an external SATA drive to the system unit.",
+      "A ribbon cable that carries data to the floppy disk drive."
     ],
-    "answer": "Modem Card",
-    "why": "A modem card fits in an expansion slot inside the system unit. Older computers used it to connect to the internet through a telephone line. The jacks on the metal bracket are for the phone cable."
+    "answer": "An older expansion card that connected to the internet through a phone line.",
+    "why": "An older expansion card that connected to the internet through a phone line."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Power Button",
+    "q": "What is the correct function of this part?",
     "image": "images/power-button.jpg",
     "choices": [
-      "Power Button",
-      "Front USB Ports",
-      "Molex Connector",
-      "PCIe Power Plug"
+      "Turns the computer on or tells it to shut down.",
+      "Extra 6-pin or 8-pin power from the PSU to a graphics card.",
+      "A fast IEEE 1394 port used for cameras and external drives.",
+      "An older LPT port used mainly to connect a printer."
     ],
-    "answer": "Power Button",
-    "why": "The power button is on the front of the system unit. Pressing it turns the computer on, or it tells the system to shut down. The small light near the button shows that the computer has power."
+    "answer": "Turns the computer on or tells it to shut down.",
+    "why": "Turns the computer on or tells it to shut down."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Front USB Ports",
+    "q": "What is the correct function of this part?",
     "image": "images/front-usb-ports.jpg",
     "choices": [
-      "Front USB Ports",
-      "Molex Connector",
-      "PCIe Power Plug",
-      "Audio Jacks"
+      "USB jacks on the front of the case for easy plug-in.",
+      "Colored round ports for microphone, speakers, and line input.",
+      "The metal plate on an expansion card, or a cover for an empty slot.",
+      "The rocker on the back of the power supply that turns wall power on or off."
     ],
-    "answer": "Front USB Ports",
-    "why": "Front USB ports are built into the front of the system unit. They let you plug in a flash drive, phone, or other USB device without using the ports at the back of the case."
+    "answer": "USB jacks on the front of the case for easy plug-in.",
+    "why": "USB jacks on the front of the case for easy plug-in."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Molex Connector",
+    "q": "What is the correct function of this part?",
     "image": "images/molex-connector.jpg",
     "choices": [
-      "Molex Connector",
-      "PCIe Power Plug",
-      "Audio Jacks",
-      "Serial Port"
+      "A 4-pin power plug for older drives and some fans.",
+      "A 9-pin COM port that sends data one bit at a time.",
+      "Store and smooth electricity on the motherboard and in the power supply.",
+      "Houses and protects the internal parts and helps keep them cool."
     ],
-    "answer": "Molex Connector",
-    "why": "A Molex connector is a 4-pin power plug from the power supply. It gives electricity to older hard drives, optical drives, and some fans. Yellow is 12 volts, red is 5 volts, and the black wires are ground."
+    "answer": "A 4-pin power plug for older drives and some fans.",
+    "why": "A 4-pin power plug for older drives and some fans."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "PCIe Power Plug",
+    "q": "What is the correct function of this part?",
     "image": "images/pcie-power-plug.jpg",
     "choices": [
-      "PCIe Power Plug",
-      "Audio Jacks",
-      "Serial Port",
-      "DVI Port"
+      "Extra 6-pin or 8-pin power from the PSU to a graphics card.",
+      "Sends digital video from the computer to a monitor.",
+      "The small 4-pin power plug for a floppy disk drive.",
+      "Processes instructions and runs programs; it is the brain of the computer."
     ],
-    "answer": "PCIe Power Plug",
-    "why": "A PCIe power plug is a 6-pin or 8-pin cable from the power supply. It gives a graphics card extra electricity when the expansion slot alone cannot supply enough power."
+    "answer": "Extra 6-pin or 8-pin power from the PSU to a graphics card.",
+    "why": "Extra 6-pin or 8-pin power from the PSU to a graphics card."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Audio Jacks",
+    "q": "What is the correct function of this part?",
     "image": "images/audio-jacks.jpg",
     "choices": [
-      "Audio Jacks",
-      "Serial Port",
-      "DVI Port",
-      "eSATA Port"
+      "Colored round ports for microphone, speakers, and line input.",
+      "Connects an external SATA drive to the system unit.",
+      "A ribbon cable that carries data to the floppy disk drive.",
+      "Holds the processor on the motherboard and connects it electrically."
     ],
-    "answer": "Audio Jacks",
-    "why": "Audio jacks are the round colored ports on the system unit. Pink is for a microphone, green is for speakers or headphones, and blue is the line input for other sound devices."
+    "answer": "Colored round ports for microphone, speakers, and line input.",
+    "why": "Colored round ports for microphone, speakers, and line input."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Serial Port",
+    "q": "What is the correct function of this part?",
     "image": "images/serial-port.jpg",
     "choices": [
-      "Serial Port",
-      "DVI Port",
-      "eSATA Port",
-      "FireWire Port"
+      "A 9-pin COM port that sends data one bit at a time.",
+      "A fast IEEE 1394 port used for cameras and external drives.",
+      "An older LPT port used mainly to connect a printer.",
+      "The main circuit board that connects all parts so they can work together."
     ],
-    "answer": "Serial Port",
-    "why": "A serial port, also called a COM port, sends data one bit at a time. It is the 9-pin port on older system units. Mice, modems, and some other devices connected here."
+    "answer": "A 9-pin COM port that sends data one bit at a time.",
+    "why": "A 9-pin COM port that sends data one bit at a time."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "DVI Port",
+    "q": "What is the correct function of this part?",
     "image": "images/dvi-port.jpg",
     "choices": [
-      "DVI Port",
-      "eSATA Port",
-      "FireWire Port",
-      "Slot Bracket"
+      "Sends digital video from the computer to a monitor.",
+      "The metal plate on an expansion card, or a cover for an empty slot.",
+      "The rocker on the back of the power supply that turns wall power on or off.",
+      "Temporarily stores data and programs the computer is using right now."
     ],
-    "answer": "DVI Port",
-    "why": "A DVI port sends digital video from the system unit to a monitor. On this graphics card, the white connector is the DVI port. It can show a sharper picture than the blue VGA port."
+    "answer": "Sends digital video from the computer to a monitor.",
+    "why": "Sends digital video from the computer to a monitor."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "eSATA Port",
+    "q": "What is the correct function of this part?",
     "image": "images/esata-port.jpg",
     "choices": [
-      "eSATA Port",
-      "FireWire Port",
-      "Slot Bracket",
-      "Capacitors"
+      "Connects an external SATA drive to the system unit.",
+      "Store and smooth electricity on the motherboard and in the power supply.",
+      "Houses and protects the internal parts and helps keep them cool.",
+      "Holds the RAM modules and connects them to the motherboard."
     ],
-    "answer": "eSATA Port",
-    "why": "An eSATA port connects an external SATA drive to the system unit. The ports labeled eSATA on this bracket are those external connections. They move data faster than many older USB ports."
+    "answer": "Connects an external SATA drive to the system unit.",
+    "why": "Connects an external SATA drive to the system unit."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "FireWire Port",
+    "q": "What is the correct function of this part?",
     "image": "images/firewire-port.jpg",
     "choices": [
-      "FireWire Port",
-      "Slot Bracket",
-      "Capacitors",
-      "Berg Connector"
+      "A fast IEEE 1394 port used for cameras and external drives.",
+      "The small 4-pin power plug for a floppy disk drive.",
+      "Processes instructions and runs programs; it is the brain of the computer.",
+      "Converts AC from the wall into DC power for the parts."
     ],
-    "answer": "FireWire Port",
-    "why": "A FireWire port, also called IEEE 1394, transfers data quickly. Computers used it for video cameras and external drives. The port in the picture is labeled FireWire 800."
+    "answer": "A fast IEEE 1394 port used for cameras and external drives.",
+    "why": "A fast IEEE 1394 port used for cameras and external drives."
   },
   {
-    "q": "Which part of the system unit is shown in the picture?",
+    "part": "Slot Bracket",
+    "q": "What is the correct function of this part?",
     "image": "images/slot-bracket.jpg",
     "choices": [
-      "Slot Bracket",
-      "Capacitors",
-      "Berg Connector",
-      "Floppy Cable"
+      "The metal plate on an expansion card, or a cover for an empty slot.",
+      "A ribbon cable that carries data to the floppy disk drive.",
+      "Holds the processor on the motherboard and connects it electrically.",
+      "Stores files and the operating system on spinning disks even when power is off."
     ],
-    "answer": "Slot Bracket",
-    "why": "A slot bracket is the metal plate at the back of an expansion card, or a cover over an empty slot. It closes the opening in the case, holds the card ports, and helps keep dust out of the system unit."
+    "answer": "The metal plate on an expansion card, or a cover for an empty slot.",
+    "why": "The metal plate on an expansion card, or a cover for an empty slot."
   },
   {
-    "q": "Which parts are the cylinder components that smooth electricity on the motherboard and inside the power supply?",
+    "part": "Capacitors",
+    "q": "What is the correct function of this part?",
     "image": "images/capacitors.jpg",
     "choices": [
-      "Capacitors",
-      "Berg Connector",
-      "Floppy Cable",
-      "Parallel Port"
+      "Store and smooth electricity on the motherboard and in the power supply.",
+      "An older LPT port used mainly to connect a printer.",
+      "The main circuit board that connects all parts so they can work together.",
+      "Carries data between a SATA storage drive and the motherboard."
     ],
-    "answer": "Capacitors",
-    "why": "Capacitors store and smooth electricity so the other parts get steady power. On a motherboard they are the small cylinder parts near the CPU and slots."
+    "answer": "Store and smooth electricity on the motherboard and in the power supply.",
+    "why": "Store and smooth electricity on the motherboard and in the power supply."
   },
   {
-    "q": "Which small 4-pin plug in this picture supplies power to a floppy disk drive?",
+    "part": "Berg Connector",
+    "q": "What is the correct function of this part?",
     "image": "images/berg-connector.jpg",
     "choices": [
-      "Berg Connector",
-      "Floppy Cable",
-      "Parallel Port",
-      "PSU Switch"
+      "The small 4-pin power plug for a floppy disk drive.",
+      "The rocker on the back of the power supply that turns wall power on or off.",
+      "Temporarily stores data and programs the computer is using right now.",
+      "Reads data stored on compact discs."
     ],
-    "answer": "Berg Connector",
-    "why": "A Berg connector is the small 4-pin power plug for a floppy disk drive."
+    "answer": "The small 4-pin power plug for a floppy disk drive.",
+    "why": "The small 4-pin power plug for a floppy disk drive."
   },
   {
-    "q": "Which cable is this ribbon that connects a floppy disk drive to the motherboard?",
+    "part": "Floppy Cable",
+    "q": "What is the correct function of this part?",
     "image": "images/floppy-cable.jpg",
     "choices": [
-      "Floppy Cable",
-      "Parallel Port",
-      "PSU Switch",
-      "System Case"
+      "A ribbon cable that carries data to the floppy disk drive.",
+      "Houses and protects the internal parts and helps keep them cool.",
+      "Holds the RAM modules and connects them to the motherboard.",
+      "Pulls heat away from the CPU or GPU to help prevent overheating."
     ],
-    "answer": "Floppy Cable",
-    "why": "A floppy ribbon cable carries data between the floppy disk drive and the motherboard."
+    "answer": "A ribbon cable that carries data to the floppy disk drive.",
+    "why": "A ribbon cable that carries data to the floppy disk drive."
   },
   {
-    "q": "Which older printer port uses the wide plug shown in the picture?",
+    "part": "Parallel Port",
+    "q": "What is the correct function of this part?",
     "image": "images/parallel-port.jpg",
     "choices": [
-      "Parallel Port",
-      "PSU Switch",
-      "System Case",
-      "CPU"
+      "An older LPT port used mainly to connect a printer.",
+      "Processes instructions and runs programs; it is the brain of the computer.",
+      "Converts AC from the wall into DC power for the parts.",
+      "Provide ports so external devices can connect to the computer."
     ],
-    "answer": "Parallel Port",
-    "why": "A parallel port, also called an LPT port, was used mainly to connect a printer. The computer side uses a 25-pin plug."
+    "answer": "An older LPT port used mainly to connect a printer.",
+    "why": "An older LPT port used mainly to connect a printer."
   },
   {
-    "q": "What is the rocker switch on the back of this power supply called?",
+    "part": "PSU Switch",
+    "q": "What is the correct function of this part?",
     "image": "images/psu-switch.jpg",
     "choices": [
-      "PSU Switch",
-      "System Case",
-      "CPU",
-      "CPU Socket"
+      "The rocker on the back of the power supply that turns wall power on or off.",
+      "Holds the processor on the motherboard and connects it electrically.",
+      "Stores files and the operating system on spinning disks even when power is off.",
+      "An older ribbon cable that connects hard drives or optical drives to the motherboard."
     ],
-    "answer": "PSU Switch",
-    "why": "The PSU switch turns electricity from the wall outlet on or off before it enters the system unit."
+    "answer": "The rocker on the back of the power supply that turns wall power on or off.",
+    "why": "The rocker on the back of the power supply that turns wall power on or off."
   }
 ];

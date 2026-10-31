@@ -30,8 +30,8 @@ function showStart() {
   who.textContent = "Parts inside the case";
   app.innerHTML = `
     <section class="intro">
-      <h2>Open the case.<br>Name the parts.</h2>
-      <p class="lede">Every part of the system unit is here, with its picture. At the end you get your score, and every question shows the correct answer.</p>
+      <h2>Open the case.<br>Choose the function.</h2>
+      <p class="lede">Each question shows the part and its picture. Pick the correct function. At the end you get your score and the right answer for every item.</p>
       <label for="player">Your name</label>
       <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}">
       <label>How many questions</label>
@@ -83,7 +83,8 @@ function showQuestion() {
       <span>${state.name}</span>
     </div>
     <div class="track"><span style="width:${(number / state.deck.length) * 100}%"></span></div>
-    <img class="photo" src="${escapeHtml(item.image)}" alt="Part of the system unit">
+    <img class="photo" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.part || "Part of the system unit")}">
+    <p class="part-name">${escapeHtml(item.part || "")}</p>
     <h2 class="prompt">${escapeHtml(item.q)}</h2>
     <div class="choices" id="choices"></div>
     <div class="row">
@@ -137,7 +138,7 @@ function showScore() {
         <img class="thumb" src="${escapeHtml(item.image)}" alt="">
         <div>
         <div class="tag">${right ? "Correct" : "Review"}</div>
-        <h3>${index + 1}. ${escapeHtml(item.q)}</h3>
+        <h3>${index + 1}. ${escapeHtml(item.part || item.q)}</h3>
         <p><strong>Your answer:</strong> ${escapeHtml(mine || "No answer")}</p>
         <p><strong>Correct answer:</strong> ${escapeHtml(item.answer)}</p>
         <p class="why">${escapeHtml(item.why)}</p>
