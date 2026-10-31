@@ -83,16 +83,20 @@ function showQuestion() {
       <span>${state.name}</span>
     </div>
     <div class="track"><span style="width:${(number / state.deck.length) * 100}%"></span></div>
-    <figure class="photo-card">
-      <img class="photo" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.part || "Part of the system unit")}">
-      <figcaption class="part-name">${escapeHtml(item.part || "")}</figcaption>
-    </figure>
-    <h2 class="prompt">Choose the correct function.</h2>
-    <div class="choices" id="choices"></div>
-    <p class="feedback" id="feedback" hidden></p>
-    <div class="row">
-      <button class="ghost" id="back" type="button"${state.index === 0 ? " disabled" : ""}>Back</button>
-      <button class="primary" id="next" type="button" disabled>${number === state.deck.length ? "See score" : "Next"}</button>
+    <div class="ask">
+      <figure class="photo-card">
+        <img class="photo" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.part || "Part of the system unit")}">
+        <figcaption class="part-name">${escapeHtml(item.part || "")}</figcaption>
+      </figure>
+      <div class="answers">
+        <h2 class="prompt">Choose the correct function.</h2>
+        <div class="choices" id="choices"></div>
+        <p class="feedback" id="feedback" hidden></p>
+        <div class="row">
+          <button class="ghost" id="back" type="button"${state.index === 0 ? " disabled" : ""}>Back</button>
+          <button class="primary" id="next" type="button" disabled>${number === state.deck.length ? "See score" : "Next"}</button>
+        </div>
+      </div>
     </div>
   `;
   const choices = document.getElementById("choices");
