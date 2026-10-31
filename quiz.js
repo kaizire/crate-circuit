@@ -83,9 +83,11 @@ function showQuestion() {
       <span>${state.name}</span>
     </div>
     <div class="track"><span style="width:${(number / state.deck.length) * 100}%"></span></div>
-    <img class="photo" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.part || "Part of the system unit")}">
-    <p class="part-name">${escapeHtml(item.part || "")}</p>
-    <h2 class="prompt">${escapeHtml(item.q)}</h2>
+    <figure class="photo-card">
+      <img class="photo" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.part || "Part of the system unit")}">
+      <figcaption class="part-name">${escapeHtml(item.part || "")}</figcaption>
+    </figure>
+    <h2 class="prompt">Choose the correct function.</h2>
     <div class="choices" id="choices"></div>
     <div class="row">
       <button class="ghost" id="back" type="button"${state.index === 0 ? " disabled" : ""}>Back</button>
