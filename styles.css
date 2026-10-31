@@ -249,6 +249,38 @@ input[type="text"] {
   box-shadow: inset 4px 0 0 var(--amber);
 }
 
+.choice.correct {
+  border-color: var(--green);
+  background: var(--green-soft);
+  box-shadow: inset 4px 0 0 var(--green);
+}
+
+.choice.missed {
+  border-color: var(--red);
+  background: var(--red-soft);
+  box-shadow: inset 4px 0 0 var(--red);
+}
+
+.choice:disabled { cursor: default; }
+
+.feedback {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.feedback.ok {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.feedback.bad {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
 .mark {
   flex: 0 0 auto;
   width: 32px;

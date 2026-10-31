@@ -31,7 +31,7 @@ function showStart() {
   app.innerHTML = `
     <section class="intro">
       <h2>Open the case.<br>Choose the function.</h2>
-      <p class="lede">Each question shows the part and its picture. Pick the correct function. At the end you get your score and the right answer for every item.</p>
+      <p class="lede">Each question shows the part and its picture. Pick the correct function. You will see right away if your answer is correct, and at the end you get your score.</p>
       <label for="player">Your name</label>
       <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}">
       <label>How many questions</label>
@@ -89,26 +89,48 @@ function showQuestion() {
     </figure>
     <h2 class="prompt">Choose the correct function.</h2>
     <div class="choices" id="choices"></div>
+    <p class="feedback" id="feedback" hidden></p>
     <div class="row">
       <button class="ghost" id="back" type="button"${state.index === 0 ? " disabled" : ""}>Back</button>
       <button class="primary" id="next" type="button" disabled>${number === state.deck.length ? "See score" : "Next"}</button>
     </div>
   `;
   const choices = document.getElementById("choices");
+  const locked = Boolean(picked);
+
+  function markAnswers(selected) {
+    const right = selected === item.answer;
+    choices.querySelectorAll(".choice").forEach((node) => {
+      const value = node.getAttribute("data-choice");
+      node.disabled = true;
+      node.classList.remove("selected", "correct", "missed");
+      if (value === item.answer) node.classList.add("correct");
+      if (value === selected && !right) node.classList.add("missed");
+    });
+    const box = document.getElementById("feedback");
+    box.hidden = false;
+    box.className = "feedback " + (right ? "ok" : "bad");
+    box.textContent = right
+      ? "Correct! That is the function of the " + item.part + "."
+      : "Wrong. The correct function is: " + item.answer;
+    document.getElementById("next").disabled = false;
+    setLed(right ? "on" : "warn");
+  }
+
   item.choices.forEach((choice, index) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "choice" + (picked === choice ? " selected" : "");
+    button.className = "choice";
+    button.setAttribute("data-choice", choice);
     button.innerHTML = `<span class="mark">${String.fromCharCode(65 + index)}</span><span>${escapeHtml(choice)}</span>`;
     button.addEventListener("click", () => {
+      if (state.picks[state.index]) return;
       state.picks[state.index] = choice;
-      choices.querySelectorAll(".choice").forEach((node) => node.classList.remove("selected"));
-      button.classList.add("selected");
-      document.getElementById("next").disabled = false;
+      markAnswers(choice);
     });
     choices.appendChild(button);
   });
-  if (picked) document.getElementById("next").disabled = false;
+  if (locked) markAnswers(picked);
   document.getElementById("back").addEventListener("click", () => {
     if (state.index > 0) {
       state.index -= 1;
