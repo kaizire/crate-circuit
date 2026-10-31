@@ -1,193 +1,770 @@
 const QUESTIONS = [
   {
-    q: "Which part is called the brain of the computer?",
-    choices: ["RAM", "CPU", "Power supply", "Hard disk drive"],
-    answer: "CPU",
-    why: "The CPU processes instructions, performs calculations, and controls the hardware."
-  },
-  {
-    q: "Which part is the main circuit board that connects the CPU, memory, storage, and other parts?",
-    choices: ["Motherboard", "System bus", "I/O shield", "Drive bay"],
-    answer: "Motherboard",
-    why: "The motherboard is the backbone of the system unit. The other parts plug into it and communicate through it."
-  },
-  {
-    q: "Which memory holds the data and programs the computer is using right now?",
-    choices: ["ROM", "Cache only", "RAM", "CMOS battery"],
-    answer: "RAM",
-    why: "RAM is temporary memory. The CPU can read it quickly, and its contents are lost when the power goes off."
-  },
-  {
-    q: "What does the power supply do?",
-    choices: [
-      "It stores the operating system",
-      "It converts AC from the wall into DC for the parts",
-      "It renders images for the monitor",
-      "It reads CDs and DVDs"
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/system-case.jpg",
+    "choices": [
+      "System Case",
+      "CPU",
+      "CPU Socket",
+      "Motherboard"
     ],
-    answer: "It converts AC from the wall into DC for the parts",
-    why: "The power supply changes household AC into the DC voltages the system unit needs, then sends that power to the parts."
+    "answer": "System Case",
+    "why": "It houses and protects all internal components, provides cooling, and organizes the hardware for easy access and maintenance."
   },
   {
-    q: "Which drive stores files on spinning magnetic disks and keeps them when the computer is off?",
-    choices: ["Hard disk drive", "RAM", "Cache memory", "CPU fan"],
-    answer: "Hard disk drive",
-    why: "A hard disk drive keeps files, photos, programs, and the operating system even after shutdown."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/cpu.jpg",
+    "choices": [
+      "CPU",
+      "CPU Socket",
+      "Motherboard",
+      "RAM"
+    ],
+    "answer": "CPU",
+    "why": "The CPU is the “brain” of the computer. It processes instructions, performs calculations, and manages tasks to run programs and control hardware."
   },
   {
-    q: "Which storage device uses flash memory and is faster and more durable than a hard disk drive?",
-    choices: ["Floppy disk drive", "CD-ROM", "SSD", "CMOS battery"],
-    answer: "SSD",
-    why: "A solid state drive stores data in flash memory. It has no spinning disk, so it is faster and tougher than a hard drive."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/cpu-socket.jpg",
+    "choices": [
+      "CPU Socket",
+      "Motherboard",
+      "RAM",
+      "RAM Slot"
+    ],
+    "answer": "CPU Socket",
+    "why": "It holds the processor in place on the and provides the electrical and physical connection between the CPU and the motherboard, allowing data and power to flow."
   },
   {
-    q: "What holds the processor in place and connects it electrically to the motherboard?",
-    choices: ["CPU socket", "RAM slot", "AGP slot", "SATA port"],
-    answer: "CPU socket",
-    why: "The CPU socket locks the processor onto the motherboard so data and power can flow between them."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/motherboard.jpg",
+    "choices": [
+      "Motherboard",
+      "RAM",
+      "RAM Slot",
+      "Power Supply"
+    ],
+    "answer": "Motherboard",
+    "why": "The Motherboard is the main circuit board that connects all computer components, including the CPU, RAM, storage, and peripherals. It allows them to communicate and work together, acting as the backbone of the computer system."
   },
   {
-    q: "Which part keeps the date, time, and hardware settings when the computer is turned off?",
-    choices: ["Cooling fan", "CMOS battery", "Heat sink", "Slot bracket"],
-    answer: "CMOS battery",
-    why: "The CMOS battery powers the CMOS chip so those settings stay saved without the main power supply."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/ram.jpg",
+    "choices": [
+      "RAM",
+      "RAM Slot",
+      "Power Supply",
+      "Hard Disk Drive"
+    ],
+    "answer": "RAM",
+    "why": "RAM temporarily stores data and programs that the computer is currently using, allowing the CPU to access information quickly."
   },
   {
-    q: "Which chip stores the firmware that starts the computer and checks the hardware?",
-    choices: ["BIOS chip", "Sound card", "LAN card", "Graphics card"],
-    answer: "BIOS chip",
-    why: "The BIOS, or UEFI, chip holds startup firmware. It tests the hardware and helps load the operating system."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/ram-slot.jpg",
+    "choices": [
+      "RAM Slot",
+      "Power Supply",
+      "Hard Disk Drive",
+      "SATA Cable"
+    ],
+    "answer": "RAM Slot",
+    "why": "A RAM slot holds the memory modules (RAM) on the and provides the connection for data transfer between the RAM and the CPU."
   },
   {
-    q: "What are the metal spacers that hold the motherboard above the case?",
-    choices: ["Standoffs", "Jumpers", "Molex connectors", "Berg connectors"],
-    answer: "Standoffs",
-    why: "Standoffs keep the motherboard from touching the metal case, which prevents short circuits."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/power-supply.jpg",
+    "choices": [
+      "Power Supply",
+      "Hard Disk Drive",
+      "SATA Cable",
+      "CD-ROM"
+    ],
+    "answer": "Power Supply",
+    "why": "A power supply converts AC to DC, regulates and distributes power to all components."
   },
   {
-    q: "What is the metal plate at the back of the case that lines up with the motherboard ports?",
-    choices: ["I/O shield", "Drive bay", "North bridge", "Thermal paste"],
-    answer: "I/O shield",
-    why: "The I/O shield frames the rear ports, such as USB, video, audio, and network, and covers the extra openings."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/hard-disk-drive.jpg",
+    "choices": [
+      "Hard Disk Drive",
+      "SATA Cable",
+      "CD-ROM",
+      "Heat Sink"
+    ],
+    "answer": "Hard Disk Drive",
+    "why": "A hard drive stores all your computer’s data your files, photos, videos, apps, and even the operating system. It keeps everything saved even when the computer is turned off."
   },
   {
-    q: "Which part houses the internal components, helps cooling, and makes the hardware easier to reach?",
-    choices: ["System case", "Expansion slot", "System bus", "ROM"],
-    answer: "System case",
-    why: "The system case, or chassis, protects the parts inside and gives them an organized place with airflow."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/sata-cable.jpg",
+    "choices": [
+      "SATA Cable",
+      "CD-ROM",
+      "Heat Sink",
+      "Peripheral Connectors"
+    ],
+    "answer": "SATA Cable",
+    "why": "It connects storage devices like HDDs or SSD."
   },
   {
-    q: "What is placed between the CPU and the heat sink so heat can cross the tiny gaps?",
-    choices: ["Thermal paste", "SATA cable", "Jumper", "Cache memory"],
-    answer: "Thermal paste",
-    why: "Thermal paste fills microscopic gaps between the processor and the heat sink so heat leaves the CPU."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/cd-rom.jpg",
+    "choices": [
+      "CD-ROM",
+      "Heat Sink",
+      "Peripheral Connectors",
+      "IDE Cable"
+    ],
+    "answer": "CD-ROM",
+    "why": "It reads data stored on CDs, allowing the computer to access software, music, or files from the disc."
   },
   {
-    q: "Which memory is very fast and sits inside or near the CPU?",
-    choices: ["Cache memory", "Floppy disk", "DVD drive", "Parallel port"],
-    answer: "Cache memory",
-    why: "Cache keeps frequently used data and instructions close to the processor so it does not have to wait for RAM."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/heat-sink.jpg",
+    "choices": [
+      "Heat Sink",
+      "Peripheral Connectors",
+      "IDE Cable",
+      "IDE Port"
+    ],
+    "answer": "Heat Sink",
+    "why": "It removes heat from the CPU, GPU, or other components, helping prevent overheating and keeping the system cool."
   },
   {
-    q: "Which memory stores permanent startup instructions that remain when the power is off?",
-    choices: ["ROM", "RAM", "Cache memory", "System bus"],
-    answer: "ROM",
-    why: "ROM, or read-only memory, holds firmware the computer can read in order to boot and test the hardware."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/peripheral-connectors.jpg",
+    "choices": [
+      "Peripheral Connectors",
+      "IDE Cable",
+      "IDE Port",
+      "Sound Card"
+    ],
+    "answer": "Peripheral Connectors",
+    "why": "Provide ports for external devices (like keyboard, mouse, printer, or USB devices) to connect and communicate with the computer."
   },
   {
-    q: "What carries data, addresses, and control signals between the CPU, memory, and other parts?",
-    choices: ["System bus", "Power button", "Audio jack", "Slot bracket"],
-    answer: "System bus",
-    why: "The system bus is the pathway on the motherboard that lets the main parts communicate."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/ide-cable.jpg",
+    "choices": [
+      "IDE Cable",
+      "IDE Port",
+      "Sound Card",
+      "LAN Card"
+    ],
+    "answer": "IDE Cable",
+    "why": "It connects storage devices like hard drives and optical drives to the , allowing data transfer between them."
   },
   {
-    q: "On older motherboards, which chipset part handles high-speed links among the CPU, RAM, and graphics?",
-    choices: ["North bridge", "South bridge", "Modem card", "Internal speaker"],
-    answer: "North bridge",
-    why: "The north bridge managed fast traffic between the CPU, RAM, graphics card, and the front-side bus."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/ide-port.jpg",
+    "choices": [
+      "IDE Port",
+      "Sound Card",
+      "LAN Card",
+      "LAN Port"
+    ],
+    "answer": "IDE Port",
+    "why": "The IDE Port is used to connect older storage devices to the , such as: Hard Disk Drives/Optical drives."
   },
   {
-    q: "On older motherboards, which chipset part handles slower devices such as storage, USB, and audio?",
-    choices: ["South bridge", "North bridge", "CPU fan", "NVMe SSD"],
-    answer: "South bridge",
-    why: "The south bridge managed slower input and output, including drives, USB, PS/2, PCI, BIOS, audio, and networking."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/sound-card.jpg",
+    "choices": [
+      "Sound Card",
+      "LAN Card",
+      "LAN Port",
+      "PS/2 Ports"
+    ],
+    "answer": "Sound Card",
+    "why": "It processes and outputs sound, allowing the computer to play music, sounds, and recordings, and often provides inputs for microphones or musical instruments."
   },
   {
-    q: "On the audio jacks, what is the pink port for?",
-    choices: ["Microphone", "Speakers", "Line input", "Network cable"],
-    answer: "Microphone",
-    why: "Pink is the microphone jack. Green is for speakers or headphones, and blue is the line input."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/lan-card.jpg",
+    "choices": [
+      "LAN Card",
+      "LAN Port",
+      "PS/2 Ports",
+      "VGA Port"
+    ],
+    "answer": "LAN Card",
+    "why": "It allows a computer to connect to a local area network (LAN) or the internet, enabling data communication with other devices."
   },
   {
-    q: "Which plug is the main 24-pin power connection from the power supply to the motherboard?",
-    choices: ["ATX power connector", "Berg connector", "PS/2 port", "HDMI port"],
-    answer: "ATX power connector",
-    why: "The 24-pin ATX connector delivers the main electricity the motherboard needs to turn on and run."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/lan-port.jpg",
+    "choices": [
+      "LAN Port",
+      "PS/2 Ports",
+      "VGA Port",
+      "Graphics Card"
+    ],
+    "answer": "LAN Port",
+    "why": "It connects a computer to a network or the internet, enabling fast, stable communication and data sharing with other devices."
   },
   {
-    q: "Which motherboard connector is L-shaped and is where a SATA data cable plugs in?",
-    choices: ["SATA port", "VGA port", "Serial port", "FireWire port"],
-    answer: "SATA port",
-    why: "A SATA port links a hard drive, SSD, or optical drive so data can move through the system unit."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/ps-2-ports.jpg",
+    "choices": [
+      "PS/2 Ports",
+      "VGA Port",
+      "Graphics Card",
+      "CMOS Battery"
+    ],
+    "answer": "PS/2 Ports",
+    "why": "Allow a computer to connect a keyboard and mouse, enabling input for typing, navigation, and control."
   },
   {
-    q: "Which older slot was used only for a graphics card and is often brown?",
-    choices: ["AGP slot", "RAM slot", "PCI slot", "M.2 slot"],
-    answer: "AGP slot",
-    why: "AGP was a graphics-only slot on older boards. Newer computers use a PCIe slot for the graphics card."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/vga-port.jpg",
+    "choices": [
+      "VGA Port",
+      "Graphics Card",
+      "CMOS Battery",
+      "North Bridge"
+    ],
+    "answer": "VGA Port",
+    "why": "It transmits video signals from the computer to a monitor or display, allowing you to see the visual output."
   },
   {
-    q: "What makes the beep codes you hear when the computer starts?",
-    choices: ["Internal speaker", "Graphics card", "Cooling fan", "DVD drive"],
-    answer: "Internal speaker",
-    why: "The small motherboard speaker or buzzer beeps during startup to help diagnose hardware problems."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/graphics-card.jpg",
+    "choices": [
+      "Graphics Card",
+      "CMOS Battery",
+      "North Bridge",
+      "South Bridge"
+    ],
+    "answer": "Graphics Card",
+    "why": "It processes and renders images, videos, and animations, improving visual performance for gaming, design, and multimedia applications."
   },
   {
-    q: "Which cable gives a graphics card extra electricity beyond what the expansion slot provides?",
-    choices: ["PCIe power plug", "Floppy cable", "IDE cable", "SATA data cable"],
-    answer: "PCIe power plug",
-    why: "A 6-pin or 8-pin PCIe power plug runs from the power supply to the graphics card."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/cmos-battery.jpg",
+    "choices": [
+      "CMOS Battery",
+      "North Bridge",
+      "South Bridge",
+      "SSD"
+    ],
+    "answer": "CMOS Battery",
+    "why": "It provides power to the ’s CMOS chip, preserving system settings like date, time, and hardware configuration when the computer is turned off."
   },
   {
-    q: "Which port is also called IEEE 1394 and was used for cameras and fast external drives?",
-    choices: ["FireWire port", "Parallel port", "PS/2 port", "VGA port"],
-    answer: "FireWire port",
-    why: "FireWire, or IEEE 1394, transfers data quickly. FireWire 800 is one version of that port."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/north-bridge.jpg",
+    "choices": [
+      "North Bridge",
+      "South Bridge",
+      "SSD",
+      "Cooling Fan"
+    ],
+    "answer": "North Bridge",
+    "why": "The North Bridge is a part of older chipsets that manages high-speed communication between the CPU, RAM, graphics card, and the front-side bus, ensuring fast data transfer among these key components."
   },
   {
-    q: "Which older port is also called LPT and was used mainly for printers?",
-    choices: ["Parallel port", "Serial port", "LAN port", "DisplayPort"],
-    answer: "Parallel port",
-    why: "A parallel port is the wide printer port on older system units. The computer side uses a 25-pin plug."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/south-bridge.jpg",
+    "choices": [
+      "South Bridge",
+      "SSD",
+      "Cooling Fan",
+      "USB Port"
+    ],
+    "answer": "South Bridge",
+    "why": "The South Bridge is part of older chipsets that manages slower I/O functions, handling communication between the CPU and devices like storage drives, USB and PS/2 ports, PCI slots, BIOS/CMOS, audio, networking, and system timers."
   },
   {
-    q: "Which port is also called a COM port and sends data one bit at a time through 9 pins?",
-    choices: ["Serial port", "HDMI port", "USB port", "eSATA port"],
-    answer: "Serial port",
-    why: "A serial, or COM, port was used by older mice, modems, and similar devices."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/ssd.jpg",
+    "choices": [
+      "SSD",
+      "Cooling Fan",
+      "USB Port",
+      "HDMI Port"
+    ],
+    "answer": "SSD",
+    "why": "A Solid State Drive stores data using flash memory. It is faster and more durable than a hard disk drive, and it keeps your files and operating system even when the computer is turned off."
   },
   {
-    q: "Which 4-pin drive plug uses a yellow 12-volt wire, a red 5-volt wire, and black ground wires?",
-    choices: ["Molex connector", "Berg connector", "Front panel connector", "DisplayPort"],
-    answer: "Molex connector",
-    why: "A Molex connector powers older hard drives, optical drives, and some fans."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/cooling-fan.jpg",
+    "choices": [
+      "Cooling Fan",
+      "USB Port",
+      "HDMI Port",
+      "Expansion Slot"
+    ],
+    "answer": "Cooling Fan",
+    "why": "A cooling fan moves air through the computer case to remove heat from the CPU, GPU, and other parts, helping prevent overheating and keeping the system stable."
   },
   {
-    q: "Which small 4-pin plug supplies power to a floppy disk drive?",
-    choices: ["Berg connector", "ATX power connector", "HDMI port", "DVI port"],
-    answer: "Berg connector",
-    why: "The Berg connector is the floppy-drive power plug. It is smaller than a Molex plug."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/usb-port.jpg",
+    "choices": [
+      "USB Port",
+      "HDMI Port",
+      "Expansion Slot",
+      "BIOS Chip"
+    ],
+    "answer": "USB Port",
+    "why": "A USB port lets you connect external devices such as flash drives, printers, keyboards, and phones so they can transfer data and sometimes receive power from the computer."
   },
   {
-    q: "Which storage board plugs into the M.2 slot and is much faster than a hard disk drive?",
-    choices: ["NVMe SSD", "CD-ROM", "Floppy disk drive", "Sound card"],
-    answer: "NVMe SSD",
-    why: "An NVMe SSD is a small board that sits in the M.2 slot and keeps files even when the power is off."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/hdmi-port.jpg",
+    "choices": [
+      "HDMI Port",
+      "Expansion Slot",
+      "BIOS Chip",
+      "Thermal Paste"
+    ],
+    "answer": "HDMI Port",
+    "why": "An HDMI port sends high-quality video and audio from the computer to a monitor, TV, or projector through a single cable."
   },
   {
-    q: "What is the rocker on the back of the power supply that turns wall power on or off?",
-    choices: ["PSU switch", "Power button", "Reset button", "Jumper"],
-    answer: "PSU switch",
-    why: "The PSU switch controls electricity from the outlet before it enters the system unit. The power button is on the front of the case."
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/expansion-slot.jpg",
+    "choices": [
+      "Expansion Slot",
+      "BIOS Chip",
+      "Thermal Paste",
+      "ATX Power Connector"
+    ],
+    "answer": "Expansion Slot",
+    "why": "An expansion slot (such as PCIe ) on the lets you install extra cards like a graphics card, sound card, or network card to add or improve features."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/bios-chip.jpg",
+    "choices": [
+      "BIOS Chip",
+      "Thermal Paste",
+      "ATX Power Connector",
+      "Front Panel Connectors"
+    ],
+    "answer": "BIOS Chip",
+    "why": "The BIOS (or UEFI) chip stores firmware that starts the computer, checks hardware during boot, and helps load the operating system."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/thermal-paste.jpg",
+    "choices": [
+      "Thermal Paste",
+      "ATX Power Connector",
+      "Front Panel Connectors",
+      "Drive Bay"
+    ],
+    "answer": "Thermal Paste",
+    "why": "Thermal paste is a heat-transfer compound placed between the CPU and the heat sink. It fills tiny gaps so heat can leave the processor and keep it from overheating."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/atx-power-connector.jpg",
+    "choices": [
+      "ATX Power Connector",
+      "Front Panel Connectors",
+      "Drive Bay",
+      "I/O Shield"
+    ],
+    "answer": "ATX Power Connector",
+    "why": "The 24-pin ATX power connector is the main power plug from the power supply to the . It delivers electricity so the board and its parts can turn on and run."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/front-panel-connectors.jpg",
+    "choices": [
+      "Front Panel Connectors",
+      "Drive Bay",
+      "I/O Shield",
+      "Jumpers"
+    ],
+    "answer": "Front Panel Connectors",
+    "why": "Front panel connectors attach the case power button, reset button, and LED lights to the so you can turn the computer on and see power or drive activity."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/drive-bay.jpg",
+    "choices": [
+      "Drive Bay",
+      "I/O Shield",
+      "Jumpers",
+      "Standoffs"
+    ],
+    "answer": "Drive Bay",
+    "why": "A drive bay is a space inside the system unit that holds storage devices such as a hard drive, SSD cage, floppy drive, or optical drive in place."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/i-o-shield.jpg",
+    "choices": [
+      "I/O Shield",
+      "Jumpers",
+      "Standoffs",
+      "Internal Speaker"
+    ],
+    "answer": "I/O Shield",
+    "why": "The I/O shield is the metal plate at the back of the case. It lines up with the ports and protects the openings while giving access to USB, video, audio, and network ports."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/jumpers.jpg",
+    "choices": [
+      "Jumpers",
+      "Standoffs",
+      "Internal Speaker",
+      "Cache Memory"
+    ],
+    "answer": "Jumpers",
+    "why": "Jumpers are small plastic caps placed on pins. They set hardware options such as clearing CMOS settings or changing older drive and BIOS configurations."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/standoffs.jpg",
+    "choices": [
+      "Standoffs",
+      "Internal Speaker",
+      "Cache Memory",
+      "ROM"
+    ],
+    "answer": "Standoffs",
+    "why": "Standoffs are metal spacers that hold the above the case. They prevent short circuits and keep the board securely mounted inside the system unit."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/internal-speaker.jpg",
+    "choices": [
+      "Internal Speaker",
+      "Cache Memory",
+      "ROM",
+      "SATA Power Cable"
+    ],
+    "answer": "Internal Speaker",
+    "why": "The internal speaker or buzzer is a small speaker on or connected to the . It makes beep codes that help diagnose hardware problems during startup."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/cache-memory.jpg",
+    "choices": [
+      "Cache Memory",
+      "ROM",
+      "SATA Power Cable",
+      "Floppy Disk Drive"
+    ],
+    "answer": "Cache Memory",
+    "why": "Cache memory is very fast memory inside or near the CPU. It stores frequently used data and instructions so the processor can work faster than using RAM alone."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/rom.jpg",
+    "choices": [
+      "ROM",
+      "SATA Power Cable",
+      "Floppy Disk Drive",
+      "DisplayPort"
+    ],
+    "answer": "ROM",
+    "why": "ROM, or Read-Only Memory, stores permanent startup instructions. The computer can read this firmware to boot and test hardware, and the data stays even when power is off."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/sata-power-cable.jpg",
+    "choices": [
+      "SATA Power Cable",
+      "Floppy Disk Drive",
+      "DisplayPort",
+      "CPU Fan"
+    ],
+    "answer": "SATA Power Cable",
+    "why": "A SATA power cable comes from the power supply and plugs into a hard drive, SSD, or optical drive to give it the electricity it needs to operate."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/floppy-disk-drive.jpg",
+    "choices": [
+      "Floppy Disk Drive",
+      "DisplayPort",
+      "CPU Fan",
+      "PCI Slot"
+    ],
+    "answer": "Floppy Disk Drive",
+    "why": "A floppy disk drive reads and writes data on floppy disks. It was used in older system units for saving small files and installing programs."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/displayport.jpg",
+    "choices": [
+      "DisplayPort",
+      "CPU Fan",
+      "PCI Slot",
+      "AGP Slot"
+    ],
+    "answer": "DisplayPort",
+    "why": "A DisplayPort sends high-quality video and audio from the computer to a monitor, similar to HDMI but often used on PCs."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/cpu-fan.jpg",
+    "choices": [
+      "CPU Fan",
+      "PCI Slot",
+      "AGP Slot",
+      "SATA Port"
+    ],
+    "answer": "CPU Fan",
+    "why": "The CPU fan sits on the processor heat sink inside the system unit. It blows air across the CPU so the processor does not overheat while the computer is running."
+  },
+  {
+    "q": "In this picture, what are the long white slots called?",
+    "image": "images/pci-slot.jpg",
+    "choices": [
+      "PCI Slot",
+      "AGP Slot",
+      "SATA Port",
+      "DVD Drive"
+    ],
+    "answer": "PCI Slot",
+    "why": "A PCI slot is a long expansion slot on the . In this picture the white slots are PCI slots. They hold older cards such as a sound card, network card, or modem."
+  },
+  {
+    "q": "In this picture, what is the brown slot above the white slots called?",
+    "image": "images/agp-slot.jpg",
+    "choices": [
+      "AGP Slot",
+      "SATA Port",
+      "DVD Drive",
+      "NVMe SSD"
+    ],
+    "answer": "AGP Slot",
+    "why": "An AGP slot was used only for a graphics card on older s. In this picture it is the brown slot above the white PCI slots. Newer computers use a PCIe slot instead."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/sata-port.jpg",
+    "choices": [
+      "SATA Port",
+      "DVD Drive",
+      "NVMe SSD",
+      "Modem Card"
+    ],
+    "answer": "SATA Port",
+    "why": "A SATA port is the L-shaped connector on the where a SATA data cable plugs in. It links a hard drive, SSD, or optical drive so data can move through the system unit."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/dvd-drive.jpg",
+    "choices": [
+      "DVD Drive",
+      "NVMe SSD",
+      "Modem Card",
+      "Power Button"
+    ],
+    "answer": "DVD Drive",
+    "why": "A DVD drive is an optical drive mounted in the system unit. It reads DVDs and CDs. The drive in the picture is a Blu-ray drive, which can also read DVDs."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/nvme-ssd.jpg",
+    "choices": [
+      "NVMe SSD",
+      "Modem Card",
+      "Power Button",
+      "Front USB Ports"
+    ],
+    "answer": "NVMe SSD",
+    "why": "An NVMe SSD is a small storage board that plugs into the M.2 slot on the . It keeps your files and operating system when the power is off, and it is much faster than a hard disk drive."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/modem-card.jpg",
+    "choices": [
+      "Modem Card",
+      "Power Button",
+      "Front USB Ports",
+      "Molex Connector"
+    ],
+    "answer": "Modem Card",
+    "why": "A modem card fits in an expansion slot inside the system unit. Older computers used it to connect to the internet through a telephone line. The jacks on the metal bracket are for the phone cable."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/power-button.jpg",
+    "choices": [
+      "Power Button",
+      "Front USB Ports",
+      "Molex Connector",
+      "PCIe Power Plug"
+    ],
+    "answer": "Power Button",
+    "why": "The power button is on the front of the system unit. Pressing it turns the computer on, or it tells the system to shut down. The small light near the button shows that the computer has power."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/front-usb-ports.jpg",
+    "choices": [
+      "Front USB Ports",
+      "Molex Connector",
+      "PCIe Power Plug",
+      "Audio Jacks"
+    ],
+    "answer": "Front USB Ports",
+    "why": "Front USB ports are built into the front of the system unit. They let you plug in a flash drive, phone, or other USB device without using the ports at the back of the case."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/molex-connector.jpg",
+    "choices": [
+      "Molex Connector",
+      "PCIe Power Plug",
+      "Audio Jacks",
+      "Serial Port"
+    ],
+    "answer": "Molex Connector",
+    "why": "A Molex connector is a 4-pin power plug from the power supply. It gives electricity to older hard drives, optical drives, and some fans. Yellow is 12 volts, red is 5 volts, and the black wires are ground."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/pcie-power-plug.jpg",
+    "choices": [
+      "PCIe Power Plug",
+      "Audio Jacks",
+      "Serial Port",
+      "DVI Port"
+    ],
+    "answer": "PCIe Power Plug",
+    "why": "A PCIe power plug is a 6-pin or 8-pin cable from the power supply. It gives a graphics card extra electricity when the expansion slot alone cannot supply enough power."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/audio-jacks.jpg",
+    "choices": [
+      "Audio Jacks",
+      "Serial Port",
+      "DVI Port",
+      "eSATA Port"
+    ],
+    "answer": "Audio Jacks",
+    "why": "Audio jacks are the round colored ports on the system unit. Pink is for a microphone, green is for speakers or headphones, and blue is the line input for other sound devices."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/serial-port.jpg",
+    "choices": [
+      "Serial Port",
+      "DVI Port",
+      "eSATA Port",
+      "FireWire Port"
+    ],
+    "answer": "Serial Port",
+    "why": "A serial port, also called a COM port, sends data one bit at a time. It is the 9-pin port on older system units. Mice, modems, and some other devices connected here."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/dvi-port.jpg",
+    "choices": [
+      "DVI Port",
+      "eSATA Port",
+      "FireWire Port",
+      "Slot Bracket"
+    ],
+    "answer": "DVI Port",
+    "why": "A DVI port sends digital video from the system unit to a monitor. On this graphics card, the white connector is the DVI port. It can show a sharper picture than the blue VGA port."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/esata-port.jpg",
+    "choices": [
+      "eSATA Port",
+      "FireWire Port",
+      "Slot Bracket",
+      "Capacitors"
+    ],
+    "answer": "eSATA Port",
+    "why": "An eSATA port connects an external SATA drive to the system unit. The ports labeled eSATA on this bracket are those external connections. They move data faster than many older USB ports."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/firewire-port.jpg",
+    "choices": [
+      "FireWire Port",
+      "Slot Bracket",
+      "Capacitors",
+      "Berg Connector"
+    ],
+    "answer": "FireWire Port",
+    "why": "A FireWire port, also called IEEE 1394, transfers data quickly. Computers used it for video cameras and external drives. The port in the picture is labeled FireWire 800."
+  },
+  {
+    "q": "Which part of the system unit is shown in the picture?",
+    "image": "images/slot-bracket.jpg",
+    "choices": [
+      "Slot Bracket",
+      "Capacitors",
+      "Berg Connector",
+      "Floppy Cable"
+    ],
+    "answer": "Slot Bracket",
+    "why": "A slot bracket is the metal plate at the back of an expansion card, or a cover over an empty slot. It closes the opening in the case, holds the card ports, and helps keep dust out of the system unit."
+  },
+  {
+    "q": "Which parts are the cylinder components that smooth electricity on the motherboard and inside the power supply?",
+    "image": "images/capacitors.jpg",
+    "choices": [
+      "Capacitors",
+      "Berg Connector",
+      "Floppy Cable",
+      "Parallel Port"
+    ],
+    "answer": "Capacitors",
+    "why": "Capacitors store and smooth electricity so the other parts get steady power. On a motherboard they are the small cylinder parts near the CPU and slots."
+  },
+  {
+    "q": "Which small 4-pin plug in this picture supplies power to a floppy disk drive?",
+    "image": "images/berg-connector.jpg",
+    "choices": [
+      "Berg Connector",
+      "Floppy Cable",
+      "Parallel Port",
+      "PSU Switch"
+    ],
+    "answer": "Berg Connector",
+    "why": "A Berg connector is the small 4-pin power plug for a floppy disk drive."
+  },
+  {
+    "q": "Which cable is this ribbon that connects a floppy disk drive to the motherboard?",
+    "image": "images/floppy-cable.jpg",
+    "choices": [
+      "Floppy Cable",
+      "Parallel Port",
+      "PSU Switch",
+      "System Case"
+    ],
+    "answer": "Floppy Cable",
+    "why": "A floppy ribbon cable carries data between the floppy disk drive and the motherboard."
+  },
+  {
+    "q": "Which older printer port uses the wide plug shown in the picture?",
+    "image": "images/parallel-port.jpg",
+    "choices": [
+      "Parallel Port",
+      "PSU Switch",
+      "System Case",
+      "CPU"
+    ],
+    "answer": "Parallel Port",
+    "why": "A parallel port, also called an LPT port, was used mainly to connect a printer. The computer side uses a 25-pin plug."
+  },
+  {
+    "q": "What is the rocker switch on the back of this power supply called?",
+    "image": "images/psu-switch.jpg",
+    "choices": [
+      "PSU Switch",
+      "System Case",
+      "CPU",
+      "CPU Socket"
+    ],
+    "answer": "PSU Switch",
+    "why": "The PSU switch turns electricity from the wall outlet on or off before it enters the system unit."
   }
 ];

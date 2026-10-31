@@ -4,7 +4,7 @@ const who = document.getElementById("who-label");
 
 const state = {
   name: "",
-  length: 12,
+  length: QUESTIONS.length,
   deck: [],
   index: 0,
   picks: []
@@ -31,7 +31,7 @@ function showStart() {
   app.innerHTML = `
     <section class="intro">
       <h2>Open the case.<br>Name the parts.</h2>
-      <p class="lede">CrateCircuit quizzes you on the parts of the system unit. At the end you get your score, and every question shows the correct answer.</p>
+      <p class="lede">Every part of the system unit is here, with its picture. At the end you get your score, and every question shows the correct answer.</p>
       <label for="player">Your name</label>
       <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}">
       <label>How many questions</label>
@@ -82,6 +82,7 @@ function showQuestion() {
       <span>${state.name}</span>
     </div>
     <div class="track"><span style="width:${(number / state.deck.length) * 100}%"></span></div>
+    <img class="photo" src="${escapeHtml(item.image)}" alt="Part of the system unit">
     <h2 class="prompt">${escapeHtml(item.q)}</h2>
     <div class="choices" id="choices"></div>
     <div class="row">
@@ -132,11 +133,14 @@ function showScore() {
     const right = mine === item.answer;
     return `
       <article class="item ${right ? "right" : "wrong"}">
+        <img class="thumb" src="${escapeHtml(item.image)}" alt="">
+        <div>
         <div class="tag">${right ? "Correct" : "Review"}</div>
         <h3>${index + 1}. ${escapeHtml(item.q)}</h3>
         <p><strong>Your answer:</strong> ${escapeHtml(mine || "No answer")}</p>
         <p><strong>Correct answer:</strong> ${escapeHtml(item.answer)}</p>
         <p class="why">${escapeHtml(item.why)}</p>
+        </div>
       </article>
     `;
   }).join("");

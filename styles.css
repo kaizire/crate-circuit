@@ -186,6 +186,17 @@ input[type="text"] {
   background: linear-gradient(90deg, var(--amber-deep), var(--amber));
 }
 
+.photo {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  background: #fffdf8;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin: 0 0 14px;
+}
+
 .prompt {
   margin: 0 0 16px;
   font-size: 26px;
@@ -266,10 +277,22 @@ input[type="text"] {
 .review { display: grid; gap: 10px; }
 
 .item {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 12px;
+  align-items: start;
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px 14px;
   background: #fffdf8;
+}
+
+.thumb {
+  width: 112px;
+  height: 84px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
 }
 
 .item.right { background: var(--green-soft); border-color: #b7dfc4; }
@@ -299,6 +322,7 @@ input[type="text"] {
   .bezel { align-items: flex-start; }
   .who { display: none; }
   .intro h2, .prompt { font-size: 24px; }
+  .photo { max-height: 220px; }
   .score-hero { grid-template-columns: 1fr; }
   .row { flex-direction: column-reverse; }
   .row button { width: 100%; }
