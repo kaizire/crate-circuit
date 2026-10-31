@@ -31,15 +31,12 @@ function showStart() {
   app.innerHTML = `
     <section class="intro">
       <h2>Open the case.<br>Choose the function.</h2>
-      <p class="lede">Study the parts first if you want. Then take the quiz: each question shows the picture and name, and you choose the correct function.</p>
+      <p class="lede">Enter your name, then you can study the parts before the quiz. Each quiz question shows the picture and name. You choose the correct function.</p>
       <label for="player">Your name</label>
       <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}">
       <label>How many questions</label>
       <div class="lengths" id="lengths"></div>
-      <div class="row start-actions">
-        <button class="ghost" id="study" type="button">Study first</button>
-        <button class="primary" id="start" type="button">Start quiz</button>
-      </div>
+      <button class="primary" id="continue" type="button">Continue</button>
     </section>
   `;
   const box = document.getElementById("lengths");
@@ -58,8 +55,29 @@ function showStart() {
   document.getElementById("player").addEventListener("input", (event) => {
     state.name = event.target.value;
   });
-  document.getElementById("start").addEventListener("click", startQuiz);
+  document.getElementById("continue").addEventListener("click", () => {
+    state.name = state.name.trim() || "Player";
+    showReady();
+  });
+}
+
+function showReady() {
+  setLed("");
+  who.textContent = state.name;
+  app.innerHTML = `
+    <section class="intro">
+      <h2>Study first,<br>then take the quiz.</h2>
+      <p class="lede">Look at each part’s picture, name, and function. When you are ready, go to the quiz.</p>
+      <div class="row start-actions">
+        <button class="primary" id="study" type="button">Study</button>
+        <button class="ghost" id="start" type="button">Go to quiz</button>
+      </div>
+      <button class="ghost" id="home" type="button">Back</button>
+    </section>
+  `;
   document.getElementById("study").addEventListener("click", () => showStudy(0));
+  document.getElementById("start").addEventListener("click", startQuiz);
+  document.getElementById("home").addEventListener("click", showStart);
 }
 
 function showStudy(index) {
@@ -83,9 +101,9 @@ function showStudy(index) {
         <p class="study-function">${escapeHtml(item.answer)}</p>
         <div class="row">
           <button class="ghost" id="prev-part" type="button"${index === 0 ? " disabled" : ""}>Previous</button>
-          <button class="primary" id="next-part" type="button">${index === last ? "Start quiz" : "Next part"}</button>
+          <button class="primary" id="next-part" type="button">${index === last ? "Go to quiz" : "Next part"}</button>
         </div>
-        <button class="ghost" id="home" type="button">Back to start</button>
+        <button class="ghost" id="home" type="button">Back</button>
       </div>
     </div>
   `;
@@ -96,7 +114,7 @@ function showStudy(index) {
     if (index === last) startQuiz();
     else showStudy(index + 1);
   });
-  document.getElementById("home").addEventListener("click", showStart);
+  document.getElementById("home").addEventListener("click", showReady);
 }
 
 function startQuiz() {
