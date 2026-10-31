@@ -31,7 +31,7 @@ function showStart() {
   app.innerHTML = `
     <section class="intro">
       <h2>Open the case.<br>Choose the function.</h2>
-      <p class="lede">Enter the same name each time so you can look up your other quizzes. You can study first, then choose the function for each part.</p>
+      <p class="lede">Enter the same name each time. From My quizzes you can open your last attempt or type the quiz number.</p>
       <label for="player">Your name</label>
       <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}">
       <label>How many questions</label>
@@ -87,13 +87,15 @@ function showReady() {
         <button class="ghost" id="start" type="button">Go to quiz</button>
       </div>
       <div class="row start-actions">
+        <button class="ghost" id="last" type="button">Open last quiz</button>
         <button class="ghost" id="history" type="button">My quizzes</button>
-        <button class="ghost" id="home" type="button">Back</button>
       </div>
+      <button class="ghost" id="home" type="button">Back</button>
     </section>
   `;
   document.getElementById("study").addEventListener("click", () => showStudy(0));
   document.getElementById("start").addEventListener("click", startQuiz);
+  document.getElementById("last").addEventListener("click", () => openLastQuiz(state.name));
   document.getElementById("history").addEventListener("click", () => showMyQuizzes(state.name));
   document.getElementById("home").addEventListener("click", showStart);
 }
@@ -144,7 +146,7 @@ function startQuiz() {
   }));
   state.index = 0;
   state.picks = [];
-  logVisitStart(state.name, state.length);
+  logVisitStart(state.name, state.length, snapshotFromState());
   showQuestion();
 }
 
@@ -173,6 +175,7 @@ function showQuestion() {
           <button class="ghost" id="back" type="button"${state.index === 0 ? " disabled" : ""}>Back</button>
           <button class="primary" id="next" type="button" disabled>${number === state.deck.length ? "See score" : "Next"}</button>
         </div>
+        <button class="ghost" id="leave" type="button">Save and leave</button>
       </div>
     </div>
   `;
@@ -208,6 +211,7 @@ function showQuestion() {
       if (state.picks[state.index]) return;
       state.picks[state.index] = choice;
       markAnswers(choice);
+      logVisitProgress();
     });
     choices.appendChild(button);
   });
@@ -223,8 +227,13 @@ function showQuestion() {
     if (state.index === state.deck.length - 1) showScore();
     else {
       state.index += 1;
+      logVisitProgress();
       showQuestion();
     }
+  });
+  document.getElementById("leave").addEventListener("click", () => {
+    logVisitProgress();
+    showMyQuizzes(state.name);
   });
 }
 
@@ -232,11 +241,25 @@ function showScore() {
   const total = state.deck.length;
   const correct = state.deck.filter((item, index) => state.picks[index] === item.answer).length;
   const percent = Math.round((correct / total) * 100);
-  const title = percent >= 90 ? "Case master" : percent >= 70 ? "Bench technician" : percent >= 50 ? "Still tracing cables" : "Open the case again";
-  setLed(percent >= 70 ? "on" : "warn");
-  who.textContent = state.name;
-  const review = state.deck.map((item, index) => {
-    const mine = state.picks[index];
+  renderAttemptReview({
+    name: state.name,
+    deck: state.deck,
+    picks: state.picks,
+    correct: correct,
+    total: total,
+    percent: percent,
+    heading: null,
+    leaveLabel: "My quizzes"
+  });
+  logVisitScore(correct, total, percent);
+}
+
+function renderAttemptReview(view) {
+  const title = view.percent >= 90 ? "Case master" : view.percent >= 70 ? "Bench technician" : view.percent >= 50 ? "Still tracing cables" : "Open the case again";
+  setLed(view.percent >= 70 ? "on" : "warn");
+  who.textContent = view.name;
+  const review = view.deck.map((item, index) => {
+    const mine = view.picks[index];
     const right = mine === item.answer;
     return `
       <article class="item ${right ? "right" : "wrong"}">
@@ -251,30 +274,100 @@ function showScore() {
       </article>
     `;
   }).join("");
-
+  const scoreLine = typeof view.correct === "number" && view.total
+    ? `${view.correct}/${view.total}`
+    : scoreLabel(view);
   app.innerHTML = `
     <section>
       <div class="score-hero">
         <div class="readout">
-          <strong>${correct}/${total}</strong>
-          <span>${percent}%</span>
+          <strong>${escapeHtml(scoreLine)}</strong>
+          <span>${view.percent != null ? view.percent + "%" : ""}</span>
         </div>
         <div>
-          <h2>${title}</h2>
-          <p>${escapeHtml(state.name)}, here is your score and the correct answer for every question.</p>
+          <h2>${escapeHtml(view.heading || title)}</h2>
+          <p>${escapeHtml(view.name)}, here is this quiz and the correct answer for every saved question.</p>
         </div>
       </div>
-      <div class="review">${review}</div>
+      <div class="review">${review || "<p class='muted-note'>This older quiz has a score, but the question list was not saved yet.</p>"}</div>
       <div class="row start-actions">
         <button class="primary" id="again" type="button">Try another round</button>
-        <button class="ghost" id="history" type="button">My quizzes</button>
+        <button class="ghost" id="history" type="button">${escapeHtml(view.leaveLabel || "My quizzes")}</button>
       </div>
     </section>
   `;
   document.getElementById("again").addEventListener("click", showStart);
-  document.getElementById("history").addEventListener("click", () => showMyQuizzes(state.name));
+  document.getElementById("history").addEventListener("click", () => showMyQuizzes(view.name));
   app.scrollIntoView({ behavior: "smooth", block: "start" });
-  logVisitScore(correct, total, percent);
+}
+
+function numberQuizzes(visits) {
+  const byStart = visits.slice().sort((a, b) => (Date.parse(a.startedAt) || 0) - (Date.parse(b.startedAt) || 0));
+  const numbers = new Map();
+  byStart.forEach((visit, index) => numbers.set(visit, index + 1));
+  return visits.map((visit) => Object.assign({}, visit, { quizNumber: numbers.get(visit) }));
+}
+
+function deckFromVisit(visit) {
+  const parts = Array.isArray(visit.parts) ? visit.parts : [];
+  const picks = Array.isArray(visit.picks) ? visit.picks : [];
+  const deck = parts.map((part) => {
+    const item = QUESTIONS.find((question) => question.part === part);
+    return item ? Object.assign({}, item, { choices: shuffle(item.choices.slice()) }) : null;
+  }).filter(Boolean);
+  let index = typeof visit.index === "number" ? visit.index : picks.findIndex((pick) => !pick);
+  if (index < 0) index = Math.max(picks.length - 1, 0);
+  if (deck.length) index = Math.min(index, deck.length - 1);
+  return { deck, picks, index };
+}
+
+function openAttempt(visit) {
+  if (!visit) return;
+  const restored = deckFromVisit(visit);
+  state.name = visit.name || state.name;
+  if (visit.status !== "finished" && restored.deck.length) {
+    sessionStorage.setItem(VISIT_KEY, visit._id);
+    state.deck = restored.deck;
+    state.picks = restored.picks;
+    state.index = restored.index;
+    state.length = restored.deck.length;
+    showQuestion();
+    return;
+  }
+  const correct = typeof visit.score === "number"
+    ? visit.score
+    : restored.deck.filter((item, index) => restored.picks[index] === item.answer).length;
+  const total = visit.total || restored.deck.length || visit.length || 0;
+  const percent = typeof visit.percent === "number"
+    ? visit.percent
+    : (total ? Math.round((correct / total) * 100) : 0);
+  renderAttemptReview({
+    name: state.name,
+    deck: restored.deck,
+    picks: restored.picks,
+    correct: correct,
+    total: total,
+    percent: percent,
+    heading: "Quiz " + visit.quizNumber
+  });
+}
+
+async function openLastQuiz(name) {
+  const player = (name || "").trim();
+  if (!player) {
+    showStart();
+    return;
+  }
+  try {
+    const numbered = numberQuizzes(await loadVisitsByName(player));
+    if (!numbered.length) {
+      showMyQuizzes(player);
+      return;
+    }
+    openAttempt(numbered[0]);
+  } catch (error) {
+    showMyQuizzes(player);
+  }
 }
 
 async function showMyQuizzes(name) {
@@ -284,20 +377,27 @@ async function showMyQuizzes(name) {
   app.innerHTML = `
     <section>
       <h2>Quizzes for ${escapeHtml(player)}</h2>
-      <p class="lede">Loading scores saved under this name…</p>
+      <p class="lede">Loading quizzes saved under this name…</p>
     </section>
   `;
   try {
-    const visits = await loadVisitsByName(player);
-    const rows = visits.length
-      ? visits.map((visit) => `
-          <article class="visit ${visit.status === "finished" ? "right" : ""}">
-            <div class="visit-name">${escapeHtml(scoreLabel(visit))}</div>
+    const numbered = numberQuizzes(await loadVisitsByName(player));
+    const last = numbered[0];
+    const rows = numbered.length
+      ? numbered.map((visit) => `
+          <article class="visit ${visit.status === "finished" ? "right" : ""}" data-open="${escapeHtml(visit._id || "")}">
+            <div class="visit-top">
+              <div>
+                <div class="visit-kicker">Quiz ${visit.quizNumber}</div>
+                <div class="visit-name">${escapeHtml(scoreLabel(visit))}</div>
+              </div>
+              <button class="primary open-quiz" type="button" data-id="${escapeHtml(visit._id || "")}">Open</button>
+            </div>
             <dl>
               <div><dt>Started</dt><dd>${escapeHtml(formatWhen(visit.startedAt))}</dd></div>
               <div><dt>Questions</dt><dd>${escapeHtml(visit.length ?? "—")}</dd></div>
               <div><dt>Finished</dt><dd>${escapeHtml(formatWhen(visit.finishedAt))}</dd></div>
-              <div><dt>Status</dt><dd>${escapeHtml(visit.status || "saved")}</dd></div>
+              <div><dt>Status</dt><dd>${escapeHtml(visit.status === "finished" ? "Finished" : "In progress")}</dd></div>
             </dl>
           </article>
         `).join("")
@@ -307,10 +407,19 @@ async function showMyQuizzes(name) {
         <div class="log-head">
           <div>
             <h2>${escapeHtml(player)}</h2>
-            <p class="lede">${visits.length} saved ${visits.length === 1 ? "quiz" : "quizzes"}.</p>
+            <p class="lede">${numbered.length} saved ${numbered.length === 1 ? "quiz" : "quizzes"}. Open the last one, or type the quiz number.</p>
           </div>
           <button class="ghost" id="reload" type="button">Refresh</button>
         </div>
+        ${last ? `<div class="row start-actions">
+          <button class="primary" id="open-last" type="button">Open last quiz (Quiz ${last.quizNumber})</button>
+        </div>` : ""}
+        <label for="quiz-number">Open quiz number</label>
+        <div class="row start-actions">
+          <input id="quiz-number" type="number" min="1" max="${Math.max(numbered.length, 1)}" placeholder="1" inputmode="numeric">
+          <button class="ghost" id="open-number" type="button">Open number</button>
+        </div>
+        <p class="muted-note" id="number-note" hidden></p>
         <div class="visit-list">${rows}</div>
         <div class="row start-actions">
           <button class="primary" id="again" type="button">Take the quiz</button>
@@ -318,9 +427,33 @@ async function showMyQuizzes(name) {
         </div>
       </section>
     `;
+    const byId = new Map(numbered.map((visit) => [visit._id, visit]));
+    const byNumber = new Map(numbered.map((visit) => [String(visit.quizNumber), visit]));
+    function openFromList(id) {
+      const visit = byId.get(id);
+      if (visit) openAttempt(visit);
+    }
     document.getElementById("reload").addEventListener("click", () => showMyQuizzes(player));
     document.getElementById("again").addEventListener("click", showReady);
     document.getElementById("home").addEventListener("click", showStart);
+    const lastButton = document.getElementById("open-last");
+    if (lastButton) lastButton.addEventListener("click", () => openAttempt(last));
+    document.getElementById("open-number").addEventListener("click", () => {
+      const value = document.getElementById("quiz-number").value.trim();
+      const visit = byNumber.get(value);
+      const note = document.getElementById("number-note");
+      if (!visit) {
+        note.hidden = false;
+        note.textContent = numbered.length
+          ? "Type a quiz number from 1 to " + numbered.length + "."
+          : "No quizzes to open yet.";
+        return;
+      }
+      openAttempt(visit);
+    });
+    document.querySelectorAll(".open-quiz").forEach((button) => {
+      button.addEventListener("click", () => openFromList(button.getAttribute("data-id")));
+    });
   } catch (error) {
     app.innerHTML = `
       <section>

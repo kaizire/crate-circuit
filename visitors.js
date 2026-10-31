@@ -5,13 +5,16 @@ function newVisitId() {
   return "v-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
 }
 
-async function logVisitStart(name, length) {
+async function logVisitStart(name, length, snapshot) {
   const payload = {
     visitId: newVisitId(),
     name: (name && name.trim()) || "Anonymous",
     startedAt: new Date().toISOString(),
     length: length,
-    status: "started"
+    status: "started",
+    parts: snapshot && snapshot.parts ? snapshot.parts : [],
+    picks: snapshot && snapshot.picks ? snapshot.picks : [],
+    index: snapshot && typeof snapshot.index === "number" ? snapshot.index : 0
   };
   try {
     const response = await fetch(CONFIG.storeUrl, {
@@ -27,7 +30,7 @@ async function logVisitStart(name, length) {
   }
 }
 
-async function logVisitScore(correct, total, percent) {
+async function patchVisit(changes) {
   const id = sessionStorage.getItem(VISIT_KEY);
   if (!id) return;
   try {
@@ -35,11 +38,7 @@ async function logVisitScore(correct, total, percent) {
     if (!response.ok) return;
     const current = await response.json();
     delete current._id;
-    current.status = "finished";
-    current.finishedAt = new Date().toISOString();
-    current.score = correct;
-    current.total = total;
-    current.percent = percent;
+    Object.assign(current, changes);
     await fetch(CONFIG.storeUrl + "/" + encodeURIComponent(id), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -48,6 +47,29 @@ async function logVisitScore(correct, total, percent) {
   } catch (error) {
     /* logging is best-effort so the quiz still runs */
   }
+}
+
+function snapshotFromState() {
+  return {
+    parts: (state.deck || []).map((item) => item.part),
+    picks: (state.picks || []).slice(),
+    index: state.index || 0,
+    length: state.deck ? state.deck.length : state.length
+  };
+}
+
+function logVisitProgress() {
+  return patchVisit(Object.assign({ status: "started" }, snapshotFromState()));
+}
+
+function logVisitScore(correct, total, percent) {
+  return patchVisit(Object.assign(snapshotFromState(), {
+    status: "finished",
+    finishedAt: new Date().toISOString(),
+    score: correct,
+    total: total,
+    percent: percent
+  }));
 }
 
 async function loadVisits() {
