@@ -9,17 +9,17 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Grotesk:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="admin-page">
   <div class="case">
     <header class="bezel">
       <div class="brand">
         <span class="led on" id="status-led" aria-hidden="true"></span>
         <div>
           <p class="kicker">Staff only</p>
-          <h1>Visitor log</h1>
+          <h1>Dashboard</h1>
         </div>
       </div>
-      <p class="who">Who opened the quiz</p>
+      <p class="who" id="who-label">Who took the quiz</p>
     </header>
 
     <main id="app" class="bay"></main>

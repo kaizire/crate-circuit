@@ -522,6 +522,130 @@ input:focus {
 
 .muted-note { color: var(--muted); }
 
+.admin-page .case { width: min(1120px, calc(100% - 24px)); }
+
+.dash-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+
+.stat {
+  background: #12150f;
+  color: #f6f1e6;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+}
+
+.stat span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c8c0b0;
+  font-weight: 700;
+}
+
+.stat strong {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--display);
+  font-size: 28px;
+  letter-spacing: -0.04em;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) 1.2fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.dash-title {
+  margin: 0 0 10px;
+  font-family: var(--display);
+  font-size: 18px;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filters input,
+.filters select {
+  width: 100%;
+  border: 1.5px solid #d3c8b4;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 15px;
+}
+
+.visit-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.visit-top .visit-name { margin: 0; }
+
+.bar {
+  height: 8px;
+  background: #e8dfcf;
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 0 0 12px;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--amber-deep), var(--amber));
+}
+
+.visit.right .bar span { background: linear-gradient(90deg, #0f6a3d, #3dde7a); }
+.visit.wrong .bar span { background: linear-gradient(90deg, #8a2420, #e07068); }
+
+.student-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: var(--card);
+}
+
+.student-row .visit-name { margin: 0 0 2px; }
+
+.score-chip {
+  flex: 0 0 auto;
+  min-width: 64px;
+  text-align: center;
+  background: #12150f;
+  color: #7dffa8;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-family: var(--display);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dash-grid,
+  .filters { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 820px) {
   .ask { grid-template-columns: 1fr; }
   .photo { height: 220px; }
