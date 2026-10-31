@@ -31,12 +31,15 @@ function showStart() {
   app.innerHTML = `
     <section class="intro">
       <h2>Open the case.<br>Choose the function.</h2>
-      <p class="lede">Each question shows the part and its picture. Pick the correct function. You will see right away if your answer is correct, and at the end you get your score.</p>
+      <p class="lede">Study the parts first if you want. Then take the quiz: each question shows the picture and name, and you choose the correct function.</p>
       <label for="player">Your name</label>
       <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}">
       <label>How many questions</label>
       <div class="lengths" id="lengths"></div>
-      <button class="primary" id="start" type="button">Start quiz</button>
+      <div class="row start-actions">
+        <button class="ghost" id="study" type="button">Study first</button>
+        <button class="primary" id="start" type="button">Start quiz</button>
+      </div>
     </section>
   `;
   const box = document.getElementById("lengths");
@@ -56,6 +59,44 @@ function showStart() {
     state.name = event.target.value;
   });
   document.getElementById("start").addEventListener("click", startQuiz);
+  document.getElementById("study").addEventListener("click", () => showStudy(0));
+}
+
+function showStudy(index) {
+  const item = QUESTIONS[index];
+  const last = QUESTIONS.length - 1;
+  setLed("on");
+  who.textContent = "Study mode";
+  app.innerHTML = `
+    <div class="progress">
+      <span>Study ${index + 1} of ${QUESTIONS.length}</span>
+      <span>Look, then remember the function</span>
+    </div>
+    <div class="track"><span style="width:${((index + 1) / QUESTIONS.length) * 100}%"></span></div>
+    <div class="ask">
+      <figure class="photo-card">
+        <img class="photo" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.part)}">
+        <figcaption class="part-name">${escapeHtml(item.part)}</figcaption>
+      </figure>
+      <div class="answers">
+        <p class="prompt">Function</p>
+        <p class="study-function">${escapeHtml(item.answer)}</p>
+        <div class="row">
+          <button class="ghost" id="prev-part" type="button"${index === 0 ? " disabled" : ""}>Previous</button>
+          <button class="primary" id="next-part" type="button">${index === last ? "Start quiz" : "Next part"}</button>
+        </div>
+        <button class="ghost" id="home" type="button">Back to start</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("prev-part").addEventListener("click", () => {
+    if (index > 0) showStudy(index - 1);
+  });
+  document.getElementById("next-part").addEventListener("click", () => {
+    if (index === last) startQuiz();
+    else showStudy(index + 1);
+  });
+  document.getElementById("home").addEventListener("click", showStart);
 }
 
 function startQuiz() {

@@ -346,6 +346,30 @@ input:focus {
   margin-top: 16px;
 }
 
+.start-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.start-actions .primary { margin-top: 0; }
+
+.study-function {
+  margin: 0;
+  padding: 16px 18px;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 650;
+}
+
+#home {
+  width: 100%;
+  margin-top: 10px;
+}
+
 .score-hero {
   display: grid;
   grid-template-columns: auto 1fr;
