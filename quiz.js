@@ -67,6 +67,7 @@ function startQuiz() {
   }));
   state.index = 0;
   state.picks = [];
+  logVisitStart(state.name, state.length);
   showQuestion();
 }
 
@@ -163,6 +164,7 @@ function showScore() {
   `;
   document.getElementById("again").addEventListener("click", showStart);
   app.scrollIntoView({ behavior: "smooth", block: "start" });
+  logVisitScore(correct, total, percent);
 }
 
 function escapeHtml(value) {
