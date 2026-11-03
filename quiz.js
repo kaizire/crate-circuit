@@ -15,7 +15,7 @@ const state = {
 const lengths = [10, QUESTIONS.length];
 const QUIZ_SECONDS = {
   10: 10 * 60,
-  [QUESTIONS.length]: 40 * 60
+  [QUESTIONS.length]: 30 * 60
 };
 
 let timerTick = null;
@@ -162,7 +162,7 @@ function showReady() {
   app.innerHTML = `
     <section class="intro">
       <h2>Study first,<br>then take the quiz.</h2>
-      <p class="lede">Look at each part’s picture, name, and function. The 10-question quiz is 10 minutes. All 64 questions is 40 minutes. The clock starts when you go to the quiz.</p>
+      <p class="lede">Look at each part’s picture, name, and function. The 10-question quiz is 10 minutes. All 64 questions is 30 minutes. The clock starts when you go to the quiz.</p>
       <div class="row start-actions">
         <button class="primary" id="study" type="button">Study</button>
         <button class="ghost" id="start" type="button">Go to quiz</button>
