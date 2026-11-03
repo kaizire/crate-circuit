@@ -292,6 +292,11 @@ input:focus {
   box-shadow: 4px 4px 0 rgba(164, 94, 20, 0.2);
 }
 
+input[aria-invalid="true"] {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+
 .lengths { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .lengths button, .primary, .ghost {
@@ -726,6 +731,11 @@ input:focus {
 .visit dd { margin: 2px 0 0; font-size: 14px; }
 
 .muted-note { color: var(--muted); }
+
+.muted-note.warn-note {
+  color: var(--red);
+  font-weight: 600;
+}
 
 .admin-page {
   background: #071410;

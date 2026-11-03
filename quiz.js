@@ -25,6 +25,27 @@ function setLed(mode) {
   led.className = "led" + (mode ? " " + mode : "");
 }
 
+function requireStudentName(noteId) {
+  const name = String(state.name || "").trim();
+  const note = noteId ? document.getElementById(noteId) : null;
+  if (name) {
+    state.name = name;
+    if (note) note.hidden = true;
+    return name;
+  }
+  if (note) {
+    note.hidden = false;
+    note.classList.add("warn-note");
+    note.textContent = "Type your name first before you start the quiz.";
+  }
+  const input = document.getElementById("player");
+  if (input) {
+    input.focus();
+    input.setAttribute("aria-invalid", "true");
+  }
+  return "";
+}
+
 function showStart() {
   setLed("");
   who.textContent = "Parts inside the case";
@@ -33,7 +54,7 @@ function showStart() {
       <h2>Open the case.<br>Choose the function.</h2>
       <p class="lede">Enter the same name each time. From My quizzes you can open your last attempt or type the quiz number.</p>
       <label for="player">Your name</label>
-      <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}">
+      <input id="player" type="text" maxlength="40" placeholder="Type your name" value="${escapeHtml(state.name)}" required autocomplete="name">
       <label>How many questions</label>
       <div class="lengths" id="lengths"></div>
       <div class="row start-actions">
@@ -58,19 +79,22 @@ function showStart() {
   });
   document.getElementById("player").addEventListener("input", (event) => {
     state.name = event.target.value;
+    const note = document.getElementById("history-note");
+    if (note && String(event.target.value || "").trim()) note.hidden = true;
+  });
+  document.getElementById("player").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      document.getElementById("continue").click();
+    }
   });
   document.getElementById("continue").addEventListener("click", () => {
-    state.name = state.name.trim() || "Player";
+    if (!requireStudentName("history-note")) return;
     showReady();
   });
   document.getElementById("history").addEventListener("click", () => {
-    const name = state.name.trim();
-    const note = document.getElementById("history-note");
-    if (!name) {
-      note.hidden = false;
-      note.textContent = "Type the same name you used on the quiz, then tap My quizzes.";
-      return;
-    }
+    const name = requireStudentName("history-note");
+    if (!name) return;
     showMyQuizzes(name);
   });
 }
@@ -138,8 +162,13 @@ function showStudy(index) {
 }
 
 function startQuiz() {
-  const name = state.name.trim();
-  state.name = name || "Player";
+  const name = String(state.name || "").trim();
+  if (!name) {
+    showStart();
+    requireStudentName("history-note");
+    return;
+  }
+  state.name = name;
   state.deck = shuffle(QUESTIONS).slice(0, state.length).map((item) => ({
     ...item,
     choices: shuffle(item.choices)
