@@ -110,7 +110,7 @@ async function loadDashboard() {
     </section>
   `;
   try {
-    dash.visits = await loadVisits();
+    dash.visits = await loadRemoteVisits();
     renderDashboard();
   } catch (error) {
     app.innerHTML = `

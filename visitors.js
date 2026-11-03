@@ -191,10 +191,14 @@ async function loadJsonList(url) {
   }
 }
 
-async function loadVisits() {
+async function loadRemoteVisits() {
   const live = await loadJsonList(liveListUrl());
   const term = await loadJsonList(CONFIG.termLogUrl);
-  return mergeVisits(mergeVisits(term, live), loadLocalVisits());
+  return mergeVisits(term, live);
+}
+
+async function loadVisits() {
+  return mergeVisits(await loadRemoteVisits(), loadLocalVisits());
 }
 
 function downloadTermLog(visits) {
