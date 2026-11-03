@@ -1,8 +1,43 @@
 const VISIT_KEY = "cratecircuit-visit-id";
+const LOCAL_VISITS = "cratecircuit-visits";
+
+let currentVisit = null;
+let remoteSave = Promise.resolve();
 
 function newVisitId() {
   if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
   return "v-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+}
+
+function loadLocalVisits() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(LOCAL_VISITS) || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function writeLocalVisits(list) {
+  localStorage.setItem(LOCAL_VISITS, JSON.stringify(list.slice(0, 80)));
+}
+
+function upsertLocal(visit) {
+  const list = loadLocalVisits();
+  const index = list.findIndex((item) => item.visitId && item.visitId === visit.visitId);
+  const copy = Object.assign({}, visit);
+  if (index >= 0) list[index] = Object.assign({}, list[index], copy);
+  else list.unshift(copy);
+  writeLocalVisits(list);
+  currentVisit = copy;
+  return copy;
+}
+
+function setActiveVisit(visit) {
+  currentVisit = visit || null;
+  const id = visit && (visit._id || visit.visitId);
+  if (id) sessionStorage.setItem(VISIT_KEY, id);
+  else sessionStorage.removeItem(VISIT_KEY);
 }
 
 async function logVisitStart(name, length, snapshot) {
@@ -12,37 +47,50 @@ async function logVisitStart(name, length, snapshot) {
     startedAt: new Date().toISOString(),
     length: length,
     status: "started",
-    parts: snapshot && snapshot.parts ? snapshot.parts : [],
-    picks: snapshot && snapshot.picks ? snapshot.picks : [],
+    parts: snapshot && snapshot.parts ? snapshot.parts.slice() : [],
+    picks: snapshot && snapshot.picks ? snapshot.picks.slice() : [],
     index: snapshot && typeof snapshot.index === "number" ? snapshot.index : 0
   };
-  try {
-    const response = await fetch(CONFIG.storeUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) return;
-    const saved = await response.json();
-    if (saved && saved._id) sessionStorage.setItem(VISIT_KEY, saved._id);
-  } catch (error) {
-    /* logging is best-effort so the quiz still runs */
-  }
+  setActiveVisit(upsertLocal(payload));
+  remoteSave = (async () => {
+    try {
+      const response = await fetch(CONFIG.storeUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) return;
+      const saved = await response.json();
+      if (saved && saved._id) {
+        payload._id = saved._id;
+        setActiveVisit(upsertLocal(payload));
+      }
+    } catch (error) {
+      /* local copy still works if the online store is down */
+    }
+  })();
+  return remoteSave;
+}
+
+function findStoredVisit(id) {
+  if (!id) return null;
+  return loadLocalVisits().find((item) => item._id === id || item.visitId === id) || null;
 }
 
 async function patchVisit(changes) {
-  const id = sessionStorage.getItem(VISIT_KEY);
-  if (!id) return;
+  await remoteSave;
+  if (!currentVisit) currentVisit = findStoredVisit(sessionStorage.getItem(VISIT_KEY));
+  if (!currentVisit) return;
+  Object.assign(currentVisit, changes);
+  upsertLocal(currentVisit);
+  if (!currentVisit._id) return;
   try {
-    const response = await fetch(CONFIG.storeUrl + "/" + encodeURIComponent(id));
-    if (!response.ok) return;
-    const current = await response.json();
-    delete current._id;
-    Object.assign(current, changes);
-    await fetch(CONFIG.storeUrl + "/" + encodeURIComponent(id), {
+    const body = Object.assign({}, currentVisit);
+    delete body._id;
+    await fetch(CONFIG.storeUrl + "/" + encodeURIComponent(currentVisit._id), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(current)
+      body: JSON.stringify(body)
     });
   } catch (error) {
     /* logging is best-effort so the quiz still runs */
@@ -59,7 +107,12 @@ function snapshotFromState() {
 }
 
 function logVisitProgress() {
-  return patchVisit(Object.assign({ status: "started" }, snapshotFromState()));
+  const snap = snapshotFromState();
+  const answered = (snap.picks || []).filter(Boolean).length;
+  const done = snap.parts.length && answered >= snap.parts.length;
+  return patchVisit(Object.assign({}, snap, {
+    status: done ? "finished" : "started"
+  }));
 }
 
 function logVisitScore(correct, total, percent) {
@@ -72,15 +125,45 @@ function logVisitScore(correct, total, percent) {
   }));
 }
 
-async function loadVisits() {
-  const response = await fetch(CONFIG.storeUrl);
-  if (!response.ok) throw new Error("Could not load visits");
-  const visits = await response.json();
-  return visits.sort((a, b) => {
+function mergeVisits(remote, local) {
+  const map = new Map();
+  function add(visit) {
+    if (!visit) return;
+    const key = visit.visitId || visit._id;
+    if (!key) return;
+    const prev = map.get(key);
+    if (!prev) {
+      map.set(key, Object.assign({}, visit));
+      return;
+    }
+    const merged = Object.assign({}, prev, visit);
+    const prevPicks = Array.isArray(prev.picks) ? prev.picks.filter(Boolean).length : 0;
+    const nextPicks = Array.isArray(visit.picks) ? visit.picks.filter(Boolean).length : 0;
+    if (nextPicks < prevPicks) merged.picks = prev.picks;
+    if (prev.status === "finished" || visit.status === "finished") merged.status = "finished";
+    map.set(key, merged);
+  }
+  (remote || []).forEach(add);
+  (local || []).forEach(add);
+  return Array.from(map.values()).sort((a, b) => {
     const aTime = Date.parse(a.finishedAt || a.startedAt || 0) || 0;
     const bTime = Date.parse(b.finishedAt || b.startedAt || 0) || 0;
     return bTime - aTime;
   });
+}
+
+async function loadVisits() {
+  let remote = [];
+  try {
+    const response = await fetch(CONFIG.storeUrl);
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data)) remote = data;
+    }
+  } catch (error) {
+    remote = [];
+  }
+  return mergeVisits(remote, loadLocalVisits());
 }
 
 function samePlayerName(a, b) {
@@ -90,6 +173,7 @@ function samePlayerName(a, b) {
 
 async function deleteVisit(id) {
   if (!id) throw new Error("Missing visit id");
+  writeLocalVisits(loadLocalVisits().filter((item) => item._id !== id && item.visitId !== id));
   const response = await fetch(CONFIG.storeUrl + "/" + encodeURIComponent(id), {
     method: "DELETE"
   });
@@ -100,7 +184,7 @@ async function deleteVisit(id) {
 
 async function loadVisitsByName(name) {
   const visits = await loadVisits();
-  return visits.filter((visit) => samePlayerName(visit.name, name));
+  return visits.filter((visit) => samePlayerName(visit.name, name) && visit.visitId);
 }
 
 function formatWhen(iso) {

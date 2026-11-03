@@ -231,8 +231,8 @@ function showQuestion() {
       showQuestion();
     }
   });
-  document.getElementById("leave").addEventListener("click", () => {
-    logVisitProgress();
+  document.getElementById("leave").addEventListener("click", async () => {
+    await logVisitProgress();
     showMyQuizzes(state.name);
   });
 }
@@ -321,12 +321,20 @@ function deckFromVisit(visit) {
   return { deck, picks, index };
 }
 
+function usableVisit(visit) {
+  if (!visit) return false;
+  if (typeof visit.score === "number") return true;
+  return Array.isArray(visit.parts) && visit.parts.length > 0;
+}
+
 function openAttempt(visit) {
   if (!visit) return;
   const restored = deckFromVisit(visit);
+  const answered = restored.picks.filter(Boolean).length;
+  const complete = restored.deck.length > 0 && answered >= restored.deck.length;
   state.name = visit.name || state.name;
-  if (visit.status !== "finished" && restored.deck.length) {
-    sessionStorage.setItem(VISIT_KEY, visit._id);
+  setActiveVisit(visit);
+  if (visit.status !== "finished" && !complete && restored.deck.length) {
     state.deck = restored.deck;
     state.picks = restored.picks;
     state.index = restored.index;
@@ -360,11 +368,12 @@ async function openLastQuiz(name) {
   }
   try {
     const numbered = numberQuizzes(await loadVisitsByName(player));
-    if (!numbered.length) {
+    const last = numbered.find((visit) => usableVisit(visit));
+    if (!last) {
       showMyQuizzes(player);
       return;
     }
-    openAttempt(numbered[0]);
+    openAttempt(last);
   } catch (error) {
     showMyQuizzes(player);
   }
@@ -382,7 +391,7 @@ async function showMyQuizzes(name) {
   `;
   try {
     const numbered = numberQuizzes(await loadVisitsByName(player));
-    const last = numbered[0];
+    const last = numbered.find((visit) => usableVisit(visit)) || numbered[0];
     const rows = numbered.length
       ? numbered.map((visit) => `
           <article class="visit ${visit.status === "finished" ? "right" : ""}" data-open="${escapeHtml(visit._id || "")}">
