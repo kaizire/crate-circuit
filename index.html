@@ -3,25 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a120c">
   <title>CrateCircuit — System Unit Quiz</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="shop-floor" aria-hidden="true"></div>
   <div class="case">
+    <span class="rivet nw" aria-hidden="true"></span>
+    <span class="rivet ne" aria-hidden="true"></span>
+    <span class="rivet sw" aria-hidden="true"></span>
+    <span class="rivet se" aria-hidden="true"></span>
+    <div class="tape" aria-hidden="true">FRAGILE · SYSTEM UNIT · HANDLE WITH CARE</div>
     <header class="bezel">
       <div class="brand">
-        <span class="led" id="status-led" aria-hidden="true"></span>
+        <div class="crate-mark" aria-hidden="true">
+          <span class="fan"></span>
+          <span class="led" id="status-led"></span>
+        </div>
         <div>
-          <p class="kicker">System unit quiz</p>
-          <h1>CrateCircuit</h1>
+          <p class="kicker">Lab crate · System unit</p>
+          <h1><span>CRATE</span><i>/</i><span>CIRCUIT</span></h1>
         </div>
       </div>
       <p class="who" id="who-label">Parts inside the case</p>
     </header>
-
+    <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main id="app" class="bay"></main>
   </div>
   <a class="admin-dot" href="admin.html" title="Staff" aria-label="Staff">·</a>
