@@ -4,13 +4,13 @@ const who = document.getElementById("who-label");
 
 const state = {
   name: "",
-  length: QUESTIONS.length,
+  length: 10,
   deck: [],
   index: 0,
   picks: []
 };
 
-const lengths = [12, 20, QUESTIONS.length];
+const lengths = [10, QUESTIONS.length];
 
 function shuffle(list) {
   const copy = list.slice();
