@@ -182,23 +182,18 @@ function showQuestion() {
   const choices = document.getElementById("choices");
   const locked = Boolean(picked);
 
-  function markAnswers(selected) {
-    const right = selected === item.answer;
+  function lockChoice(selected) {
     choices.querySelectorAll(".choice").forEach((node) => {
       const value = node.getAttribute("data-choice");
       node.disabled = true;
-      node.classList.remove("selected", "correct", "missed");
-      if (value === item.answer) node.classList.add("correct");
-      if (value === selected && !right) node.classList.add("missed");
+      node.classList.toggle("selected", value === selected);
     });
     const box = document.getElementById("feedback");
     box.hidden = false;
-    box.className = "feedback " + (right ? "ok" : "bad");
-    box.textContent = right
-      ? "Correct! That is the function of the " + item.part + "."
-      : "Wrong. The correct function is: " + item.answer;
+    box.className = "feedback";
+    box.textContent = "Answer saved. Correct answers appear after you finish the quiz.";
     document.getElementById("next").disabled = false;
-    setLed(right ? "on" : "warn");
+    setLed("on");
   }
 
   item.choices.forEach((choice, index) => {
@@ -210,12 +205,12 @@ function showQuestion() {
     button.addEventListener("click", () => {
       if (state.picks[state.index]) return;
       state.picks[state.index] = choice;
-      markAnswers(choice);
+      lockChoice(choice);
       logVisitProgress();
     });
     choices.appendChild(button);
   });
-  if (locked) markAnswers(picked);
+  if (locked) lockChoice(picked);
   document.getElementById("back").addEventListener("click", () => {
     if (state.index > 0) {
       state.index -= 1;
@@ -327,19 +322,43 @@ function usableVisit(visit) {
   return Array.isArray(visit.parts) && visit.parts.length > 0;
 }
 
+function attemptIsComplete(visit, restored) {
+  const picks = (restored && restored.picks) || visit.picks || [];
+  const expected = (restored && restored.deck && restored.deck.length)
+    || (Array.isArray(visit.parts) ? visit.parts.length : 0)
+    || visit.total
+    || visit.length
+    || 0;
+  return expected > 0 && picks.filter(Boolean).length >= expected;
+}
+
 function openAttempt(visit) {
   if (!visit) return;
   const restored = deckFromVisit(visit);
-  const answered = restored.picks.filter(Boolean).length;
-  const complete = restored.deck.length > 0 && answered >= restored.deck.length;
+  const complete = attemptIsComplete(visit, restored);
   state.name = visit.name || state.name;
   setActiveVisit(visit);
-  if (visit.status !== "finished" && !complete && restored.deck.length) {
+  if (!complete && restored.deck.length) {
     state.deck = restored.deck;
     state.picks = restored.picks;
     state.index = restored.index;
     state.length = restored.deck.length;
     showQuestion();
+    return;
+  }
+  if (!complete) {
+    app.innerHTML = `
+      <section class="intro">
+        <h2>Quiz ${escapeHtml(visit.quizNumber || "")} is not finished</h2>
+        <p class="lede">Correct answers stay hidden until every question is done.</p>
+        <div class="row start-actions">
+          <button class="primary" id="again" type="button">Take the quiz</button>
+          <button class="ghost" id="history" type="button">My quizzes</button>
+        </div>
+      </section>
+    `;
+    document.getElementById("again").addEventListener("click", showReady);
+    document.getElementById("history").addEventListener("click", () => showMyQuizzes(state.name));
     return;
   }
   const correct = typeof visit.score === "number"
