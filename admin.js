@@ -77,13 +77,16 @@ function filteredVisits() {
 function showGate(error) {
   document.getElementById("who-label").textContent = "Locked";
   app.innerHTML = `
-    <section class="intro">
-      <h2>Staff dashboard</h2>
-      <p class="lede">Enter the password to see who took the quiz, their scores, and how many times they tried.</p>
+    <section class="lock-panel">
+      <p class="kicker ink">Staff access</p>
+      <h2>Unlock the log</h2>
+      <p class="lede">Enter the staff password to see names, scores, and how many times each student tried.</p>
       ${error ? `<p class="gate-error">${escapeHtml(error)}</p>` : ""}
       <label for="password">Password</label>
-      <input id="password" type="password" maxlength="40" autocomplete="current-password">
-      <button class="primary" id="unlock" type="button">Open dashboard</button>
+      <div class="lock-row">
+        <input id="password" type="password" maxlength="40" autocomplete="current-password" placeholder="Staff password">
+        <button class="primary" id="unlock" type="button">Open log</button>
+      </div>
     </section>
   `;
   const field = document.getElementById("password");
@@ -129,9 +132,34 @@ function initials(name) {
   return parts.map((part) => part.charAt(0).toUpperCase()).join("") || "A";
 }
 
+function emptyPanel(title, copy) {
+  return `
+    <div class="empty-panel">
+      <p class="empty-kicker">${escapeHtml(title)}</p>
+      <p>${escapeHtml(copy)}</p>
+    </div>
+  `;
+}
+
+function statusLabel(visit) {
+  if (visit.timedOut) return "Time up";
+  if (visit.status === "finished") return "Finished";
+  return "In progress";
+}
+
+function scoreLine(visit) {
+  if (typeof visit.score === "number" && typeof visit.total === "number") {
+    return visit.score + "/" + visit.total;
+  }
+  const percent = percentOf(visit);
+  return percent === null ? "—" : percent + "%";
+}
+
 function studentMarkup() {
   const students = groupedStudents(dash.visits);
-  if (!students.length) return `<p class="muted-note">No students yet.</p>`;
+  if (!students.length) {
+    return emptyPanel("No students yet", "Names appear here after a quiz is saved to the class log.");
+  }
   return students.map((student) => {
     const best = percentOf(student.best);
     return `
@@ -139,10 +167,11 @@ function studentMarkup() {
         <div class="avatar">${escapeHtml(initials(student.name))}</div>
         <div class="student-copy">
           <div class="visit-name">${escapeHtml(student.name)}</div>
-          <p class="muted-note">${student.attempts} ${student.attempts === 1 ? "try" : "tries"} · ${student.finished} finished</p>
+          <p class="muted-note">${student.finished}/${student.attempts} finished</p>
+          ${best === null ? "" : `<div class="bar"><span style="width:${Math.max(best, 4)}%"></span></div>`}
         </div>
-        <div class="score-chip">${best === null ? "—" : best + "%"}</div>
-        <button class="ghost danger" type="button" data-delete-name="${escapeHtml(student.name)}">Delete</button>
+        <div class="score-chip" title="Best score">${best === null ? "—" : best + "%"}</div>
+        <button class="ghost danger" type="button" data-delete-name="${escapeHtml(student.name)}">Remove</button>
       </article>
     `;
   }).join("");
@@ -150,23 +179,29 @@ function studentMarkup() {
 
 function attemptMarkup() {
   const shown = filteredVisits();
-  if (!shown.length) return `<p class="muted-note">No visits match this search.</p>`;
+  if (!shown.length) {
+    return emptyPanel("No matching quizzes", "Try another name, or switch All / Finished / In progress.");
+  }
   return shown.map((visit) => {
     const percent = percentOf(visit);
     const tone = visit.status === "finished" ? (percent >= 70 ? "pass" : "fail") : "wait";
+    const length = visit.length || visit.total || "—";
     return `
       <article class="attempt ${tone}">
         <div class="avatar">${escapeHtml(initials(visit.name || "A"))}</div>
         <div class="attempt-copy">
           <div class="visit-top">
             <div class="visit-name">${escapeHtml(visit.name || "Anonymous")}</div>
-            <span class="pill-tag">${visit.status === "finished" ? "Finished" : "In progress"}</span>
+            <span class="pill-tag ${visit.timedOut ? "warn" : ""}">${escapeHtml(statusLabel(visit))}</span>
           </div>
-          <p class="muted-note">${escapeHtml(formatWhen(visit.startedAt))} · ${escapeHtml(visit.length ?? "—")} questions</p>
+          <p class="muted-note">${escapeHtml(formatWhen(visit.startedAt))} · ${escapeHtml(length)} questions</p>
           ${percent === null ? "" : `<div class="bar"><span style="width:${Math.max(percent, 4)}%"></span></div>`}
         </div>
-        <div class="score-chip">${percent === null ? "—" : percent + "%"}</div>
-        ${visit._id ? `<button class="ghost danger" type="button" data-delete="${escapeHtml(visit._id)}" data-name="${escapeHtml(visit.name || "this student")}">Delete</button>` : ""}
+        <div class="score-stack">
+          <div class="score-chip">${percent === null ? "—" : percent + "%"}</div>
+          <span class="score-sub">${escapeHtml(scoreLine(visit))}</span>
+        </div>
+        ${visit._id ? `<button class="ghost danger" type="button" data-delete="${escapeHtml(visit._id)}" data-name="${escapeHtml(visit.name || "this student")}">Remove</button>` : ""}
       </article>
     `;
   }).join("");
@@ -190,32 +225,39 @@ function renderDashboard() {
     <section class="dash">
       <div class="log-head">
         <div>
-          <p class="kicker ink">Overview</p>
-          <h2>Quiz activity</h2>
-          <p class="lede">Names, attempts, and scores from CrateCircuit.</p>
+          <p class="kicker ink">Staff terminal</p>
+          <h2>Class log</h2>
+          <p class="lede">Who took CrateCircuit, how they scored, and which quizzes are still open.</p>
         </div>
         <div class="dash-actions">
           <button class="ghost" id="reload" type="button">Refresh</button>
-          <button class="ghost" id="download" type="button">Download scores</button>
+          <button class="primary" id="download" type="button">Download scores</button>
           <button class="ghost" id="lock" type="button">Lock</button>
         </div>
       </div>
       <div class="stats">
-        <article class="stat tone-amber"><span>Visits</span><strong>${all.length}</strong></article>
-        <article class="stat tone-green"><span>Students</span><strong>${uniqueNames(all)}</strong></article>
-        <article class="stat"><span>Finished</span><strong>${finished.length}</strong></article>
-        <article class="stat"><span>In progress</span><strong>${started.length}</strong></article>
-        <article class="stat tone-amber"><span>Average</span><strong>${avg === null ? "—" : avg + "%"}</strong></article>
+        <article class="stat tone-amber"><span>Quizzes</span><strong>${all.length}</strong><em>saved in the log</em></article>
+        <article class="stat"><span>Students</span><strong>${uniqueNames(all)}</strong><em>unique names</em></article>
+        <article class="stat tone-green"><span>Finished</span><strong>${finished.length}</strong><em>with a score</em></article>
+        <article class="stat"><span>Open</span><strong>${started.length}</strong><em>still in progress</em></article>
+        <article class="stat tone-amber"><span>Average</span><strong>${avg === null ? "—" : avg + "%"}</strong><em>finished quizzes</em></article>
       </div>
       <div class="dash-grid">
         <section class="panel">
-          <h3 class="dash-title">Students</h3>
+          <div class="panel-head">
+            <h3 class="dash-title">Roster</h3>
+            <span class="count-chip">${uniqueNames(all)}</span>
+          </div>
+          <p class="panel-copy">Best score for each name.</p>
           <div class="visit-list" id="student-list">${studentMarkup()}</div>
         </section>
         <section class="panel">
-          <h3 class="dash-title">Attempts</h3>
+          <div class="panel-head">
+            <h3 class="dash-title">Quiz runs</h3>
+            <span class="count-chip">${all.length}</span>
+          </div>
           <div class="filters">
-            <input id="search" type="text" maxlength="40" placeholder="Search by name" value="${escapeHtml(dash.query)}">
+            <input id="search" type="text" maxlength="40" placeholder="Find a student name" value="${escapeHtml(dash.query)}">
             <div class="pills" id="filters">
               <button type="button" class="pill${dash.filter === "all" ? " picked" : ""}" data-filter="all">All</button>
               <button type="button" class="pill${dash.filter === "finished" ? " picked" : ""}" data-filter="finished">Finished</button>
