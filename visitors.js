@@ -72,6 +72,7 @@ async function logVisitStart(name, length, snapshot) {
     visitId: newVisitId(),
     name: (name && name.trim()) || "Anonymous",
     startedAt: new Date().toISOString(),
+    endsAt: snapshot && snapshot.endsAt ? snapshot.endsAt : "",
     length: length,
     status: "started",
     parts: snapshot && snapshot.parts ? snapshot.parts.slice() : [],
@@ -130,7 +131,8 @@ function snapshotFromState() {
     parts: (state.deck || []).map((item) => item.part),
     picks: (state.picks || []).slice(),
     index: state.index || 0,
-    length: state.deck ? state.deck.length : state.length
+    length: state.deck ? state.deck.length : state.length,
+    endsAt: state.endsAt || ""
   };
 }
 
@@ -143,13 +145,14 @@ function logVisitProgress() {
   }));
 }
 
-function logVisitScore(correct, total, percent) {
+function logVisitScore(correct, total, percent, timedOut) {
   return patchVisit(Object.assign(snapshotFromState(), {
     status: "finished",
     finishedAt: new Date().toISOString(),
     score: correct,
     total: total,
-    percent: percent
+    percent: percent,
+    timedOut: Boolean(timedOut)
   }));
 }
 

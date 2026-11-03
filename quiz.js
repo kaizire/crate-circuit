@@ -7,10 +7,65 @@ const state = {
   length: 10,
   deck: [],
   index: 0,
-  picks: []
+  picks: [],
+  endsAt: "",
+  closing: false
 };
 
 const lengths = [10, QUESTIONS.length];
+const QUIZ_SECONDS = {
+  10: 10 * 60,
+  [QUESTIONS.length]: 40 * 60
+};
+
+let timerTick = null;
+
+function quizSecondsFor(length) {
+  if (QUIZ_SECONDS[length]) return QUIZ_SECONDS[length];
+  return Math.max(Number(length) || 1, 1) * 60;
+}
+
+function formatMinutes(seconds) {
+  return Math.round(seconds / 60) + " min";
+}
+
+function formatClock(seconds) {
+  const safe = Math.max(0, Math.floor(seconds));
+  const minutes = Math.floor(safe / 60);
+  const rest = safe % 60;
+  return String(minutes).padStart(2, "0") + ":" + String(rest).padStart(2, "0");
+}
+
+function remainingMs() {
+  const ends = Date.parse(state.endsAt || "");
+  if (!Number.isFinite(ends)) return 0;
+  return ends - Date.now();
+}
+
+function stopQuizTimer() {
+  if (timerTick) {
+    clearInterval(timerTick);
+    timerTick = null;
+  }
+}
+
+function paintTimer() {
+  const node = document.getElementById("quiz-timer");
+  if (!node) return;
+  const left = remainingMs();
+  node.textContent = formatClock(left / 1000);
+  node.classList.toggle("low", left <= 60 * 1000);
+}
+
+function startQuizTimer() {
+  stopQuizTimer();
+  paintTimer();
+  timerTick = setInterval(() => {
+    paintTimer();
+    if (state.closing) return;
+    if (remainingMs() <= 0) finishQuiz({ timedOut: true });
+  }, 250);
+}
 
 function shuffle(list) {
   const copy = list.slice();
@@ -47,6 +102,7 @@ function requireStudentName(noteId) {
 }
 
 function showStart() {
+  stopQuizTimer();
   setLed("");
   who.textContent = "Parts inside the case";
   app.innerHTML = `
@@ -68,7 +124,8 @@ function showStart() {
   lengths.forEach((count) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = count === QUESTIONS.length ? `All ${count}` : String(count);
+    const label = count === QUESTIONS.length ? `All ${count}` : String(count);
+    button.textContent = label + " · " + formatMinutes(quizSecondsFor(count));
     if (count === state.length) button.classList.add("picked");
     button.addEventListener("click", () => {
       state.length = count;
@@ -105,7 +162,7 @@ function showReady() {
   app.innerHTML = `
     <section class="intro">
       <h2>Study first,<br>then take the quiz.</h2>
-      <p class="lede">Look at each part’s picture, name, and function. When you are ready, go to the quiz.</p>
+      <p class="lede">Look at each part’s picture, name, and function. The 10-question quiz is 10 minutes. All 64 questions is 40 minutes. The clock starts when you go to the quiz.</p>
       <div class="row start-actions">
         <button class="primary" id="study" type="button">Study</button>
         <button class="ghost" id="start" type="button">Go to quiz</button>
@@ -175,6 +232,8 @@ function startQuiz() {
   }));
   state.index = 0;
   state.picks = [];
+  state.closing = false;
+  state.endsAt = new Date(Date.now() + quizSecondsFor(state.length) * 1000).toISOString();
   logVisitStart(state.name, state.length, snapshotFromState());
   showQuestion();
 }
@@ -188,7 +247,7 @@ function showQuestion() {
   app.innerHTML = `
     <div class="progress">
       <span>Question ${number} of ${state.deck.length}</span>
-      <span>${state.name}</span>
+      <span class="quiz-timer" id="quiz-timer">${formatClock(remainingMs() / 1000)}</span>
     </div>
     <div class="track"><span style="width:${(number / state.deck.length) * 100}%"></span></div>
     <div class="ask">
@@ -221,7 +280,8 @@ function showQuestion() {
     box.hidden = false;
     box.className = "feedback";
     box.textContent = "Answer saved. Correct answers appear after you finish the quiz.";
-    document.getElementById("next").disabled = false;
+    const next = document.getElementById("next");
+    if (next) next.disabled = false;
     setLed("on");
   }
 
@@ -232,7 +292,7 @@ function showQuestion() {
     button.setAttribute("data-choice", choice);
     button.innerHTML = `<span class="mark">${String.fromCharCode(65 + index)}</span><span>${escapeHtml(choice)}</span>`;
     button.addEventListener("click", () => {
-      if (state.picks[state.index]) return;
+      if (state.closing || state.picks[state.index]) return;
       state.picks[state.index] = choice;
       lockChoice(choice);
       logVisitProgress();
@@ -248,7 +308,7 @@ function showQuestion() {
   });
   document.getElementById("next").addEventListener("click", () => {
     if (!state.picks[state.index]) return;
-    if (state.index === state.deck.length - 1) showScore();
+    if (state.index === state.deck.length - 1) finishQuiz();
     else {
       state.index += 1;
       logVisitProgress();
@@ -259,12 +319,18 @@ function showQuestion() {
     await logVisitProgress();
     showMyQuizzes(state.name);
   });
+  startQuizTimer();
 }
 
-function showScore() {
+function finishQuiz(options) {
+  if (state.closing) return;
+  state.closing = true;
+  stopQuizTimer();
+  const timedOut = Boolean(options && options.timedOut);
   const total = state.deck.length;
   const correct = state.deck.filter((item, index) => state.picks[index] === item.answer).length;
-  const percent = Math.round((correct / total) * 100);
+  const percent = total ? Math.round((correct / total) * 100) : 0;
+  logVisitScore(correct, total, percent, timedOut);
   renderAttemptReview({
     name: state.name,
     deck: state.deck,
@@ -272,13 +338,13 @@ function showScore() {
     correct: correct,
     total: total,
     percent: percent,
-    heading: null,
+    heading: timedOut ? "Time is up" : null,
     leaveLabel: "My quizzes"
   });
-  logVisitScore(correct, total, percent);
 }
 
 function renderAttemptReview(view) {
+  stopQuizTimer();
   const title = view.percent >= 90 ? "Case master" : view.percent >= 70 ? "Bench technician" : view.percent >= 50 ? "Still tracing cables" : "Open the case again";
   setLed(view.percent >= 70 ? "on" : "warn");
   who.textContent = view.name;
@@ -352,6 +418,7 @@ function usableVisit(visit) {
 }
 
 function attemptIsComplete(visit, restored) {
+  if (visit && (visit.timedOut || typeof visit.score === "number") && visit.status === "finished") return true;
   const picks = (restored && restored.picks) || visit.picks || [];
   const expected = (restored && restored.deck && restored.deck.length)
     || (Array.isArray(visit.parts) ? visit.parts.length : 0)
@@ -359,6 +426,12 @@ function attemptIsComplete(visit, restored) {
     || visit.length
     || 0;
   return expected > 0 && picks.filter(Boolean).length >= expected;
+}
+
+function visitTimeLeft(visit) {
+  const ends = Date.parse(visit && visit.endsAt ? visit.endsAt : "");
+  if (!Number.isFinite(ends)) return 0;
+  return ends - Date.now();
 }
 
 function openAttempt(visit) {
@@ -372,6 +445,18 @@ function openAttempt(visit) {
     state.picks = restored.picks;
     state.index = restored.index;
     state.length = restored.deck.length;
+    state.endsAt = visit.endsAt || "";
+    state.closing = false;
+    if (!state.endsAt) {
+      state.endsAt = new Date(Date.now() + quizSecondsFor(state.length) * 1000).toISOString();
+      logVisitProgress();
+      showQuestion();
+      return;
+    }
+    if (visitTimeLeft(visit) <= 0) {
+      finishQuiz({ timedOut: true });
+      return;
+    }
     showQuestion();
     return;
   }

@@ -367,6 +367,17 @@ input[aria-invalid="true"] {
   font-family: var(--mono);
 }
 
+.quiz-timer {
+  color: var(--cyan);
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+.quiz-timer.low {
+  color: var(--red);
+}
+
 .track {
   height: 10px;
   background: #0f3b2c;
