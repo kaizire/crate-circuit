@@ -33,6 +33,33 @@ function upsertLocal(visit) {
   return copy;
 }
 
+function liveStoreBase() {
+  const url = CONFIG.firebase && CONFIG.firebase.databaseURL;
+  return url ? String(url).replace(/\/$/, "") + "/visits" : "";
+}
+
+function liveListUrl() {
+  return liveStoreBase() ? liveStoreBase() + ".json" : "";
+}
+
+function liveItemUrl(id) {
+  return liveStoreBase() ? liveStoreBase() + "/" + encodeURIComponent(id) + ".json" : "";
+}
+
+function visitsFromPayload(data) {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.visits)) return data.visits;
+  if (typeof data === "object") {
+    return Object.keys(data).map((key) => {
+      const item = data[key] && typeof data[key] === "object" ? Object.assign({}, data[key]) : { value: data[key] };
+      item._id = item._id || item.visitId || key;
+      return item;
+    });
+  }
+  return [];
+}
+
 function setActiveVisit(visit) {
   currentVisit = visit || null;
   const id = visit && (visit._id || visit.visitId);
@@ -51,20 +78,19 @@ async function logVisitStart(name, length, snapshot) {
     picks: snapshot && snapshot.picks ? snapshot.picks.slice() : [],
     index: snapshot && typeof snapshot.index === "number" ? snapshot.index : 0
   };
+  payload._id = payload.visitId;
   setActiveVisit(upsertLocal(payload));
   remoteSave = (async () => {
     try {
-      const response = await fetch(CONFIG.storeUrl, {
-        method: "POST",
+      const url = liveItemUrl(payload.visitId);
+      if (!url) return;
+      const response = await fetch(url, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
       if (!response.ok) return;
-      const saved = await response.json();
-      if (saved && saved._id) {
-        payload._id = saved._id;
-        setActiveVisit(upsertLocal(payload));
-      }
+      setActiveVisit(upsertLocal(payload));
     } catch (error) {
       /* local copy still works if the online store is down */
     }
@@ -82,15 +108,17 @@ async function patchVisit(changes) {
   if (!currentVisit) currentVisit = findStoredVisit(sessionStorage.getItem(VISIT_KEY));
   if (!currentVisit) return;
   Object.assign(currentVisit, changes);
+  currentVisit._id = currentVisit._id || currentVisit.visitId;
   upsertLocal(currentVisit);
-  if (!currentVisit._id) return;
+  const remoteId = currentVisit.visitId || currentVisit._id;
+  if (!remoteId) return;
   try {
-    const body = Object.assign({}, currentVisit);
-    delete body._id;
-    await fetch(CONFIG.storeUrl + "/" + encodeURIComponent(currentVisit._id), {
+    const url = liveItemUrl(remoteId);
+    if (!url) return;
+    await fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify(currentVisit)
     });
   } catch (error) {
     /* logging is best-effort so the quiz still runs */
@@ -157,17 +185,14 @@ async function loadJsonList(url) {
   try {
     const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) return [];
-    const data = await response.json();
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.visits)) return data.visits;
+    return visitsFromPayload(await response.json());
   } catch (error) {
     return [];
   }
-  return [];
 }
 
 async function loadVisits() {
-  const live = await loadJsonList(CONFIG.storeUrl);
+  const live = await loadJsonList(liveListUrl());
   const term = await loadJsonList(CONFIG.termLogUrl);
   return mergeVisits(mergeVisits(term, live), loadLocalVisits());
 }
@@ -192,7 +217,9 @@ function samePlayerName(a, b) {
 async function deleteVisit(id) {
   if (!id) throw new Error("Missing visit id");
   writeLocalVisits(loadLocalVisits().filter((item) => item._id !== id && item.visitId !== id));
-  const response = await fetch(CONFIG.storeUrl + "/" + encodeURIComponent(id), {
+  const url = liveItemUrl(id);
+  if (!url) return;
+  const response = await fetch(url, {
     method: "DELETE"
   });
   if (!response.ok && response.status !== 204) {

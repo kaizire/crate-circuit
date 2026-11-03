@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Merge live scores into the term log
         env:
-          LIVE_URL: https://crudcrud.com/api/cb1e095a104e47e8bd90f338b113fcea/visits
+          LIVE_URL: https://crate-circuit-default-rtdb.firebaseio.com/visits.json
         run: |
           python - <<'PY'
           import json, os, urllib.request
@@ -32,6 +32,13 @@ jobs:
                   data = json.load(res)
               if isinstance(data, list):
                   live = data
+              elif isinstance(data, dict):
+                  live = []
+                  for key, item in data.items():
+                      if isinstance(item, dict):
+                          row = dict(item)
+                          row["_id"] = row.get("_id") or row.get("visitId") or key
+                          live.append(row)
           except Exception as err:
               print("live store skipped:", err)
           merged = {}
