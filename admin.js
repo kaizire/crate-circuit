@@ -196,6 +196,7 @@ function renderDashboard() {
         </div>
         <div class="dash-actions">
           <button class="ghost" id="reload" type="button">Refresh</button>
+          <button class="ghost" id="download" type="button">Download scores</button>
           <button class="ghost" id="lock" type="button">Lock</button>
         </div>
       </div>
@@ -231,6 +232,7 @@ function renderDashboard() {
     </section>
   `;
   document.getElementById("reload").addEventListener("click", loadDashboard);
+  document.getElementById("download").addEventListener("click", () => downloadTermLog(dash.visits));
   document.getElementById("lock").addEventListener("click", () => {
     sessionStorage.removeItem(AUTH_KEY);
     showGate();

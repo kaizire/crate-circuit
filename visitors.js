@@ -19,7 +19,7 @@ function loadLocalVisits() {
 }
 
 function writeLocalVisits(list) {
-  localStorage.setItem(LOCAL_VISITS, JSON.stringify(list.slice(0, 80)));
+  localStorage.setItem(LOCAL_VISITS, JSON.stringify(list.slice(0, 400)));
 }
 
 function upsertLocal(visit) {
@@ -152,18 +152,36 @@ function mergeVisits(remote, local) {
   });
 }
 
-async function loadVisits() {
-  let remote = [];
+async function loadJsonList(url) {
+  if (!url) return [];
   try {
-    const response = await fetch(CONFIG.storeUrl);
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) remote = data;
-    }
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) return [];
+    const data = await response.json();
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.visits)) return data.visits;
   } catch (error) {
-    remote = [];
+    return [];
   }
-  return mergeVisits(remote, loadLocalVisits());
+  return [];
+}
+
+async function loadVisits() {
+  const live = await loadJsonList(CONFIG.storeUrl);
+  const term = await loadJsonList(CONFIG.termLogUrl);
+  return mergeVisits(mergeVisits(term, live), loadLocalVisits());
+}
+
+function downloadTermLog(visits) {
+  const blob = new Blob([JSON.stringify({ visits: visits || [] }, null, 2)], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "cratecircuit-scores.json";
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 function samePlayerName(a, b) {

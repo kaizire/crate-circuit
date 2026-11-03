@@ -1,0 +1,65 @@
+name: Sync quiz scores
+
+on:
+  schedule:
+    - cron: "20 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge live scores into the term log
+        env:
+          LIVE_URL: https://crudcrud.com/api/cb1e095a104e47e8bd90f338b113fcea/visits
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          path = "data/visits.json"
+          with open(path, encoding="utf-8") as f:
+              stored = json.load(f)
+          visits = stored.get("visits") if isinstance(stored, dict) else stored
+          if not isinstance(visits, list):
+              visits = []
+          live = []
+          try:
+              req = urllib.request.Request(os.environ["LIVE_URL"], headers={"Accept": "application/json"})
+              with urllib.request.urlopen(req, timeout=30) as res:
+                  data = json.load(res)
+              if isinstance(data, list):
+                  live = data
+          except Exception as err:
+              print("live store skipped:", err)
+          merged = {}
+          def add(item):
+              if not isinstance(item, dict):
+                  return
+              key = item.get("visitId") or item.get("_id")
+              if not key:
+                  return
+              prev = merged.get(key, {})
+              cur = dict(prev)
+              cur.update(item)
+              if prev.get("status") == "finished" or item.get("status") == "finished":
+                  cur["status"] = "finished"
+              merged[key] = cur
+          for item in visits:
+              add(item)
+          for item in live:
+              add(item)
+          out = {"visits": sorted(merged.values(), key=lambda v: v.get("finishedAt") or v.get("startedAt") or "", reverse=True)[:500]}
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(out, f, ensure_ascii=False)
+          print("saved", len(out["visits"]), "visits")
+          PY
+      - name: Commit term log
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/visits.json
+          git diff --staged --quiet || git commit -m "Save quiz scores for the school term."
+          git push
