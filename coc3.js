@@ -1,5 +1,15 @@
+const STUDENT_ADDRESS_KEY = "cratecircuit-vm-address";
+
 function labStoreUrl() {
   return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/lab.json";
+}
+
+function studentUser() {
+  return CONFIG.labStudentUser || "student";
+}
+
+function studentPassword() {
+  return CONFIG.labStudentPassword || "crate-lab";
 }
 
 function normalizeLabLink(value) {
@@ -20,7 +30,20 @@ function hostFromLink(link) {
   }
 }
 
+function rdpUri(link) {
+  const host = hostFromLink(link);
+  if (!host) return "#";
+  return (
+    "ms-rd:connect?full%20address=s:" + encodeURIComponent(host) +
+    "&username=s:" + encodeURIComponent(studentUser())
+  );
+}
+
 async function loadSharedLabLink() {
+  const typed = document.getElementById("vm-address");
+  const local = typed && typed.value.trim()
+    ? typed.value.trim()
+    : (localStorage.getItem(STUDENT_ADDRESS_KEY) || "");
   try {
     const response = await fetch(labStoreUrl(), { cache: "no-store" });
     if (response.ok) {
@@ -28,45 +51,58 @@ async function loadSharedLabLink() {
       if (data && data.consoleUrl) return normalizeLabLink(data.consoleUrl);
     }
   } catch (error) {
-    /* teacher has not shared a VM yet */
+    /* students can still type the address */
   }
-  return normalizeLabLink(CONFIG.labConsoleUrl || "");
+  return normalizeLabLink(local || CONFIG.labConsoleUrl || "");
 }
 
-function setRdpLink(link) {
-  const rdp = document.getElementById("open-rdp");
-  if (!rdp) return;
-  const host = hostFromLink(link);
-  rdp.href = host
-    ? "ms-rd:connect?full%20address=s:" + encodeURIComponent(host)
-    : "#";
+function paintStudentLogon() {
+  const user = document.getElementById("student-user");
+  const pass = document.getElementById("student-pass");
+  if (user) user.textContent = studentUser();
+  if (pass) pass.textContent = studentPassword();
 }
 
 async function readyStudentLab() {
+  const field = document.getElementById("vm-address");
   const wait = document.getElementById("vm-wait");
-  const link = await loadSharedLabLink();
-  setRdpLink(link);
-  if (!wait) return link;
-  if (!link) {
-    wait.textContent = "Wait for your teacher to start the virtual machine, then tap Refresh.";
-  } else {
-    wait.textContent = "The virtual machine is ready. Tap Open the VM.";
+  const rdp = document.getElementById("open-rdp");
+  let link = await loadSharedLabLink();
+  if (field && !field.value.trim() && link) field.value = hostFromLink(link) || link.replace(/^https?:\/\//i, "");
+  if (field && field.value.trim()) {
+    localStorage.setItem(STUDENT_ADDRESS_KEY, field.value.trim());
+    link = normalizeLabLink(field.value);
+  }
+  if (rdp) rdp.href = rdpUri(link);
+  if (wait) {
+    wait.textContent = link
+      ? "Use student / " + studentPassword() + ". You do not need a teacher account."
+      : "Type the VM address, then tap Open the VM. Use the student logon, not the teacher account.";
   }
   return link;
 }
 
 async function openStudentLab() {
+  const field = document.getElementById("vm-address");
   const wait = document.getElementById("vm-wait");
+  if (field && field.value.trim()) localStorage.setItem(STUDENT_ADDRESS_KEY, field.value.trim());
   const link = await readyStudentLab();
   if (!link) {
-    if (wait) wait.textContent = "The VM is not shared yet. Ask your teacher to start COC3-SERVER.";
+    if (wait) wait.textContent = "Type the VM address first (example 192.168.1.50).";
+    if (field) field.focus();
     return;
   }
-  window.location.href = link;
+  const rdp = rdpUri(link);
+  if (rdp !== "#") window.location.href = rdp;
+  else window.location.href = link;
 }
 
+paintStudentLogon();
 const openButton = document.getElementById("open-vm");
 if (openButton) openButton.addEventListener("click", () => openStudentLab());
-const refresh = document.getElementById("refresh-lab");
-if (refresh) refresh.addEventListener("click", () => readyStudentLab());
+const address = document.getElementById("vm-address");
+if (address) {
+  address.value = localStorage.getItem(STUDENT_ADDRESS_KEY) || "";
+  address.addEventListener("change", () => readyStudentLab());
+}
 readyStudentLab();
