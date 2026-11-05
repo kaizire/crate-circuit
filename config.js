@@ -2,8 +2,7 @@ const CONFIG = {
   termLogUrl: "data/visits.json",
   adminPassword: "crate-admin",
   labConsoleUrl: "",
-  labStudentUser: "student",
-  labStudentPassword: "crate-lab",
+  azureLabUrl: "https://portal.azure.com",
   firebase: {
     apiKey: "AIzaSyBHHjHW9pHE9iH3WIqInBZNiu0IH-JfLVc",
     authDomain: "crate-circuit.firebaseapp.com",
