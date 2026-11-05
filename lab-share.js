@@ -29,19 +29,27 @@
 
   window.saveLabAddress = async function (link) {
     const consoleUrl = normalize(link);
-    const response = await fetch(labUrl(), {
-      method: "PUT",
+    const payload = JSON.stringify({
+      kind: "lab",
+      visitId: "cratecircuit-lab",
+      name: "_lab",
+      consoleUrl: consoleUrl,
+      updatedAt: new Date().toISOString()
+    });
+    let response = await fetch(labUrl(), {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        kind: "lab",
-        visitId: "cratecircuit-lab",
-        name: "_lab",
-        consoleUrl: consoleUrl,
-        updatedAt: new Date().toISOString()
-      })
+      body: payload
     });
     if (!response.ok) {
-      throw new Error("Save failed (" + response.status + "). Refresh the page with Ctrl+F5 and try again.");
+      response = await fetch(labUrl(), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: payload
+      });
+    }
+    if (!response.ok) {
+      throw new Error("Could not save here. Open share-vm.html instead.");
     }
     return consoleUrl;
   };
