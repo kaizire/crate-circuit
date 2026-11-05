@@ -299,13 +299,15 @@ function renderDashboard() {
           </div>
           <p class="panel-copy">Windows Server VM. Install AD, DNS, DHCP, and File Services only inside this machine.</p>
           <div class="lab-actions">
-            <a class="primary" id="open-azure-staff" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
+            <a class="primary" href="lab/auto-setup-coc3.ps1" download>Auto setup server + client</a>
+            <a class="ghost" href="lab/setup-server-roles.ps1" download>Inside-server script</a>
+            <a class="ghost" id="open-azure-staff" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
             <a class="ghost" href="coc3.html" target="_blank" rel="noopener">Student phone page</a>
-            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create SERVER + CLIENT disks</a>
           </div>
           <ol class="lab-steps">
-            <li>Start <strong>COC3-SERVER</strong> in Azure or VMware.</li>
-            <li>Share the server IP or Azure link so phones can tap <strong>Open server</strong>.</li>
+            <li>On the lab PC, run <strong>Auto setup server + client</strong> (Right-click → Run with PowerShell). It creates and starts both VMs.</li>
+            <li>Finish Windows setup inside the SERVER window. Then run <strong>Inside-server script</strong> as Administrator in that VM (creates crate.lab, DNS, DHCP, share).</li>
+            <li>Share the server Bridged IP so phones can tap <strong>Open server</strong>.</li>
           </ol>
           <label for="lab-link">Server IP or https link</label>
           <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://portal.azure.com">
@@ -323,12 +325,14 @@ function renderDashboard() {
           </div>
           <p class="panel-copy">Windows client PC. Students join the domain and test DHCP and the shared folder from this VM, not from their phone OS.</p>
           <div class="lab-actions">
+            <a class="primary" href="lab/auto-setup-coc3.ps1" download>Auto setup server + client</a>
+            <a class="ghost" href="lab/setup-client-domain.ps1" download>Inside-client script</a>
             <a class="ghost" href="coc3.html" target="_blank" rel="noopener">Student phone page</a>
-            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create SERVER + CLIENT disks</a>
           </div>
           <ol class="lab-steps">
-            <li>Start <strong>COC3-CLIENT</strong> in VMware or Azure. Join it to the domain inside the VM.</li>
-            <li>Share the client IP or https link so phones can tap <strong>Open client</strong>.</li>
+            <li>The same auto-setup also starts <strong>COC3-CLIENT</strong>. Finish Windows setup inside the CLIENT window.</li>
+            <li>Run <strong>Inside-client script</strong> as Administrator in that VM to join domain <strong>crate.lab</strong>.</li>
+            <li>Share the client Bridged IP so phones can tap <strong>Open client</strong>.</li>
           </ol>
           <label for="client-link">Client IP or https link</label>
           <input id="client-link" type="text" maxlength="200" placeholder="192.168.1.51">
