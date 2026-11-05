@@ -248,6 +248,7 @@ function renderDashboard() {
         </div>
         <div class="dash-actions">
           <button class="ghost" id="reload" type="button">Refresh</button>
+          <button class="ghost danger" id="wipe" type="button">Clear scores</button>
           <button class="ghost" id="lock" type="button">Lock</button>
         </div>
       </div>
@@ -348,6 +349,7 @@ function renderDashboard() {
   bindTeacherLab();
   bindTabs();
   document.getElementById("reload").addEventListener("click", loadDashboard);
+  document.getElementById("wipe").addEventListener("click", clearAllScores);
   document.getElementById("download").addEventListener("click", () => downloadTermLog(dash.visits));
   document.getElementById("lock").addEventListener("click", () => {
     sessionStorage.removeItem(AUTH_KEY);
@@ -437,6 +439,16 @@ function bindTeacherLab() {
   });
   bindShareField("lab-link", "lab-note", "save-lab", "serverUrl", "Server shared. Students tap Open server.", "Paste the server IP or Azure link first.");
   bindShareField("client-link", "client-note", "save-client", "clientUrl", "Client shared. Students tap Open client.", "Paste the client IP or link first.");
+}
+
+async function clearAllScores() {
+  if (!window.confirm("Delete every quiz score from the live staff log? New student quizzes can still be saved.")) return;
+  try {
+    await wipeAllVisits();
+    await loadDashboard();
+  } catch (error) {
+    window.alert("Could not clear scores. Try again in a moment.");
+  }
 }
 
 async function removeAttempt(id, name, button) {
