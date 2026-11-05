@@ -52,7 +52,7 @@ function visitsFromPayload(data) {
   if (Array.isArray(data.visits)) return data.visits;
   if (typeof data === "object") {
     return Object.keys(data).map((key) => {
-      if (key === "_cratecircuitLab" || key.charAt(0) === "_") return null;
+      if (key === "_cratecircuitLab" || key === "cratecircuit-lab" || key.charAt(0) === "_") return null;
       const item = data[key] && typeof data[key] === "object" ? Object.assign({}, data[key]) : { value: data[key] };
       if (item.kind === "lab" || (item.consoleUrl && !item.visitId)) return null;
       item._id = item._id || item.visitId || key;
