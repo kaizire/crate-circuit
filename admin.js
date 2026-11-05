@@ -226,6 +226,17 @@ function renderDashboard() {
 
   app.innerHTML = `
     <section class="dash staff-console">
+      <nav class="side-rail" id="side-rail" aria-label="Staff bays">
+        <button type="button" class="rail-btn${dash.tab === "scores" ? " picked" : ""}" data-tab="scores">
+          <span class="rail-mark">01</span>
+          <span>Scores</span>
+        </button>
+        <button type="button" class="rail-btn${dash.tab === "lab" ? " picked" : ""}" data-tab="lab">
+          <span class="rail-mark">COC</span>
+          <span>3 lab</span>
+        </button>
+      </nav>
+      <div class="staff-main">
       <div class="console-head">
         <div>
           <p class="kicker ink">Dispatch bay</p>
@@ -236,10 +247,6 @@ function renderDashboard() {
           <button class="ghost" id="lock" type="button">Lock</button>
         </div>
       </div>
-      <nav class="bay-tabs" id="bay-tabs">
-        <button type="button" class="bay-tab${dash.tab === "scores" ? " picked" : ""}" data-tab="scores">1 · Scores</button>
-        <button type="button" class="bay-tab${dash.tab === "lab" ? " picked" : ""}" data-tab="lab">2 · COC 3 lab</button>
-      </nav>
 
       <div id="bay-scores" class="staff-bay" ${dash.tab === "scores" ? "" : "hidden"}>
         <div class="gauge-row">
@@ -304,6 +311,7 @@ function renderDashboard() {
           <p class="muted-note" id="lab-note" hidden></p>
         </section>
       </div>
+      </div>
     </section>
   `;
   bindTeacherLab();
@@ -345,7 +353,7 @@ function renderDashboard() {
 }
 
 function bindTabs() {
-  const nav = document.getElementById("bay-tabs");
+  const nav = document.getElementById("side-rail");
   if (!nav) return;
   nav.addEventListener("click", (event) => {
     const button = event.target.closest("[data-tab]");
@@ -354,7 +362,7 @@ function bindTabs() {
     sessionStorage.setItem(TAB_KEY, dash.tab);
     document.getElementById("bay-scores").hidden = dash.tab !== "scores";
     document.getElementById("bay-lab").hidden = dash.tab !== "lab";
-    nav.querySelectorAll(".bay-tab").forEach((node) => node.classList.toggle("picked", node === button));
+    nav.querySelectorAll(".rail-btn").forEach((node) => node.classList.toggle("picked", node === button));
   });
 }
 
