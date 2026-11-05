@@ -26,8 +26,8 @@ if (-not $vmx) {
   throw "COC3-SERVER.vmx was not found. Run create-coc3-vms.ps1 first, then install Windows inside the VM."
 }
 
-Write-Host "Starting $vmx"
-& $vmrun -T ws start $vmx
+Write-Host "Starting $vmx in the VMware window"
+& $vmrun -T ws start $vmx gui
 if ($LASTEXITCODE -ne 0) { throw "Could not start COC3-SERVER." }
 
 if (-not $GuestPassword) {
