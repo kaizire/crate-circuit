@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
     <span class="rivet ne" aria-hidden="true"></span>
     <span class="rivet sw" aria-hidden="true"></span>
     <span class="rivet se" aria-hidden="true"></span>
-    <div class="tape" aria-hidden="true">COC 3 · STUDENTS · PHONE OK</div>
+    <div class="tape" aria-hidden="true">COC 3 · VIRTUAL MACHINE · PHONE OK</div>
     <header class="bezel">
       <div class="brand">
         <div class="crate-mark" aria-hidden="true">
@@ -29,17 +29,19 @@
           <h1><span>COC</span><i>/</i><span>3</span></h1>
         </div>
       </div>
-      <p class="who">Student access</p>
+      <p class="who">Virtual machine</p>
     </header>
     <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main class="bay">
       <section class="intro lab">
-        <h2>Open the server<br>on your phone.</h2>
-        <p class="lede">Use Chrome or Edge. Sign in with the lab account your teacher gives you. Windows Server stays in Azure. Nothing installs on your phone.</p>
-        <p class="warn-banner">Do not download Windows Server or role installers on this phone.</p>
+        <h2>Open the virtual<br>machine.</h2>
+        <p class="lede">The Windows Server lab runs in VMware on the school PC. Your phone only views that VM. Nothing installs on this phone.</p>
+        <p class="warn-banner">Do not download Windows Server or role installers on your phone or on the PC desktop. They go inside the VM only.</p>
+        <p class="vm-wait" id="vm-wait">Checking if the teacher started the virtual machine…</p>
         <div class="row start-actions">
-          <button class="primary" id="open-vm" type="button">Open Azure lab</button>
-          <a class="ghost" href="index.html">Back to quiz</a>
+          <button class="primary" id="open-vm" type="button">Open the VM</button>
+          <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
+          <button class="ghost" id="refresh-lab" type="button">Refresh</button>
         </div>
         <article class="lab-card">
           <p class="kicker ink">Students only</p>
@@ -47,17 +49,19 @@
           <ol class="lab-steps">
             <li>Join school Wi‑Fi.</li>
             <li>Open <strong>kaizire.github.io/crate-circuit/coc3.html</strong></li>
-            <li>Tap <strong>Open Azure lab</strong>.</li>
-            <li>Sign in with the lab Microsoft account from your teacher.</li>
-            <li>Open <strong>COC3-SERVER</strong> → <strong>Connect</strong> → <strong>Bastion</strong> → Connect.</li>
-            <li>The Windows desktop that opens is the lab.</li>
+            <li>Tap <strong>Open the VM</strong> when it says ready. Or tap <strong>Remote Desktop app</strong> and use the address your teacher wrote on the board.</li>
+            <li>Log on with the student account from your teacher.</li>
+            <li>You are inside <strong>COC3-SERVER</strong>. Installers already belong in that virtual machine.</li>
           </ol>
         </article>
+        <div class="row start-actions">
+          <a class="ghost" href="index.html">Back to quiz</a>
+        </div>
       </section>
     </main>
   </div>
   <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
-  <script src="config.js?v=5"></script>
-  <script src="coc3.js?v=3"></script>
+  <script src="config.js?v=6"></script>
+  <script src="coc3.js?v=4"></script>
 </body>
 </html>
