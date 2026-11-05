@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
     <span class="rivet ne" aria-hidden="true"></span>
     <span class="rivet sw" aria-hidden="true"></span>
     <span class="rivet se" aria-hidden="true"></span>
-    <div class="tape" aria-hidden="true">COC 3 · VIRTUAL MACHINE · PHONE OK</div>
+    <div class="tape" aria-hidden="true">COC 3 · STUDENT VM · NO TEACHER LOGIN</div>
     <header class="bezel">
       <div class="brand">
         <div class="crate-mark" aria-hidden="true">
@@ -29,29 +29,30 @@
           <h1><span>COC</span><i>/</i><span>3</span></h1>
         </div>
       </div>
-      <p class="who">Virtual machine</p>
+      <p class="who">Student logon</p>
     </header>
     <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main class="bay">
       <section class="intro lab">
-        <h2>Open the virtual<br>machine.</h2>
-        <p class="lede">The Windows Server lab runs in VMware on the school PC. Your phone only views that VM. Nothing installs on this phone.</p>
-        <p class="warn-banner">Do not download Windows Server or role installers on your phone or on the PC desktop. They go inside the VM only.</p>
-        <p class="vm-wait" id="vm-wait">Checking if the teacher started the virtual machine…</p>
+        <h2>Open the VM<br>as a student.</h2>
+        <p class="lede">You do not need a teacher account or the staff password. Use the student logon below. The virtual machine runs on the school PC.</p>
+        <p class="warn-banner">Log on as <strong id="student-user">student</strong> / <strong id="student-pass">crate-lab</strong>. Never use the teacher or admin account.</p>
+        <label for="vm-address">VM address</label>
+        <input id="vm-address" type="text" maxlength="80" placeholder="192.168.1.50" inputmode="decimal" autocomplete="off">
+        <p class="vm-wait" id="vm-wait">Join school Wi‑Fi, type the VM address if it is empty, then tap Open the VM.</p>
         <div class="row start-actions">
           <button class="primary" id="open-vm" type="button">Open the VM</button>
           <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
-          <button class="ghost" id="refresh-lab" type="button">Refresh</button>
         </div>
         <article class="lab-card">
           <p class="kicker ink">Students only</p>
           <h3 class="dash-title">How you enter</h3>
           <ol class="lab-steps">
-            <li>Join school Wi‑Fi.</li>
-            <li>Open <strong>kaizire.github.io/crate-circuit/coc3.html</strong></li>
-            <li>Tap <strong>Open the VM</strong> when it says ready. Or tap <strong>Remote Desktop app</strong> and use the address your teacher wrote on the board.</li>
-            <li>Log on with the student account from your teacher.</li>
-            <li>You are inside <strong>COC3-SERVER</strong>. Installers already belong in that virtual machine.</li>
+            <li>Join school Wi‑Fi. Install <strong>Microsoft Remote Desktop</strong> if your phone asks for it.</li>
+            <li>Type the VM address (example 192.168.1.50) if it is not already filled.</li>
+            <li>Tap <strong>Open the VM</strong> or <strong>Remote Desktop app</strong>.</li>
+            <li>Username <strong>student</strong>. Password <strong>crate-lab</strong>. Not the teacher login.</li>
+            <li>You are inside the virtual machine. Installers stay there, not on your phone.</li>
           </ol>
         </article>
         <div class="row start-actions">
@@ -61,7 +62,7 @@
     </main>
   </div>
   <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
-  <script src="config.js?v=6"></script>
-  <script src="coc3.js?v=4"></script>
+  <script src="config.js?v=7"></script>
+  <script src="coc3.js?v=5"></script>
 </body>
 </html>
