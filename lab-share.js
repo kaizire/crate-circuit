@@ -1,6 +1,7 @@
 (function () {
   function base() {
-    return String((window.CONFIG && CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "");
+    const fromConfig = typeof CONFIG !== "undefined" && CONFIG.firebase && CONFIG.firebase.databaseURL;
+    return String(fromConfig || "https://crate-circuit-default-rtdb.firebaseio.com").replace(/\/$/, "");
   }
 
   function labUrl() {
