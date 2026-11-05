@@ -1402,6 +1402,7 @@ a.primary {
     flex: 1;
     min-height: 64px;
   }
+  .side-rail { flex-wrap: wrap; }
 }
 
 @media (max-width: 820px) {
