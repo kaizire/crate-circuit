@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#1a120c">
-  <title>CrateCircuit — COC 3 student lab</title>
+  <title>CrateCircuit — COC 3 Proxmox lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
     <span class="rivet ne" aria-hidden="true"></span>
     <span class="rivet sw" aria-hidden="true"></span>
     <span class="rivet se" aria-hidden="true"></span>
-    <div class="tape" aria-hidden="true">COC 3 · STUDENT VM · NO TEACHER LOGIN</div>
+    <div class="tape" aria-hidden="true">COC 3 · PROXMOX VE</div>
     <header class="bezel">
       <div class="brand">
         <div class="crate-mark" aria-hidden="true">
@@ -25,58 +25,74 @@
           <span class="led on"></span>
         </div>
         <div>
-          <p class="kicker">Student crate · Servers</p>
+          <p class="kicker">Staff crate · Proxmox</p>
           <h1><span>COC</span><i>/</i><span>3</span></h1>
         </div>
       </div>
-      <p class="who">Student logon</p>
+      <p class="who">Web console</p>
     </header>
     <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main class="bay">
       <section class="intro lab">
-        <h2>Open the VM<br>as a student.</h2>
-        <p class="lede">You do not need a teacher account or the staff password. This opens Remote Desktop into the Windows VM. VMware Workstation stays on the school PC.</p>
-        <p class="warn-banner">Log on as <strong id="student-user">student</strong> / <strong id="student-pass">crate-lab</strong>. Never use the teacher or admin account.</p>
-        <article class="lab-card rd-get">
-          <p class="kicker ink">Step 1 · Install the app</p>
-          <h3 class="dash-title">Microsoft Remote Desktop</h3>
-          <p class="lede">Free. Install it on this phone first, then tap Open the VM.</p>
-          <div class="row start-actions">
-            <a class="primary" id="rd-store" href="https://aka.ms/rdandroid" target="_blank" rel="noopener">Install Microsoft Remote Desktop</a>
-          </div>
-          <div class="row start-actions">
-            <a class="ghost" id="rd-android" href="https://play.google.com/store/apps/details?id=com.microsoft.rdc.androidx" target="_blank" rel="noopener">Android</a>
-            <a class="ghost" id="rd-ios" href="https://apps.apple.com/app/microsoft-remote-desktop/id714464092" target="_blank" rel="noopener">iPhone</a>
-            <a class="ghost" id="rd-windows" href="https://apps.microsoft.com/detail/9wzdncrfj3ps" target="_blank" rel="noopener">Windows</a>
-          </div>
-        </article>
-        <label for="vm-address">VM address</label>
-        <input id="vm-address" type="text" maxlength="80" placeholder="192.168.1.50" inputmode="decimal" autocomplete="off">
-        <p class="vm-wait" id="vm-wait">Join school Wi‑Fi, type the VM address if it is empty, then tap Open the VM.</p>
-        <div class="row start-actions">
-          <button class="primary" id="open-vm" type="button">Open the VM</button>
-          <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
+        <h2>Proxmox VE<br>for the class VM.</h2>
+        <p class="lede">The lab PC runs Proxmox VE. Windows Server, AD, DHCP, and DNS install only inside the virtual machine. Students open the Proxmox console from a phone on school Wi‑Fi.</p>
+        <p class="warn-banner">Proxmox replaces the host OS on that lab PC. Use a spare computer. Do not install Proxmox on the teacher’s everyday Windows disk unless you mean to erase it.</p>
+
+        <div class="vm-screen">
+          <p class="kicker ink">COC3-SERVER · Proxmox</p>
+          <iframe id="vm-frame" title="COC 3 Proxmox console" hidden></iframe>
+          <p class="vm-wait" id="vm-wait">Waiting for the teacher to share the Proxmox address.</p>
         </div>
-        <p class="muted-note">After the app is installed, tap <strong>Open the VM</strong> and allow Remote Desktop. If needed, open the downloaded <strong>COC3-SERVER.rdp</strong> file.</p>
+        <div class="row start-actions">
+          <button class="primary" id="open-vm" type="button">Open Proxmox lab</button>
+          <button class="ghost" id="refresh-lab" type="button">Refresh lab</button>
+        </div>
+
         <article class="lab-card">
-          <p class="kicker ink">Students only</p>
-          <h3 class="dash-title">How you enter</h3>
+          <p class="kicker ink">Students · cellphone</p>
+          <h3 class="dash-title">How you join</h3>
           <ol class="lab-steps">
-            <li>Join school Wi‑Fi. Tap <strong>Install Microsoft Remote Desktop</strong> above (Android, iPhone, or Windows).</li>
-            <li>Type the VM address (example 192.168.1.50) if it is not already filled.</li>
-            <li>Tap <strong>Open the VM</strong>. Allow Remote Desktop. If needed, open the <strong>COC3-SERVER.rdp</strong> download.</li>
-            <li>Username <strong>student</strong>. Password <strong>crate-lab</strong>. Not the teacher login.</li>
-            <li>You are inside the Windows VM. Installers stay there, not on your phone.</li>
+            <li>Join school Wi‑Fi.</li>
+            <li>Open <strong>kaizire.github.io/crate-circuit/coc3.html</strong></li>
+            <li>Tap <strong>Open Proxmox lab</strong>. If the phone warns about a certificate, tap Advanced → Continue.</li>
+            <li>Sign in with the student account the teacher gives you. Open VM <strong>COC3-SERVER</strong> → <strong>Console</strong>.</li>
           </ol>
         </article>
+
+        <article class="lab-card">
+          <p class="kicker ink">Teacher · install Proxmox VE</p>
+          <h3 class="dash-title">Host the disk here</h3>
+          <ol class="lab-steps">
+            <li>Download the ISO from <a href="https://www.proxmox.com/en/downloads/" target="_blank" rel="noopener">proxmox.com/en/downloads</a> (Proxmox VE 9). Write it to a USB with Rufus.</li>
+            <li>Boot a <strong>spare</strong> lab PC from that USB and install Proxmox. Set a management IP on school LAN (example 192.168.1.20).</li>
+            <li>On another computer open <strong>https://192.168.1.20:8006</strong> (use your IP). Login <code>root</code>.</li>
+            <li>Create VM 100 named <strong>COC3-SERVER</strong> (4 GB RAM, UEFI or SeaBIOS, SATA disk). Create VM 101 named <strong>COC3-CLIENT</strong>.</li>
+            <li>To import a VMware disk, copy the <code>.vmdk</code> onto Proxmox then run:
+              <code>qm disk import 100 /root/COC3-SERVER.vmdk local-lvm --format qcow2</code>
+              Attach the unused disk as SATA, set boot order, start the VM.</li>
+            <li>Or skip the VMware disk: attach a Windows Server evaluation ISO in Proxmox and install <em>inside</em> VM 100.</li>
+            <li>Datacenter → Permissions → Users: add <code>student@pve</code>. On VM 100 give that user role <strong>PVEVMUser</strong> (console only, not root).</li>
+            <li>Paste the Proxmox address below (example <code>192.168.1.20</code>) and tap Share with class.</li>
+          </ol>
+          <label for="lab-password">Staff password</label>
+          <input id="lab-password" type="password" maxlength="40" autocomplete="current-password">
+          <label for="lab-link">Proxmox IP (port 8006 is added for you)</label>
+          <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.20">
+          <div class="row start-actions">
+            <button class="primary" id="save-lab" type="button">Share with class</button>
+            <a class="ghost" href="https://www.proxmox.com/en/downloads/" target="_blank" rel="noopener">Download Proxmox ISO</a>
+          </div>
+          <p class="muted-note" id="lab-note" hidden></p>
+        </article>
+
         <div class="row start-actions">
-          <a class="ghost" href="index.html">Back to quiz</a>
+          <a class="primary" href="index.html">Back to quiz</a>
         </div>
       </section>
     </main>
   </div>
   <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
-  <script src="config.js?v=7"></script>
-  <script src="coc3.js?v=9"></script>
+  <script src="config.js?v=5"></script>
+  <script src="coc3.js?v=2"></script>
 </body>
 </html>
