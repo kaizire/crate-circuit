@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <meta name="theme-color" content="#0b1612">
+  <title>CrateCircuit — Share VM</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
+  <link rel="stylesheet" href="styles.css?v=13">
+</head>
+<body class="admin-page">
+  <div class="shop-floor" aria-hidden="true"></div>
+  <div class="case">
+    <span class="rivet nw" aria-hidden="true"></span>
+    <span class="rivet ne" aria-hidden="true"></span>
+    <span class="rivet sw" aria-hidden="true"></span>
+    <span class="rivet se" aria-hidden="true"></span>
+    <div class="tape" aria-hidden="true">STAFF ONLY · SHARE VM</div>
+    <header class="bezel">
+      <div class="brand">
+        <div class="crate-mark" aria-hidden="true">
+          <span class="fan"></span>
+          <span class="led on"></span>
+        </div>
+        <div>
+          <p class="kicker">Staff · COC 3</p>
+          <h1><span>SHARE</span><i>/</i><span>VM</span></h1>
+        </div>
+      </div>
+      <p class="who">Student phones read this address</p>
+    </header>
+    <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
+    <main class="bay">
+      <section class="lock-panel" id="gate">
+        <p class="kicker ink">Staff access</p>
+        <h2>Unlock share</h2>
+        <p class="lede">Use the staff password, then paste the VM IP. Students open the student lab page. They do not need this password.</p>
+        <p class="gate-error" id="gate-error" hidden></p>
+        <label for="password">Password</label>
+        <div class="lock-row">
+          <input id="password" type="password" maxlength="40" autocomplete="current-password" placeholder="Staff password">
+          <button class="primary" id="unlock" type="button">Open</button>
+        </div>
+      </section>
+      <section class="panel staff-lab" id="share" hidden>
+        <div class="panel-head">
+          <h3 class="dash-title">VM address for students</h3>
+        </div>
+        <p class="panel-copy">Paste the IPv4 from the VM, for example 192.168.1.50. Do not paste an Azure portal link.</p>
+        <label for="vm-ip">VM address</label>
+        <input id="vm-ip" type="text" maxlength="200" placeholder="192.168.1.50">
+        <div class="row start-actions">
+          <button class="primary" id="publish-vm" type="button">Share with students</button>
+        </div>
+        <p class="muted-note" id="share-note" hidden></p>
+      </section>
+    </main>
+  </div>
+  <p class="foot-link"><a href="admin.html">Staff dashboard</a> · <a href="coc3.html">Student COC 3 page</a></p>
+  <script>
+    (function () {
+      var STORE = "https://crate-circuit-default-rtdb.firebaseio.com/visits/cratecircuit-lab.json";
+      var PASSWORD = "crate-admin";
+
+      function normalize(value) {
+        var raw = String(value || "").trim();
+        if (!raw) return "";
+        if (/^https?:\/\//i.test(raw)) return raw;
+        if (/^[\w.-]+:\d+$/.test(raw) || /^\d{1,3}(\.\d{1,3}){3}(:\d+)?$/.test(raw)) return "http://" + raw;
+        return raw;
+      }
+
+      function send(method, payload) {
+        return new Promise(function (resolve, reject) {
+          var req = new XMLHttpRequest();
+          req.open(method, STORE);
+          req.setRequestHeader("Content-Type", "application/json");
+          req.onload = function () { resolve(req.status); };
+          req.onerror = function () { reject(new Error("network")); };
+          req.send(JSON.stringify(payload));
+        });
+      }
+
+      async function publish(link) {
+        var payload = {
+          kind: "lab",
+          visitId: "cratecircuit-lab",
+          name: "_lab",
+          consoleUrl: link,
+          updatedAt: new Date().toISOString()
+        };
+        var patchStatus = await send("PATCH", payload);
+        if (patchStatus >= 200 && patchStatus < 300) return;
+        var putStatus = await send("PUT", payload);
+        if (putStatus >= 200 && putStatus < 300) return;
+        throw new Error("Save failed (" + patchStatus + "). Open this page on the lab PC: share-vm.html");
+      }
+
+      document.getElementById("unlock").onclick = function () {
+        var error = document.getElementById("gate-error");
+        if (document.getElementById("password").value !== PASSWORD) {
+          error.hidden = false;
+          error.textContent = "That password does not match.";
+          return;
+        }
+        document.getElementById("gate").hidden = true;
+        document.getElementById("share").hidden = false;
+        var field = document.getElementById("vm-ip");
+        var req = new XMLHttpRequest();
+        req.open("GET", STORE);
+        req.onload = function () {
+          try {
+            var data = JSON.parse(req.responseText || "{}");
+            if (data && data.consoleUrl && !field.value) {
+              field.value = String(data.consoleUrl).replace(/^https?:\/\//i, "");
+            }
+          } catch (err) {}
+        };
+        req.send();
+      };
+
+      document.getElementById("password").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") document.getElementById("unlock").click();
+      });
+
+      document.getElementById("publish-vm").onclick = async function () {
+        var note = document.getElementById("share-note");
+        var link = normalize(document.getElementById("vm-ip").value);
+        note.hidden = false;
+        if (!link) {
+          note.classList.add("warn-note");
+          note.textContent = "Paste the VM IP, for example 192.168.1.50.";
+          return;
+        }
+        try {
+          await publish(link);
+          note.classList.remove("warn-note");
+          note.textContent = "Saved. Students can open the VM without a teacher account.";
+        } catch (error) {
+          note.classList.add("warn-note");
+          note.textContent = error.message;
+        }
+      };
+    })();
+  </script>
+</body>
+</html>
