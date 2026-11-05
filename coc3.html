@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -37,6 +37,19 @@
         <h2>Open the VM<br>as a student.</h2>
         <p class="lede">You do not need a teacher account or the staff password. This opens Remote Desktop into the Windows VM. VMware Workstation stays on the school PC.</p>
         <p class="warn-banner">Log on as <strong id="student-user">student</strong> / <strong id="student-pass">crate-lab</strong>. Never use the teacher or admin account.</p>
+        <article class="lab-card rd-get">
+          <p class="kicker ink">Step 1 · Install the app</p>
+          <h3 class="dash-title">Microsoft Remote Desktop</h3>
+          <p class="lede">Free. Install it on this phone first, then tap Open the VM.</p>
+          <div class="row start-actions">
+            <a class="primary" id="rd-store" href="https://aka.ms/rdandroid" target="_blank" rel="noopener">Install Microsoft Remote Desktop</a>
+          </div>
+          <div class="row start-actions">
+            <a class="ghost" id="rd-android" href="https://play.google.com/store/apps/details?id=com.microsoft.rdc.androidx" target="_blank" rel="noopener">Android</a>
+            <a class="ghost" id="rd-ios" href="https://apps.apple.com/app/microsoft-remote-desktop/id714464092" target="_blank" rel="noopener">iPhone</a>
+            <a class="ghost" id="rd-windows" href="https://apps.microsoft.com/detail/9wzdncrfj3ps" target="_blank" rel="noopener">Windows</a>
+          </div>
+        </article>
         <label for="vm-address">VM address</label>
         <input id="vm-address" type="text" maxlength="80" placeholder="192.168.1.50" inputmode="decimal" autocomplete="off">
         <p class="vm-wait" id="vm-wait">Join school Wi‑Fi, type the VM address if it is empty, then tap Open the VM.</p>
@@ -44,12 +57,12 @@
           <button class="primary" id="open-vm" type="button">Open the VM</button>
           <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
         </div>
-        <p class="muted-note">On Android or iPhone install <strong>Microsoft Remote Desktop</strong>, then tap Open the VM and allow it. Open the downloaded <strong>COC3-SERVER.rdp</strong> file if the app does not start.</p>
+        <p class="muted-note">After the app is installed, tap <strong>Open the VM</strong> and allow Remote Desktop. If needed, open the downloaded <strong>COC3-SERVER.rdp</strong> file.</p>
         <article class="lab-card">
           <p class="kicker ink">Students only</p>
           <h3 class="dash-title">How you enter</h3>
           <ol class="lab-steps">
-            <li>Join school Wi‑Fi. Install <strong>Microsoft Remote Desktop</strong> from the Play Store or App Store.</li>
+            <li>Join school Wi‑Fi. Tap <strong>Install Microsoft Remote Desktop</strong> above (Android, iPhone, or Windows).</li>
             <li>Type the VM address (example 192.168.1.50) if it is not already filled.</li>
             <li>Tap <strong>Open the VM</strong>. Allow Remote Desktop. If needed, open the <strong>COC3-SERVER.rdp</strong> download.</li>
             <li>Username <strong>student</strong>. Password <strong>crate-lab</strong>. Not the teacher login.</li>
@@ -64,6 +77,6 @@
   </div>
   <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
   <script src="config.js?v=7"></script>
-  <script src="coc3.js?v=8"></script>
+  <script src="coc3.js?v=9"></script>
 </body>
 </html>
