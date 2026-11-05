@@ -52,14 +52,25 @@ function visitsFromPayload(data) {
   if (Array.isArray(data.visits)) return data.visits;
   if (typeof data === "object") {
     return Object.keys(data).map((key) => {
-      if (key === "_cratecircuitLab" || key === "cratecircuit-lab" || key.charAt(0) === "_") return null;
       const item = data[key] && typeof data[key] === "object" ? Object.assign({}, data[key]) : { value: data[key] };
-      if (item.kind === "lab" || (item.consoleUrl && !item.visitId)) return null;
       item._id = item._id || item.visitId || key;
       return item;
-    }).filter(Boolean);
+    });
   }
   return [];
+}
+
+function isLabVisit(visit) {
+  if (!visit || typeof visit !== "object") return true;
+  const id = String(visit._id || visit.visitId || "");
+  if (id === "cratecircuit-lab" || id === "_cratecircuitLab") return true;
+  if (visit.kind === "lab") return true;
+  const name = String(visit.name || "").trim().toLowerCase();
+  return name === "_lab";
+}
+
+function studentVisits(list) {
+  return (list || []).filter((visit) => !isLabVisit(visit));
 }
 
 function setActiveVisit(visit) {
@@ -196,10 +207,22 @@ async function loadJsonList(url) {
   }
 }
 
+async function fetchLiveVisits() {
+  const url = liveListUrl();
+  if (!url) return { ok: false, visits: [] };
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) return { ok: false, visits: [] };
+    return { ok: true, visits: studentVisits(visitsFromPayload(await response.json())) };
+  } catch (error) {
+    return { ok: false, visits: [] };
+  }
+}
+
 async function loadRemoteVisits() {
-  const live = await loadJsonList(liveListUrl());
-  const term = await loadJsonList(CONFIG.termLogUrl);
-  return mergeVisits(term, live);
+  const live = await fetchLiveVisits();
+  if (live.ok) return live.visits;
+  return studentVisits(await loadJsonList(CONFIG.termLogUrl));
 }
 
 async function loadVisits() {
@@ -234,6 +257,34 @@ async function deleteVisit(id) {
   if (!response.ok && response.status !== 204) {
     throw new Error("Could not delete visit");
   }
+}
+
+async function wipeAllVisits() {
+  writeLocalVisits([]);
+  const url = liveListUrl();
+  if (!url) return;
+  let data = null;
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (response.ok) data = await response.json();
+  } catch (error) {
+    data = null;
+  }
+  const kept = {};
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    Object.keys(data).forEach((key) => {
+      const item = data[key];
+      if (!item || typeof item !== "object") return;
+      const row = Object.assign({ _id: key }, item);
+      if (isLabVisit(row)) kept[key] = item;
+    });
+  }
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(Object.keys(kept).length ? kept : null)
+  });
+  if (!response.ok) throw new Error("Could not clear visits");
 }
 
 async function loadVisitsByName(name) {
