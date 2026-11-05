@@ -6,15 +6,10 @@ function normalizeLabLink(value) {
   const raw = String(value || "").trim();
   if (!raw) return "";
   if (/^https?:\/\//i.test(raw)) return raw;
-  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(raw)) return "https://" + raw + ":8006";
-  if (/^[\w.-]+:\d+$/.test(raw) || /^\d{1,3}(\.\d{1,3}){3}:\d+$/.test(raw)) {
-    return "https://" + raw;
+  if (/^[\w.-]+:\d+$/.test(raw) || /^\d{1,3}(\.\d{1,3}){3}(:\d+)?$/.test(raw)) {
+    return "http://" + raw;
   }
   return raw;
-}
-
-function isLanHost(host) {
-  return /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/i.test(host || "");
 }
 
 function hostFromLink(link) {
@@ -62,8 +57,8 @@ function showVmFrame(link) {
     return;
   }
   const host = hostFromLink(link);
-  if (rdp) rdp.href = link;
-  if (/^https:\/\//i.test(link) && !isLanHost(host)) {
+  if (rdp) rdp.href = "ms-rd:connect?full%20address=s:" + encodeURIComponent(host);
+  if (/^https:\/\//i.test(link)) {
     frame.src = link;
     frame.hidden = false;
     wait.hidden = true;
@@ -71,7 +66,7 @@ function showVmFrame(link) {
   }
   frame.hidden = true;
   wait.hidden = false;
-  wait.innerHTML = "<strong>Tap Open Proxmox lab.</strong> Phones open https://IP:8006 on school Wi‑Fi. Accept the certificate warning, then use Console on COC3-SERVER.";
+  wait.innerHTML = "<strong>Tap Open the VM.</strong> School Wi‑Fi uses http, so the desktop opens on this phone instead of inside the box.";
 }
 
 async function bootLab() {
@@ -89,10 +84,7 @@ document.getElementById("open-vm").addEventListener("click", async () => {
     return;
   }
   showVmFrame(link);
-  const host = hostFromLink(link);
-  if (!/^https:\/\//i.test(link) || isLanHost(host)) {
-    window.location.href = link;
-  }
+  if (!/^https:\/\//i.test(link)) window.location.href = link;
 });
 
 document.getElementById("refresh-lab").addEventListener("click", () => {
@@ -110,7 +102,7 @@ document.getElementById("save-lab").addEventListener("click", async () => {
   }
   if (!link) {
     note.hidden = false;
-    note.textContent = "Paste the Proxmox IP, for example 192.168.1.20";
+    note.textContent = "Paste the VM web address or the IP the phones should open.";
     return;
   }
   try {
@@ -125,5 +117,11 @@ document.getElementById("save-lab").addEventListener("click", async () => {
     note.textContent = error.message;
   }
 });
+
+(function setAzureButton() {
+  const azure = document.getElementById("open-azure");
+  if (!azure) return;
+  azure.href = CONFIG.azureLabUrl || "https://portal.azure.com";
+})();
 
 bootLab();
