@@ -117,6 +117,9 @@ function showStart() {
         <button class="primary" id="continue" type="button">Continue</button>
         <button class="ghost" id="history" type="button">My quizzes</button>
       </div>
+      <div class="row start-actions">
+        <button class="ghost" id="coc3" type="button">COC 3 · Server lab</button>
+      </div>
       <p class="muted-note" id="history-note" hidden></p>
     </section>
   `;
@@ -153,6 +156,9 @@ function showStart() {
     const name = requireStudentName("history-note");
     if (!name) return;
     showMyQuizzes(name);
+  });
+  document.getElementById("coc3").addEventListener("click", () => {
+    window.location.href = "coc3.html";
   });
 }
 
