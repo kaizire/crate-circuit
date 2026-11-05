@@ -248,7 +248,7 @@ function renderDashboard() {
         </div>
         <div class="dash-actions">
           <button class="ghost" id="reload" type="button">Refresh</button>
-          <button class="ghost danger" id="wipe" type="button">Clear scores</button>
+          <button class="danger wipe-all" id="wipe" type="button">Delete all data</button>
           <button class="ghost" id="lock" type="button">Lock</button>
         </div>
       </div>
@@ -442,12 +442,23 @@ function bindTeacherLab() {
 }
 
 async function clearAllScores() {
-  if (!window.confirm("Delete every quiz score from the live staff log? New student quizzes can still be saved.")) return;
+  if (!window.confirm("Delete ALL quiz data from Firebase and this staff dashboard? Lab server/client links stay. New quizzes can still be saved.")) return;
+  if (!window.confirm("This cannot be undone. Delete all student scores now?")) return;
+  const button = document.getElementById("wipe");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Deleting…";
+  }
   try {
     await wipeAllVisits();
+    dash.visits = [];
     await loadDashboard();
   } catch (error) {
-    window.alert("Could not clear scores. Try again in a moment.");
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Delete all data";
+    }
+    window.alert(error.message || "Could not delete Firebase data. Check Realtime Database rules allow write on /visits.");
   }
 }
 
