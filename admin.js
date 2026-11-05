@@ -233,7 +233,11 @@ function renderDashboard() {
         </button>
         <button type="button" class="rail-btn${dash.tab === "lab" ? " picked" : ""}" data-tab="lab">
           <span class="rail-mark">COC</span>
-          <span>3 lab</span>
+          <span>Server</span>
+        </button>
+        <button type="button" class="rail-btn${dash.tab === "client" ? " picked" : ""}" data-tab="client">
+          <span class="rail-mark">PC</span>
+          <span>Client</span>
         </button>
       </nav>
       <div class="staff-main">
@@ -291,24 +295,47 @@ function renderDashboard() {
       <div id="bay-lab" class="staff-bay" ${dash.tab === "lab" ? "" : "hidden"}>
         <section class="panel lab-staff crate-bay">
           <div class="panel-head">
-            <h3 class="dash-title">COC 3 · teacher bay</h3>
+            <h3 class="dash-title">COC3-SERVER</h3>
           </div>
-          <p class="panel-copy">Students stay on the phone page. You start the machine here and share it.</p>
+          <p class="panel-copy">Windows Server VM. Install AD, DNS, DHCP, and File Services only inside this machine.</p>
           <div class="lab-actions">
             <a class="primary" id="open-azure-staff" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
             <a class="ghost" href="coc3.html" target="_blank" rel="noopener">Student phone page</a>
-            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Empty VMware disks</a>
+            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create SERVER + CLIENT disks</a>
           </div>
           <ol class="lab-steps">
-            <li>Start Windows Server in Azure (or COC3-SERVER in VMware). Install AD, DNS, DHCP, and File Services only inside that VM.</li>
-            <li>Azure: students tap Open Azure lab, then Connect → Bastion. VMware: paste the IP below.</li>
+            <li>Start <strong>COC3-SERVER</strong> in Azure or VMware.</li>
+            <li>Share the server IP or Azure link so phones can tap <strong>Open server</strong>.</li>
           </ol>
-          <label for="lab-link">Share this with the class</label>
+          <label for="lab-link">Server IP or https link</label>
           <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://portal.azure.com">
           <div class="row start-actions">
-            <button class="primary" id="save-lab" type="button">Share with class</button>
+            <button class="primary" id="save-lab" type="button">Share server</button>
           </div>
           <p class="muted-note" id="lab-note" hidden></p>
+        </section>
+      </div>
+
+      <div id="bay-client" class="staff-bay" ${dash.tab === "client" ? "" : "hidden"}>
+        <section class="panel lab-staff crate-bay">
+          <div class="panel-head">
+            <h3 class="dash-title">COC3-CLIENT</h3>
+          </div>
+          <p class="panel-copy">Windows client PC. Students join the domain and test DHCP and the shared folder from this VM, not from their phone OS.</p>
+          <div class="lab-actions">
+            <a class="ghost" href="coc3.html" target="_blank" rel="noopener">Student phone page</a>
+            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create SERVER + CLIENT disks</a>
+          </div>
+          <ol class="lab-steps">
+            <li>Start <strong>COC3-CLIENT</strong> in VMware or Azure. Join it to the domain inside the VM.</li>
+            <li>Share the client IP or https link so phones can tap <strong>Open client</strong>.</li>
+          </ol>
+          <label for="client-link">Client IP or https link</label>
+          <input id="client-link" type="text" maxlength="200" placeholder="192.168.1.51">
+          <div class="row start-actions">
+            <button class="primary" id="save-client" type="button">Share client</button>
+          </div>
+          <p class="muted-note" id="client-note" hidden></p>
         </section>
       </div>
       </div>
@@ -362,38 +389,50 @@ function bindTabs() {
     sessionStorage.setItem(TAB_KEY, dash.tab);
     document.getElementById("bay-scores").hidden = dash.tab !== "scores";
     document.getElementById("bay-lab").hidden = dash.tab !== "lab";
+    document.getElementById("bay-client").hidden = dash.tab !== "client";
     nav.querySelectorAll(".rail-btn").forEach((node) => node.classList.toggle("picked", node === button));
   });
 }
 
-function bindTeacherLab() {
-  const azure = document.getElementById("open-azure-staff");
-  if (azure) azure.href = azureLabHref();
-  const field = document.getElementById("lab-link");
-  const note = document.getElementById("lab-note");
-  if (!field) return;
-  loadSharedLabLink().then((link) => {
-    if (link) field.value = link;
-  });
-  document.getElementById("save-lab").addEventListener("click", async () => {
+function bindShareField(fieldId, noteId, buttonId, key, okText, emptyText) {
+  const field = document.getElementById(fieldId);
+  const note = document.getElementById(noteId);
+  const button = document.getElementById(buttonId);
+  if (!field || !button) return;
+  button.addEventListener("click", async () => {
     const link = normalizeLabLink(field.value);
     if (!link) {
       note.hidden = false;
       note.classList.add("warn-note");
-      note.textContent = "Paste the Azure portal link or the VM IP first.";
+      note.textContent = emptyText;
       return;
     }
     try {
-      await saveSharedLabLink(link);
+      const payload = {};
+      payload[key] = link;
+      await saveSharedLab(payload);
       note.hidden = false;
       note.classList.remove("warn-note");
-      note.textContent = "Saved. Students open COC 3 on their phones and tap Open the VM.";
+      note.textContent = okText;
     } catch (error) {
       note.hidden = false;
       note.classList.add("warn-note");
       note.textContent = error.message;
     }
   });
+}
+
+function bindTeacherLab() {
+  const azure = document.getElementById("open-azure-staff");
+  if (azure) azure.href = azureLabHref();
+  loadSharedLab().then((lab) => {
+    const server = document.getElementById("lab-link");
+    const client = document.getElementById("client-link");
+    if (server && lab.serverUrl) server.value = lab.serverUrl;
+    if (client && lab.clientUrl) client.value = lab.clientUrl;
+  });
+  bindShareField("lab-link", "lab-note", "save-lab", "serverUrl", "Server shared. Students tap Open server.", "Paste the server IP or Azure link first.");
+  bindShareField("client-link", "client-note", "save-client", "clientUrl", "Client shared. Students tap Open client.", "Paste the client IP or link first.");
 }
 
 async function removeAttempt(id, name, button) {
