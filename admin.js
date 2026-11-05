@@ -80,7 +80,7 @@ function showGate(error) {
     <section class="lock-panel">
       <p class="kicker ink">Staff access</p>
       <h2>Unlock the log</h2>
-      <p class="lede">Staff only. Open scores and the COC 3 teacher setup. Students use the quiz and the student lab page.</p>
+      <p class="lede">Staff only. Open scores and set up the COC 3 server lab for student phones.</p>
       ${error ? `<p class="gate-error">${escapeHtml(error)}</p>` : ""}
       <label for="password">Password</label>
       <div class="lock-row">
@@ -227,15 +227,33 @@ function renderDashboard() {
         <div>
           <p class="kicker ink">Staff terminal</p>
           <h2>Class log</h2>
-          <p class="lede">Scores for the class, plus COC 3 teacher setup. Students do not see this page.</p>
+          <p class="lede">Who took CrateCircuit, how they scored, and which quizzes are still open.</p>
         </div>
         <div class="dash-actions">
           <button class="ghost" id="reload" type="button">Refresh</button>
           <button class="primary" id="download" type="button">Download scores</button>
-          <a class="ghost" href="coc3.html">Student lab page</a>
           <button class="ghost" id="lock" type="button">Lock</button>
         </div>
       </div>
+      <section class="panel lab-staff">
+        <div class="panel-head">
+          <h3 class="dash-title">COC 3 lab · teacher</h3>
+        </div>
+        <p class="panel-copy">Students use the phone page only. You start Azure or VMware here and share the live machine.</p>
+        <ol class="lab-steps">
+          <li>Create a Windows Server VM in Azure, or start <strong>COC3-SERVER</strong> in VMware. Install AD, DNS, DHCP, and File Services only inside that VM.</li>
+          <li>Azure: students tap <strong>Open Azure lab</strong>, then Connect → Bastion. VMware: paste the VM IP or https console below so phones can open it.</li>
+        </ol>
+        <label for="lab-link">Share VM IP or https lab link with students</label>
+        <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://portal.azure.com">
+        <div class="row start-actions">
+          <button class="primary" id="save-lab" type="button">Share with class</button>
+          <a class="ghost" id="open-azure-staff" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
+          <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
+          <a class="ghost" href="coc3.html" target="_blank" rel="noopener">View student page</a>
+        </div>
+        <p class="muted-note" id="lab-note" hidden></p>
+      </section>
       <div class="stats">
         <article class="stat tone-amber"><span>Quizzes</span><strong>${all.length}</strong><em>saved in the log</em></article>
         <article class="stat"><span>Students</span><strong>${uniqueNames(all)}</strong><em>unique names</em></article>
@@ -272,45 +290,9 @@ function renderDashboard() {
           <div class="visit-list" id="attempt-list">${attemptMarkup()}</div>
         </section>
       </div>
-      <section class="panel staff-lab" id="coc3-teacher">
-        <div class="panel-head">
-          <h3 class="dash-title">COC 3 · Teacher</h3>
-          <span class="count-chip">Staff only</span>
-        </div>
-        <p class="panel-copy">Students open the virtual machine from their phones. You run VMware on the lab PC. Do not send the class straight to Azure.</p>
-        <h3 class="dash-title">1. Create the VMs on this PC</h3>
-        <ol class="lab-steps">
-          <li>Open <strong>VMware Workstation</strong>. Download <strong>Create empty VMs</strong> below if COC3-SERVER and COC3-CLIENT are not there yet.</li>
-          <li>Attach a Windows Server ISO to <strong>COC3-SERVER</strong> and a Windows ISO to <strong>COC3-CLIENT</strong>.</li>
-          <li>Start each VM and install Windows <em>inside the VM window</em>, never on the PC desktop.</li>
-        </ol>
-        <h3 class="dash-title">2. Automate student logon and start the VM</h3>
-        <ol class="lab-steps">
-          <li>After Windows is installed in the VM, on the lab PC run <strong>Start COC3-SERVER</strong> (download below).</li>
-          <li>That script starts the VM. To also create <strong>student</strong> / <strong>crate-lab</strong> automatically, run it in PowerShell with the VM administrator password:<br>
-            <code>powershell -ExecutionPolicy Bypass -File start-coc3-server.ps1 -GuestUser Administrator -GuestPassword YOUR_VM_ADMIN_PASSWORD</code></li>
-          <li>It turns on Remote Desktop and adds <strong>student</strong> to Remote Desktop Users. Students never use the teacher account.</li>
-          <li>Set the VM network to <strong>Bridged</strong>, then copy the IPv4 from the script output or from <strong>ipconfig</strong> in the VM.</li>
-        </ol>
-        <h3 class="dash-title">3. Let phones in</h3>
-        <ol class="lab-steps">
-          <li>Paste the IP below and tap <strong>Share with students</strong>, or write it on the board.</li>
-          <li>Students open the student lab page and log on as <strong>student</strong> / <strong>crate-lab</strong>.</li>
-        </ol>
-        <p class="lede">If Share fails on this page, open <a href="share-vm.html">share-vm.html</a>.</p>
-        <label for="publish-ip">VM address for students</label>
-        <input id="publish-ip" type="text" maxlength="200" placeholder="192.168.1.50">
-        <div class="row start-actions">
-          <button class="primary" id="publish-vm" type="button">Share with students</button>
-          <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
-          <a class="ghost" href="lab/open-vmware.cmd" download>Start VMware</a>
-          <a class="ghost" href="lab/start-coc3-server.ps1" download>Start COC3-SERVER</a>
-          <a class="ghost" href="lab/setup-student-user.ps1" download>Student logon script</a>
-        </div>
-        <p class="muted-note" id="lab-note" hidden></p>
-      </section>
     </section>
   `;
+  bindTeacherLab();
   document.getElementById("reload").addEventListener("click", loadDashboard);
   document.getElementById("download").addEventListener("click", () => downloadTermLog(dash.visits));
   document.getElementById("lock").addEventListener("click", () => {
@@ -345,67 +327,30 @@ function renderDashboard() {
     if (!button) return;
     removeStudent(button.getAttribute("data-delete-name"), button);
   });
-  bindTeacherLab();
 }
 
-function labStoreUrl() {
-  return "https://crate-circuit-default-rtdb.firebaseio.com/visits/cratecircuit-lab.json";
-}
-
-function normalizeLabLink(value) {
-  const raw = String(value || "").trim();
-  if (!raw) return "";
-  if (/^https?:\/\//i.test(raw)) return raw;
-  if (/^[\w.-]+:\d+$/.test(raw) || /^\d{1,3}(\.\d{1,3}){3}(:\d+)?$/.test(raw)) return "http://" + raw;
-  return raw;
-}
-
-async function bindTeacherLab() {
-  const field = document.getElementById("publish-ip");
+function bindTeacherLab() {
+  const azure = document.getElementById("open-azure-staff");
+  if (azure) azure.href = azureLabHref();
+  const field = document.getElementById("lab-link");
   const note = document.getElementById("lab-note");
-  const save = document.getElementById("publish-vm");
-  if (!field || !save) return;
-  try {
-    const response = await fetch(labStoreUrl(), { cache: "no-store" });
-    if (response.ok) {
-      const data = await response.json();
-      if (data && data.consoleUrl) field.value = String(data.consoleUrl).replace(/^https?:\/\//i, "");
-    }
-  } catch (error) {
-    field.value = CONFIG.labConsoleUrl || "";
-  }
-  if (!field.value) field.value = CONFIG.labConsoleUrl || "";
-  save.addEventListener("click", async () => {
+  if (!field) return;
+  loadSharedLabLink().then((link) => {
+    if (link) field.value = link;
+  });
+  document.getElementById("save-lab").addEventListener("click", async () => {
     const link = normalizeLabLink(field.value);
     if (!link) {
       note.hidden = false;
-      note.textContent = "Paste the VM IP, for example 192.168.1.50.";
+      note.classList.add("warn-note");
+      note.textContent = "Paste the Azure portal link or the VM IP first.";
       return;
     }
     try {
-      const payload = JSON.stringify({
-        kind: "lab",
-        visitId: "cratecircuit-lab",
-        name: "_lab",
-        consoleUrl: link,
-        updatedAt: new Date().toISOString()
-      });
-      let response = await fetch(labStoreUrl(), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: payload
-      });
-      if (!response.ok) {
-        response = await fetch(labStoreUrl(), {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: payload
-        });
-      }
-      if (!response.ok) throw new Error("Could not save here. Open share-vm.html instead.");
+      await saveSharedLabLink(link);
       note.hidden = false;
       note.classList.remove("warn-note");
-      note.textContent = "Saved. Students tap Open the VM on the student lab page.";
+      note.textContent = "Saved. Students open COC 3 on their phones and tap Open the VM.";
     } catch (error) {
       note.hidden = false;
       note.classList.add("warn-note");
