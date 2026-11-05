@@ -1253,30 +1253,54 @@ a.primary {
   color: #e0b56a;
 }
 
-.bay-tabs {
+.staff-console {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 16px;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
 }
 
-.bay-tab {
-  font-family: var(--display);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 14px 12px;
+.side-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: sticky;
+  top: 12px;
+}
+
+.rail-btn {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  min-height: 96px;
+  padding: 12px 6px;
   border: 2px solid #5a3a1c;
   background: #15110d;
   color: #c9b089;
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
 }
 
-.bay-tab.picked {
+.rail-mark {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #e0b56a;
+}
+
+.rail-btn.picked {
   background: linear-gradient(180deg, #e39a42, var(--copper-deep));
   color: #1b1206;
   border-color: #5a3208;
+  box-shadow: 4px 4px 0 #5a3208;
 }
+
+.rail-btn.picked .rail-mark { color: #1b1206; }
+
+.staff-main { min-width: 0; }
 
 .gauge-row {
   display: grid;
@@ -1367,6 +1391,17 @@ a.primary {
   .gauge-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dash-grid { grid-template-columns: 1fr; }
   .admin-page .case { width: min(100% - 16px, 1180px); }
+  .staff-console {
+    grid-template-columns: 1fr;
+  }
+  .side-rail {
+    flex-direction: row;
+    position: static;
+  }
+  .rail-btn {
+    flex: 1;
+    min-height: 64px;
+  }
 }
 
 @media (max-width: 820px) {
