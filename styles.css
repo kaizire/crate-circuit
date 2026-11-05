@@ -600,10 +600,6 @@ a.primary {
   display: inline-block;
 }
 
-.rd-get .lede {
-  margin-bottom: 10px;
-}
-
 .vm-screen {
   margin: 12px 0 8px;
   min-height: 280px;
@@ -1019,28 +1015,6 @@ a.primary {
   align-items: start;
 }
 
-.staff-lab {
-  margin-top: 16px;
-}
-
-.staff-lab .lab-steps {
-  margin: 0 0 16px;
-}
-
-.dash-actions a.ghost {
-  display: inline-block;
-  text-decoration: none;
-}
-
-.admin-page .lab-steps,
-.admin-page .staff-lab .panel-copy {
-  color: #9dccb6;
-}
-
-.admin-page .lab-steps a {
-  color: #e0b56a;
-}
-
 .panel {
   background: rgba(238, 248, 241, 0.78);
   border: 2px solid #2a6b52;
@@ -1247,6 +1221,19 @@ a.primary {
 .admin-page .panel-head .dash-title { margin: 0; }
 
 .admin-page .visit-list { margin-top: 10px; }
+
+.admin-page .lab-staff {
+  margin: 0 0 22px;
+}
+
+.admin-page .lab-steps {
+  color: #d8f5e6;
+}
+
+.admin-page .lab-staff input {
+  width: min(100%, 520px);
+  margin-bottom: 8px;
+}
 
 .admin-page .student-row,
 .admin-page .attempt {
