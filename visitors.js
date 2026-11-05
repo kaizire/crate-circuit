@@ -1,5 +1,7 @@
 const VISIT_KEY = "cratecircuit-visit-id";
 const LOCAL_VISITS = "cratecircuit-visits";
+const WIPE_KEY = "cratecircuit-wiped-at";
+const WIPE_ID = "_wipe";
 
 let currentVisit = null;
 let remoteSave = Promise.resolve();
@@ -63,14 +65,43 @@ function visitsFromPayload(data) {
 function isLabVisit(visit) {
   if (!visit || typeof visit !== "object") return true;
   const id = String(visit._id || visit.visitId || "");
-  if (id === "cratecircuit-lab" || id === "_cratecircuitLab") return true;
-  if (visit.kind === "lab") return true;
+  if (id === "cratecircuit-lab" || id === "_cratecircuitLab" || id === WIPE_ID) return true;
+  if (visit.kind === "lab" || visit.kind === "wipe") return true;
   const name = String(visit.name || "").trim().toLowerCase();
   return name === "_lab";
 }
 
-function studentVisits(list) {
-  return (list || []).filter((visit) => !isLabVisit(visit));
+function wipedAtFrom(data) {
+  try {
+    const stored = localStorage.getItem(WIPE_KEY);
+    if (stored) return stored;
+  } catch (error) {
+    /* ignore */
+  }
+  if (!data || typeof data !== "object" || Array.isArray(data)) return "";
+  const row = data[WIPE_ID];
+  return row && row.wipedAt ? String(row.wipedAt) : "";
+}
+
+function rememberWipe(iso) {
+  if (!iso) return;
+  try {
+    localStorage.setItem(WIPE_KEY, iso);
+  } catch (error) {
+    /* ignore */
+  }
+}
+
+function afterWipe(iso, visit) {
+  if (!iso || !visit) return true;
+  const started = Date.parse(visit.startedAt || visit.finishedAt || 0);
+  if (!started) return false;
+  return started >= Date.parse(iso);
+}
+
+function studentVisits(list, wipedAt) {
+  const cut = wipedAt || "";
+  return (list || []).filter((visit) => !isLabVisit(visit) && afterWipe(cut, visit));
 }
 
 function setActiveVisit(visit) {
@@ -96,6 +127,8 @@ async function logVisitStart(name, length, snapshot) {
   setActiveVisit(upsertLocal(payload));
   remoteSave = (async () => {
     try {
+      const cut = wipedAtFrom();
+      if (cut && !afterWipe(cut, payload)) return;
       const url = liveItemUrl(payload.visitId);
       if (!url) return;
       const response = await fetch(url, {
@@ -127,6 +160,8 @@ async function patchVisit(changes) {
   const remoteId = currentVisit.visitId || currentVisit._id;
   if (!remoteId) return;
   try {
+    const cut = wipedAtFrom();
+    if (cut && !afterWipe(cut, currentVisit)) return;
     const url = liveItemUrl(remoteId);
     if (!url) return;
     await fetch(url, {
@@ -209,24 +244,31 @@ async function loadJsonList(url) {
 
 async function fetchLiveVisits() {
   const url = liveListUrl();
-  if (!url) return { ok: false, visits: [] };
+  if (!url) return { ok: false, visits: [], wipedAt: wipedAtFrom() };
   try {
     const response = await fetch(url, { cache: "no-store" });
-    if (!response.ok) return { ok: false, visits: [] };
-    return { ok: true, visits: studentVisits(visitsFromPayload(await response.json())) };
+    if (!response.ok) return { ok: false, visits: [], wipedAt: wipedAtFrom() };
+    const data = await response.json();
+    const wipedAt = wipedAtFrom(data) || wipedAtFrom();
+    if (wipedAt) rememberWipe(wipedAt);
+    return { ok: true, visits: studentVisits(visitsFromPayload(data), wipedAt), wipedAt };
   } catch (error) {
-    return { ok: false, visits: [] };
+    return { ok: false, visits: [], wipedAt: wipedAtFrom() };
   }
 }
 
 async function loadRemoteVisits() {
   const live = await fetchLiveVisits();
   if (live.ok) return live.visits;
-  return studentVisits(await loadJsonList(CONFIG.termLogUrl));
+  return studentVisits(await loadJsonList(CONFIG.termLogUrl), live.wipedAt);
 }
 
 async function loadVisits() {
-  return mergeVisits(await loadRemoteVisits(), loadLocalVisits());
+  const live = await fetchLiveVisits();
+  const remote = live.ok ? live.visits : studentVisits(await loadJsonList(CONFIG.termLogUrl), live.wipedAt);
+  const local = studentVisits(loadLocalVisits(), live.wipedAt);
+  writeLocalVisits(local);
+  return mergeVisits(remote, local);
 }
 
 function downloadTermLog(visits) {
@@ -260,6 +302,8 @@ async function deleteVisit(id) {
 }
 
 async function wipeAllVisits() {
+  const wipedAt = new Date().toISOString();
+  rememberWipe(wipedAt);
   writeLocalVisits([]);
   const url = liveListUrl();
   if (!url) return;
@@ -271,20 +315,37 @@ async function wipeAllVisits() {
     data = null;
   }
   const kept = {};
+  const stale = [];
   if (data && typeof data === "object" && !Array.isArray(data)) {
     Object.keys(data).forEach((key) => {
       const item = data[key];
-      if (!item || typeof item !== "object") return;
+      if (!item || typeof item !== "object") {
+        stale.push(key);
+        return;
+      }
       const row = Object.assign({ _id: key }, item);
-      if (isLabVisit(row)) kept[key] = item;
+      if (isLabVisit(row) && key !== WIPE_ID) kept[key] = item;
+      else stale.push(key);
     });
   }
-  const response = await fetch(url, {
+  kept[WIPE_ID] = { kind: "wipe", wipedAt: wipedAt };
+  let response = await fetch(url, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(Object.keys(kept).length ? kept : null)
+    body: JSON.stringify(kept)
   });
-  if (!response.ok) throw new Error("Could not clear visits");
+  if (!response.ok) {
+    await fetch(liveItemUrl(WIPE_ID), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(kept[WIPE_ID])
+    });
+    for (const id of stale) {
+      const del = await fetch(liveItemUrl(id), { method: "DELETE" });
+      if (!del.ok && del.status !== 204) throw new Error("Could not clear visits");
+    }
+    return;
+  }
 }
 
 async function loadVisitsByName(name) {
