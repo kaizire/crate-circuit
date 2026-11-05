@@ -1,46 +1,57 @@
-function showVmFrame(link) {
-  const frame = document.getElementById("vm-frame");
-  const wait = document.getElementById("vm-wait");
-  const rdp = document.getElementById("open-rdp");
-  if (!frame || !wait) return;
-  if (!link) {
-    frame.removeAttribute("src");
+function bindVmBox(prefix, which) {
+  const frame = document.getElementById(prefix + "-frame");
+  const wait = document.getElementById(prefix + "-wait");
+  const rdp = document.getElementById(prefix + "-rdp");
+  const openBtn = document.getElementById("open-" + prefix);
+
+  function paint(link) {
+    if (!frame || !wait) return;
+    if (!link) {
+      frame.removeAttribute("src");
+      frame.hidden = true;
+      wait.hidden = false;
+      wait.textContent = "Wait for your teacher to start the " + which + ".";
+      return;
+    }
+    if (rdp) rdp.href = "ms-rd:connect?full%20address=s:" + encodeURIComponent(hostFromLink(link));
+    if (/^https:\/\//i.test(link)) {
+      frame.src = link;
+      frame.hidden = false;
+      wait.hidden = true;
+      return;
+    }
     frame.hidden = true;
     wait.hidden = false;
-    wait.textContent = "Wait for your teacher to start the lab, then tap Refresh.";
-    return;
+    wait.innerHTML = "<strong>Tap Open " + which + ".</strong> The desktop opens on this phone.";
   }
-  const host = hostFromLink(link);
-  if (rdp) rdp.href = "ms-rd:connect?full%20address=s:" + encodeURIComponent(host);
-  if (/^https:\/\//i.test(link)) {
-    frame.src = link;
-    frame.hidden = false;
-    wait.hidden = true;
-    return;
+
+  if (openBtn) {
+    openBtn.addEventListener("click", async () => {
+      const lab = await loadSharedLab();
+      const link = normalizeLabLink(which === "client" ? lab.clientUrl : lab.serverUrl);
+      if (!link) {
+        wait.textContent = "The teacher has not shared the " + which + " yet.";
+        return;
+      }
+      paint(link);
+      if (!/^https:\/\//i.test(link)) window.location.href = link;
+    });
   }
-  frame.hidden = true;
-  wait.hidden = false;
-  wait.innerHTML = "<strong>Tap Open the VM.</strong> The desktop opens on this phone.";
+
+  return paint;
 }
 
+const paintServer = bindVmBox("server", "server");
+const paintClient = bindVmBox("client", "client");
+
 async function bootLab() {
-  const link = normalizeLabLink(await loadSharedLabLink());
-  showVmFrame(link);
-  return link;
+  const lab = await loadSharedLab();
+  paintServer(normalizeLabLink(lab.serverUrl));
+  paintClient(normalizeLabLink(lab.clientUrl));
 }
 
 const azure = document.getElementById("open-azure");
 if (azure) azure.href = azureLabHref();
-
-document.getElementById("open-vm").addEventListener("click", async () => {
-  const link = normalizeLabLink(await loadSharedLabLink());
-  if (!link) {
-    document.getElementById("vm-wait").textContent = "The teacher has not shared the lab yet. Tap Refresh after they start it.";
-    return;
-  }
-  showVmFrame(link);
-  if (!/^https:\/\//i.test(link)) window.location.href = link;
-});
 
 document.getElementById("refresh-lab").addEventListener("click", () => {
   bootLab();
