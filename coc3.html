@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#1a120c">
-  <title>CrateCircuit — COC 3 Proxmox lab</title>
+  <title>CrateCircuit — COC 3 lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
     <span class="rivet ne" aria-hidden="true"></span>
     <span class="rivet sw" aria-hidden="true"></span>
     <span class="rivet se" aria-hidden="true"></span>
-    <div class="tape" aria-hidden="true">COC 3 · PROXMOX VE</div>
+    <div class="tape" aria-hidden="true">COC 3 · VM ON THIS PAGE</div>
     <header class="bezel">
       <div class="brand">
         <div class="crate-mark" aria-hidden="true">
@@ -25,62 +25,48 @@
           <span class="led on"></span>
         </div>
         <div>
-          <p class="kicker">Staff crate · Proxmox</p>
+          <p class="kicker">Staff crate · Servers</p>
           <h1><span>COC</span><i>/</i><span>3</span></h1>
         </div>
       </div>
-      <p class="who">Web console</p>
+      <p class="who">Direct VM access</p>
     </header>
     <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main class="bay">
       <section class="intro lab">
-        <h2>Proxmox VE<br>for the class VM.</h2>
-        <p class="lede">The lab PC runs Proxmox VE. Windows Server, AD, DHCP, and DNS install only inside the virtual machine. Students open the Proxmox console from a phone on school Wi‑Fi.</p>
-        <p class="warn-banner">Proxmox replaces the host OS on that lab PC. Use a spare computer. Do not install Proxmox on the teacher’s everyday Windows disk unless you mean to erase it.</p>
+        <h2>Open the VM<br>from your phone.</h2>
+        <p class="lede">This page is the student door into COC 3. Use <strong>Open Azure lab</strong> on a phone. Windows Server, AD, DHCP, and DNS stay in the Azure virtual machine, not on the phone.</p>
+        <p class="warn-banner">Installers never run on this website. Sign in to Azure, open the Windows Server VM, then Connect → Bastion.</p>
+        <div class="row start-actions">
+          <a class="primary" id="open-azure" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure lab</a>
+        </div>
 
         <div class="vm-screen">
-          <p class="kicker ink">COC3-SERVER · Proxmox</p>
-          <iframe id="vm-frame" title="COC 3 Proxmox console" hidden></iframe>
-          <p class="vm-wait" id="vm-wait">Waiting for the teacher to share the Proxmox address.</p>
+          <p class="kicker ink">COC3-SERVER</p>
+          <iframe id="vm-frame" title="COC 3 virtual machine" hidden></iframe>
+          <p class="vm-wait" id="vm-wait">Waiting for the teacher to start the virtual machine.</p>
         </div>
-        <div class="row start-actions">
-          <button class="primary" id="open-vm" type="button">Open Proxmox lab</button>
+        <div class="row start-actions" id="vm-actions">
+          <button class="primary" id="open-vm" type="button">Open the VM</button>
+          <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
           <button class="ghost" id="refresh-lab" type="button">Refresh lab</button>
         </div>
 
         <article class="lab-card">
-          <p class="kicker ink">Students · cellphone</p>
-          <h3 class="dash-title">How you join</h3>
+          <p class="kicker ink">Teacher · share the live VM</p>
+          <h3 class="dash-title">Point the class at the machine</h3>
           <ol class="lab-steps">
-            <li>Join school Wi‑Fi.</li>
-            <li>Open <strong>kaizire.github.io/crate-circuit/coc3.html</strong></li>
-            <li>Tap <strong>Open Proxmox lab</strong>. If the phone warns about a certificate, tap Advanced → Continue.</li>
-            <li>Sign in with the student account the teacher gives you. Open VM <strong>COC3-SERVER</strong> → <strong>Console</strong>.</li>
-          </ol>
-        </article>
-
-        <article class="lab-card">
-          <p class="kicker ink">Teacher · install Proxmox VE</p>
-          <h3 class="dash-title">Host the disk here</h3>
-          <ol class="lab-steps">
-            <li>Download the ISO from <a href="https://www.proxmox.com/en/downloads/" target="_blank" rel="noopener">proxmox.com/en/downloads</a> (Proxmox VE 9). Write it to a USB with Rufus.</li>
-            <li>Boot a <strong>spare</strong> lab PC from that USB and install Proxmox. Set a management IP on school LAN (example 192.168.1.20).</li>
-            <li>On another computer open <strong>https://192.168.1.20:8006</strong> (use your IP). Login <code>root</code>.</li>
-            <li>Create VM 100 named <strong>COC3-SERVER</strong> (4 GB RAM, UEFI or SeaBIOS, SATA disk). Create VM 101 named <strong>COC3-CLIENT</strong>.</li>
-            <li>To import a VMware disk, copy the <code>.vmdk</code> onto Proxmox then run:
-              <code>qm disk import 100 /root/COC3-SERVER.vmdk local-lvm --format qcow2</code>
-              Attach the unused disk as SATA, set boot order, start the VM.</li>
-            <li>Or skip the VMware disk: attach a Windows Server evaluation ISO in Proxmox and install <em>inside</em> VM 100.</li>
-            <li>Datacenter → Permissions → Users: add <code>student@pve</code>. On VM 100 give that user role <strong>PVEVMUser</strong> (console only, not root).</li>
-            <li>Paste the Proxmox address below (example <code>192.168.1.20</code>) and tap Share with class.</li>
+            <li>Create and start <strong>COC3-SERVER</strong> in VMware. Install Windows Server and roles only inside that VM.</li>
+            <li>Turn on Remote Desktop in the VM. Set the network to <strong>Bridged</strong>.</li>
+            <li>Paste the VM IP (example 192.168.1.50) or an https web-console link below. Staff password is required. All phones then get the same door.</li>
           </ol>
           <label for="lab-password">Staff password</label>
           <input id="lab-password" type="password" maxlength="40" autocomplete="current-password">
-          <label for="lab-link">Proxmox IP (port 8006 is added for you)</label>
-          <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.20">
+          <label for="lab-link">VM IP or https lab link</label>
+          <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://lab.example">
           <div class="row start-actions">
             <button class="primary" id="save-lab" type="button">Share with class</button>
-            <a class="ghost" href="https://www.proxmox.com/en/downloads/" target="_blank" rel="noopener">Download Proxmox ISO</a>
+            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
           </div>
           <p class="muted-note" id="lab-note" hidden></p>
         </article>
@@ -92,7 +78,7 @@
     </main>
   </div>
   <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
-  <script src="config.js?v=5"></script>
+  <script src="config.js?v=6"></script>
   <script src="coc3.js?v=2"></script>
 </body>
 </html>
