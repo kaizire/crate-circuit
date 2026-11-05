@@ -1,7 +1,7 @@
 const STUDENT_ADDRESS_KEY = "cratecircuit-vm-address";
 
 function labStoreUrl() {
-  return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/lab.json";
+  return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/visits/_cratecircuitLab.json";
 }
 
 function studentUser() {
