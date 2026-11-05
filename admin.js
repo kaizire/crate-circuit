@@ -1,11 +1,14 @@
 const app = document.getElementById("app");
 const AUTH_KEY = "cratecircuit-admin-ok";
 
+const TAB_KEY = "cratecircuit-staff-tab";
+
 const dash = {
   visits: [],
   query: "",
   filter: "all",
-  sort: "newest"
+  sort: "newest",
+  tab: sessionStorage.getItem(TAB_KEY) || "scores"
 };
 
 function escapeHtml(value) {
@@ -77,15 +80,15 @@ function filteredVisits() {
 function showGate(error) {
   document.getElementById("who-label").textContent = "Locked";
   app.innerHTML = `
-    <section class="lock-panel">
-      <p class="kicker ink">Staff access</p>
-      <h2>Unlock the log</h2>
-      <p class="lede">Staff only. Open scores and set up the COC 3 server lab for student phones.</p>
+    <section class="lock-panel crate-lock">
+      <p class="kicker ink">Staff crate · Key</p>
+      <h2>Unlock<br>dispatch</h2>
+      <p class="lede">Scores in one bay. COC 3 lab in the other. Students never see this page.</p>
       ${error ? `<p class="gate-error">${escapeHtml(error)}</p>` : ""}
-      <label for="password">Password</label>
+      <label for="password">Crate key</label>
       <div class="lock-row">
         <input id="password" type="password" maxlength="40" autocomplete="current-password" placeholder="Staff password">
-        <button class="primary" id="unlock" type="button">Open log</button>
+        <button class="primary" id="unlock" type="button">Open crate</button>
       </div>
     </section>
   `;
@@ -222,77 +225,89 @@ function renderDashboard() {
   document.getElementById("who-label").textContent = all.length + " visits";
 
   app.innerHTML = `
-    <section class="dash">
-      <div class="log-head">
+    <section class="dash staff-console">
+      <div class="console-head">
         <div>
-          <p class="kicker ink">Staff terminal</p>
-          <h2>Class log</h2>
-          <p class="lede">Who took CrateCircuit, how they scored, and which quizzes are still open.</p>
+          <p class="kicker ink">Dispatch bay</p>
+          <h2>Staff crate</h2>
         </div>
         <div class="dash-actions">
           <button class="ghost" id="reload" type="button">Refresh</button>
-          <button class="primary" id="download" type="button">Download scores</button>
           <button class="ghost" id="lock" type="button">Lock</button>
         </div>
       </div>
-      <section class="panel lab-staff">
-        <div class="panel-head">
-          <h3 class="dash-title">COC 3 lab · teacher</h3>
+      <nav class="bay-tabs" id="bay-tabs">
+        <button type="button" class="bay-tab${dash.tab === "scores" ? " picked" : ""}" data-tab="scores">1 · Scores</button>
+        <button type="button" class="bay-tab${dash.tab === "lab" ? " picked" : ""}" data-tab="lab">2 · COC 3 lab</button>
+      </nav>
+
+      <div id="bay-scores" class="staff-bay" ${dash.tab === "scores" ? "" : "hidden"}>
+        <div class="gauge-row">
+          <article class="gauge"><span>Class</span><strong>${uniqueNames(all)}</strong><em>names</em></article>
+          <article class="gauge tone-ok"><span>Done</span><strong>${finished.length}</strong><em>of ${all.length} quizzes</em></article>
+          <article class="gauge tone-open"><span>Open</span><strong>${started.length}</strong><em>still running</em></article>
+          <article class="gauge tone-avg"><span>Avg</span><strong>${avg === null ? "—" : avg + "%"}</strong><em>finished only</em></article>
         </div>
-        <p class="panel-copy">Students use the phone page only. You start Azure or VMware here and share the live machine.</p>
-        <ol class="lab-steps">
-          <li>Create a Windows Server VM in Azure, or start <strong>COC3-SERVER</strong> in VMware. Install AD, DNS, DHCP, and File Services only inside that VM.</li>
-          <li>Azure: students tap <strong>Open Azure lab</strong>, then Connect → Bastion. VMware: paste the VM IP or https console below so phones can open it.</li>
-        </ol>
-        <label for="lab-link">Share VM IP or https lab link with students</label>
-        <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://portal.azure.com">
-        <div class="row start-actions">
-          <button class="primary" id="save-lab" type="button">Share with class</button>
-          <a class="ghost" id="open-azure-staff" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
-          <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
-          <a class="ghost" href="coc3.html" target="_blank" rel="noopener">View student page</a>
+        <div class="console-toolbar">
+          <input id="search" type="text" maxlength="40" placeholder="Find a name" value="${escapeHtml(dash.query)}">
+          <div class="pills" id="filters">
+            <button type="button" class="pill${dash.filter === "all" ? " picked" : ""}" data-filter="all">All</button>
+            <button type="button" class="pill${dash.filter === "finished" ? " picked" : ""}" data-filter="finished">Done</button>
+            <button type="button" class="pill${dash.filter === "started" ? " picked" : ""}" data-filter="started">Open</button>
+          </div>
+          <div class="pills" id="sorts">
+            <button type="button" class="pill${dash.sort === "newest" ? " picked" : ""}" data-sort="newest">Newest</button>
+            <button type="button" class="pill${dash.sort === "score" ? " picked" : ""}" data-sort="score">Top</button>
+          </div>
+          <button class="primary" id="download" type="button">Download</button>
         </div>
-        <p class="muted-note" id="lab-note" hidden></p>
-      </section>
-      <div class="stats">
-        <article class="stat tone-amber"><span>Quizzes</span><strong>${all.length}</strong><em>saved in the log</em></article>
-        <article class="stat"><span>Students</span><strong>${uniqueNames(all)}</strong><em>unique names</em></article>
-        <article class="stat tone-green"><span>Finished</span><strong>${finished.length}</strong><em>with a score</em></article>
-        <article class="stat"><span>Open</span><strong>${started.length}</strong><em>still in progress</em></article>
-        <article class="stat tone-amber"><span>Average</span><strong>${avg === null ? "—" : avg + "%"}</strong><em>finished quizzes</em></article>
+        <div class="dash-grid">
+          <section class="panel crate-bay">
+            <div class="panel-head">
+              <h3 class="dash-title">Manifest</h3>
+              <span class="count-chip">${uniqueNames(all)}</span>
+            </div>
+            <p class="panel-copy">Best score per student.</p>
+            <div class="visit-list" id="student-list">${studentMarkup()}</div>
+          </section>
+          <section class="panel crate-bay">
+            <div class="panel-head">
+              <h3 class="dash-title">Tickets</h3>
+              <span class="count-chip">${all.length}</span>
+            </div>
+            <p class="panel-copy">Each quiz run.</p>
+            <div class="visit-list" id="attempt-list">${attemptMarkup()}</div>
+          </section>
+        </div>
       </div>
-      <div class="dash-grid">
-        <section class="panel">
+
+      <div id="bay-lab" class="staff-bay" ${dash.tab === "lab" ? "" : "hidden"}>
+        <section class="panel lab-staff crate-bay">
           <div class="panel-head">
-            <h3 class="dash-title">Roster</h3>
-            <span class="count-chip">${uniqueNames(all)}</span>
+            <h3 class="dash-title">COC 3 · teacher bay</h3>
           </div>
-          <p class="panel-copy">Best score for each name.</p>
-          <div class="visit-list" id="student-list">${studentMarkup()}</div>
-        </section>
-        <section class="panel">
-          <div class="panel-head">
-            <h3 class="dash-title">Quiz runs</h3>
-            <span class="count-chip">${all.length}</span>
+          <p class="panel-copy">Students stay on the phone page. You start the machine here and share it.</p>
+          <div class="lab-actions">
+            <a class="primary" id="open-azure-staff" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
+            <a class="ghost" href="coc3.html" target="_blank" rel="noopener">Student phone page</a>
+            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Empty VMware disks</a>
           </div>
-          <div class="filters">
-            <input id="search" type="text" maxlength="40" placeholder="Find a student name" value="${escapeHtml(dash.query)}">
-            <div class="pills" id="filters">
-              <button type="button" class="pill${dash.filter === "all" ? " picked" : ""}" data-filter="all">All</button>
-              <button type="button" class="pill${dash.filter === "finished" ? " picked" : ""}" data-filter="finished">Finished</button>
-              <button type="button" class="pill${dash.filter === "started" ? " picked" : ""}" data-filter="started">In progress</button>
-            </div>
-            <div class="pills" id="sorts">
-              <button type="button" class="pill${dash.sort === "newest" ? " picked" : ""}" data-sort="newest">Newest</button>
-              <button type="button" class="pill${dash.sort === "score" ? " picked" : ""}" data-sort="score">Top score</button>
-            </div>
+          <ol class="lab-steps">
+            <li>Start Windows Server in Azure (or COC3-SERVER in VMware). Install AD, DNS, DHCP, and File Services only inside that VM.</li>
+            <li>Azure: students tap Open Azure lab, then Connect → Bastion. VMware: paste the IP below.</li>
+          </ol>
+          <label for="lab-link">Share this with the class</label>
+          <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://portal.azure.com">
+          <div class="row start-actions">
+            <button class="primary" id="save-lab" type="button">Share with class</button>
           </div>
-          <div class="visit-list" id="attempt-list">${attemptMarkup()}</div>
+          <p class="muted-note" id="lab-note" hidden></p>
         </section>
       </div>
     </section>
   `;
   bindTeacherLab();
+  bindTabs();
   document.getElementById("reload").addEventListener("click", loadDashboard);
   document.getElementById("download").addEventListener("click", () => downloadTermLog(dash.visits));
   document.getElementById("lock").addEventListener("click", () => {
@@ -326,6 +341,20 @@ function renderDashboard() {
     const button = event.target.closest("[data-delete-name]");
     if (!button) return;
     removeStudent(button.getAttribute("data-delete-name"), button);
+  });
+}
+
+function bindTabs() {
+  const nav = document.getElementById("bay-tabs");
+  if (!nav) return;
+  nav.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-tab]");
+    if (!button) return;
+    dash.tab = button.getAttribute("data-tab");
+    sessionStorage.setItem(TAB_KEY, dash.tab);
+    document.getElementById("bay-scores").hidden = dash.tab !== "scores";
+    document.getElementById("bay-lab").hidden = dash.tab !== "lab";
+    nav.querySelectorAll(".bay-tab").forEach((node) => node.classList.toggle("picked", node === button));
   });
 }
 
