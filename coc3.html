@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
     <span class="rivet ne" aria-hidden="true"></span>
     <span class="rivet sw" aria-hidden="true"></span>
     <span class="rivet se" aria-hidden="true"></span>
-    <div class="tape" aria-hidden="true">COC 3 · VM ON THIS PAGE</div>
+    <div class="tape" aria-hidden="true">COC 3 · AZURE LAB · PHONE OK</div>
     <header class="bezel">
       <div class="brand">
         <div class="crate-mark" aria-hidden="true">
@@ -29,43 +29,92 @@
           <h1><span>COC</span><i>/</i><span>3</span></h1>
         </div>
       </div>
-      <p class="who">Direct VM access</p>
+      <p class="who">Azure + phone</p>
     </header>
     <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main class="bay">
       <section class="intro lab">
-        <h2>Open the VM<br>from your phone.</h2>
-        <p class="lede">This page is the student door into COC 3. The Windows Server clone stays in VMware on the lab PC. Installers never run on the phone.</p>
-        <p class="warn-banner">GitHub Pages cannot store the virtual disk. Students tap Open the VM. The live machine on the lab PC appears here (https) or on the phone (school Wi‑Fi IP).</p>
+        <h2>COC 3 lab<br>on your phone.</h2>
+        <p class="lede">Windows Server lives in Azure. Students open it in Chrome. Installers never run on a phone or on the school PC desktop.</p>
+        <p class="warn-banner">Use Chrome or Edge. Sign in with the lab Microsoft account the teacher gives you. Then Connect → Bastion.</p>
 
-        <div class="vm-screen">
-          <p class="kicker ink">COC3-SERVER</p>
-          <iframe id="vm-frame" title="COC 3 virtual machine" hidden></iframe>
-          <p class="vm-wait" id="vm-wait">Waiting for the teacher to start the virtual machine.</p>
-        </div>
-        <div class="row start-actions" id="vm-actions">
-          <button class="primary" id="open-vm" type="button">Open the VM</button>
-          <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
-          <button class="ghost" id="refresh-lab" type="button">Refresh lab</button>
+        <div class="row start-actions">
+          <a class="primary" href="https://portal.azure.com/" target="_blank" rel="noopener">Open Azure lab</a>
+          <a class="ghost" href="https://azure.microsoft.com/free/students/" target="_blank" rel="noopener">Teacher: get Azure</a>
         </div>
 
         <article class="lab-card">
-          <p class="kicker ink">Teacher · share the live VM</p>
-          <h3 class="dash-title">Point the class at the machine</h3>
+          <p class="kicker ink">Students · cellphone</p>
+          <h3 class="dash-title">How you enter the server</h3>
           <ol class="lab-steps">
-            <li>Create and start <strong>COC3-SERVER</strong> in VMware. Install Windows Server and roles only inside that VM.</li>
-            <li>Turn on Remote Desktop in the VM. Set the network to <strong>Bridged</strong>.</li>
-            <li>Paste the VM IP (example 192.168.1.50) or an https web-console link below. Staff password is required. All phones then get the same door.</li>
+            <li>Join school Wi‑Fi.</li>
+            <li>Open this page: <strong>kaizire.github.io/crate-circuit/coc3.html</strong></li>
+            <li>Tap <strong>Open Azure lab</strong>.</li>
+            <li>Sign in with the lab Microsoft account (not your personal email unless the teacher says so).</li>
+            <li>Open virtual machine <strong>COC3-SERVER</strong> → <strong>Connect</strong> → <strong>Bastion</strong> → RDP → Connect.</li>
+            <li>The Windows desktop is the lab. Do not install Windows Server on your phone.</li>
+          </ol>
+        </article>
+
+        <article class="lab-card">
+          <p class="kicker ink">Teacher · create Azure</p>
+          <h3 class="dash-title">1. Sign up</h3>
+          <ol class="lab-steps">
+            <li>Go to <a href="https://azure.microsoft.com/free/students/" target="_blank" rel="noopener">Azure for Students</a> with a school email. If that is rejected, use <a href="https://azure.microsoft.com/free/" target="_blank" rel="noopener">the free Azure account</a>.</li>
+            <li>Open <a href="https://portal.azure.com/" target="_blank" rel="noopener">portal.azure.com</a>.</li>
+          </ol>
+          <h3 class="dash-title">2. Create COC3-SERVER</h3>
+          <ol class="lab-steps">
+            <li>Search <strong>Virtual machines</strong> → <strong>Create</strong> → <strong>Azure virtual machine</strong>.</li>
+            <li>Resource group: <strong>coc3-lab</strong> (create new).</li>
+            <li>Name: <strong>COC3-SERVER</strong>.</li>
+            <li>Region: <strong>Southeast Asia</strong>.</li>
+            <li>Image: <strong>Windows Server 2022 Datacenter</strong>.</li>
+            <li>Size: <strong>Standard B2s</strong> (2 vCPU, 4 GB).</li>
+            <li>Username: <strong>coc3admin</strong>. Save the password.</li>
+            <li>Public inbound ports: <strong>None</strong>. Do not open RDP to the internet.</li>
+            <li><strong>Review + create</strong> → <strong>Create</strong>. Wait until it is <strong>Running</strong>.</li>
+          </ol>
+          <h3 class="dash-title">3. Open it in the browser</h3>
+          <ol class="lab-steps">
+            <li>Click the VM → <strong>Connect</strong> → <strong>Bastion</strong>.</li>
+            <li>Use <strong>Developer</strong> (free) if the region offers it.</li>
+            <li>Protocol RDP, username <strong>coc3admin</strong>, your password → <strong>Connect</strong>.</li>
+            <li>A Windows desktop opens in Chrome or Edge. That is the virtual machine.</li>
+          </ol>
+          <h3 class="dash-title">4. Install COC 3 inside Azure only</h3>
+          <ol class="lab-steps">
+            <li>In that desktop, install <strong>Active Directory Domain Services</strong>, <strong>DNS</strong>, <strong>DHCP</strong>, and <strong>File Services</strong>.</li>
+            <li>Give the class one lab Microsoft account. Do not share your personal Microsoft password.</li>
+            <li>After class, open the VM and click <strong>Stop</strong> so credits last. Start it before the next session.</li>
+          </ol>
+        </article>
+
+        <article class="lab-card">
+          <p class="kicker ink">Optional · school PC VMware</p>
+          <h3 class="dash-title">If you still use the lab computer</h3>
+          <ol class="lab-steps">
+            <li>Install Windows Server only inside <strong>COC3-SERVER</strong> in VMware, never on the PC desktop.</li>
+            <li>Turn on Remote Desktop. Set the network to Bridged. Write the IP on the board.</li>
+            <li>Or paste the IP / https console below so phones can open it from this page.</li>
           </ol>
           <label for="lab-password">Staff password</label>
           <input id="lab-password" type="password" maxlength="40" autocomplete="current-password">
           <label for="lab-link">VM IP or https lab link</label>
-          <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://lab.example">
+          <input id="lab-link" type="text" maxlength="200" placeholder="https://portal.azure.com/">
           <div class="row start-actions">
             <button class="primary" id="save-lab" type="button">Share with class</button>
+            <button class="ghost" id="open-vm" type="button">Open shared link</button>
+            <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
+            <button class="ghost" id="refresh-lab" type="button">Refresh</button>
             <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
           </div>
           <p class="muted-note" id="lab-note" hidden></p>
+          <div class="vm-screen">
+            <p class="kicker ink">Shared console</p>
+            <iframe id="vm-frame" title="COC 3 virtual machine" hidden></iframe>
+            <p class="vm-wait" id="vm-wait">Azure is the main lab. A shared https console can appear here.</p>
+          </div>
         </article>
 
         <div class="row start-actions">
@@ -74,8 +123,8 @@
       </section>
     </main>
   </div>
-  <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
+  <p class="foot-link"><a href="index.html">CrateCircuit quiz</a> · <a href="https://portal.azure.com/" target="_blank" rel="noopener">Azure portal</a></p>
   <script src="config.js?v=5"></script>
-  <script src="coc3.js?v=1"></script>
+  <script src="coc3.js?v=2"></script>
 </body>
 </html>
