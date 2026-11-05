@@ -142,7 +142,30 @@ async function openStudentLab() {
   }
 }
 
+function pointToRemoteDesktopStore() {
+  const store = document.getElementById("rd-store");
+  if (!store) return;
+  const ua = navigator.userAgent || "";
+  const android = document.getElementById("rd-android");
+  const ios = document.getElementById("rd-ios");
+  const windows = document.getElementById("rd-windows");
+  if (/android/i.test(ua) && android) {
+    store.href = android.href;
+    store.textContent = "Install on Android";
+  } else if (/iPhone|iPad|iPod/i.test(ua) && ios) {
+    store.href = ios.href;
+    store.textContent = "Install on iPhone";
+  } else if (/Windows/i.test(ua) && windows) {
+    store.href = windows.href;
+    store.textContent = "Install on Windows";
+  } else {
+    store.href = (android && android.href) || store.href;
+    store.textContent = "Install Microsoft Remote Desktop";
+  }
+}
+
 paintStudentLogon();
+pointToRemoteDesktopStore();
 const openButton = document.getElementById("open-vm");
 if (openButton) openButton.addEventListener("click", () => openStudentLab());
 const address = document.getElementById("vm-address");
