@@ -80,7 +80,7 @@ function showGate(error) {
     <section class="lock-panel">
       <p class="kicker ink">Staff access</p>
       <h2>Unlock the log</h2>
-      <p class="lede">Enter the staff password to see names, scores, and how many times each student tried.</p>
+      <p class="lede">Staff only. Open scores and the COC 3 teacher setup. Students use the quiz and the student lab page.</p>
       ${error ? `<p class="gate-error">${escapeHtml(error)}</p>` : ""}
       <label for="password">Password</label>
       <div class="lock-row">
@@ -227,11 +227,12 @@ function renderDashboard() {
         <div>
           <p class="kicker ink">Staff terminal</p>
           <h2>Class log</h2>
-          <p class="lede">Who took CrateCircuit, how they scored, and which quizzes are still open.</p>
+          <p class="lede">Scores for the class, plus COC 3 teacher setup. Students do not see this page.</p>
         </div>
         <div class="dash-actions">
           <button class="ghost" id="reload" type="button">Refresh</button>
           <button class="primary" id="download" type="button">Download scores</button>
+          <a class="ghost" href="coc3.html">Student lab page</a>
           <button class="ghost" id="lock" type="button">Lock</button>
         </div>
       </div>
@@ -271,6 +272,51 @@ function renderDashboard() {
           <div class="visit-list" id="attempt-list">${attemptMarkup()}</div>
         </section>
       </div>
+      <section class="panel staff-lab" id="coc3-teacher">
+        <div class="panel-head">
+          <h3 class="dash-title">COC 3 · Teacher</h3>
+          <span class="count-chip">Staff only</span>
+        </div>
+        <p class="panel-copy">Students open the student lab page on their phones. You create the Azure server here.</p>
+        <h3 class="dash-title">1. Sign up</h3>
+        <ol class="lab-steps">
+          <li>Go to <a href="https://azure.microsoft.com/free/students/" target="_blank" rel="noopener">Azure for Students</a> with a school email. If that is rejected, use <a href="https://azure.microsoft.com/free/" target="_blank" rel="noopener">the free Azure account</a>.</li>
+          <li>Open <a href="https://portal.azure.com/" target="_blank" rel="noopener">portal.azure.com</a>.</li>
+        </ol>
+        <h3 class="dash-title">2. Create COC3-SERVER</h3>
+        <ol class="lab-steps">
+          <li>Search <strong>Virtual machines</strong> → <strong>Create</strong> → <strong>Azure virtual machine</strong>.</li>
+          <li>Resource group: <strong>coc3-lab</strong>. Name: <strong>COC3-SERVER</strong>. Region: <strong>Southeast Asia</strong>.</li>
+          <li>Image: <strong>Windows Server 2022 Datacenter</strong>. Size: <strong>Standard B2s</strong>.</li>
+          <li>Username: <strong>coc3admin</strong>. Save the password.</li>
+          <li>Public inbound ports: <strong>None</strong>. Do not open RDP to the internet.</li>
+          <li><strong>Review + create</strong> → wait until it is <strong>Running</strong>.</li>
+        </ol>
+        <h3 class="dash-title">3. Open it in the browser</h3>
+        <ol class="lab-steps">
+          <li>Click the VM → <strong>Connect</strong> → <strong>Bastion</strong>. Use Developer (free) if offered.</li>
+          <li>RDP, username <strong>coc3admin</strong> → <strong>Connect</strong>. The desktop is the lab.</li>
+        </ol>
+        <h3 class="dash-title">4. Install COC 3 inside Azure only</h3>
+        <ol class="lab-steps">
+          <li>Install Active Directory Domain Services, DNS, DHCP, and File Services in that desktop.</li>
+          <li>Give the class one lab Microsoft account. Do not share your personal Microsoft password.</li>
+          <li>Tell students to open <strong>coc3.html</strong> on their phones. After class, <strong>Stop</strong> the VM.</li>
+        </ol>
+        <h3 class="dash-title">Optional · school PC VMware</h3>
+        <ol class="lab-steps">
+          <li>Install Windows Server only inside the VM, never on the PC desktop.</li>
+          <li>Paste an https console link or VM IP below so the student page can open it.</li>
+        </ol>
+        <label for="lab-link">Student lab link</label>
+        <input id="lab-link" type="text" maxlength="200" placeholder="https://portal.azure.com/">
+        <div class="row start-actions">
+          <button class="primary" id="save-lab" type="button">Share with students</button>
+          <a class="ghost" href="https://portal.azure.com/" target="_blank" rel="noopener">Open Azure</a>
+          <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
+        </div>
+        <p class="muted-note" id="lab-note" hidden></p>
+      </section>
     </section>
   `;
   document.getElementById("reload").addEventListener("click", loadDashboard);
@@ -306,6 +352,59 @@ function renderDashboard() {
     const button = event.target.closest("[data-delete-name]");
     if (!button) return;
     removeStudent(button.getAttribute("data-delete-name"), button);
+  });
+  bindTeacherLab();
+}
+
+function labStoreUrl() {
+  return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/lab.json";
+}
+
+function normalizeLabLink(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (/^[\w.-]+:\d+$/.test(raw) || /^\d{1,3}(\.\d{1,3}){3}(:\d+)?$/.test(raw)) return "http://" + raw;
+  return raw;
+}
+
+async function bindTeacherLab() {
+  const field = document.getElementById("lab-link");
+  const note = document.getElementById("lab-note");
+  const save = document.getElementById("save-lab");
+  if (!field || !save) return;
+  try {
+    const response = await fetch(labStoreUrl(), { cache: "no-store" });
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.consoleUrl) field.value = data.consoleUrl;
+    }
+  } catch (error) {
+    field.value = CONFIG.labConsoleUrl || "https://portal.azure.com/";
+  }
+  if (!field.value) field.value = CONFIG.labConsoleUrl || "https://portal.azure.com/";
+  save.addEventListener("click", async () => {
+    const link = normalizeLabLink(field.value);
+    if (!link) {
+      note.hidden = false;
+      note.textContent = "Paste the Azure portal or VM link students should open.";
+      return;
+    }
+    try {
+      const response = await fetch(labStoreUrl(), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ consoleUrl: link, updatedAt: new Date().toISOString() })
+      });
+      if (!response.ok) throw new Error("Could not save. Allow read and write on lab in Firebase rules.");
+      note.hidden = false;
+      note.classList.remove("warn-note");
+      note.textContent = "Saved. Students tap Open Azure lab on the student page.";
+    } catch (error) {
+      note.hidden = false;
+      note.classList.add("warn-note");
+      note.textContent = error.message;
+    }
   });
 }
 
