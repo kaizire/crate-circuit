@@ -600,6 +600,10 @@ a.primary {
   display: inline-block;
 }
 
+.rd-get .lede {
+  margin-bottom: 10px;
+}
+
 .vm-screen {
   margin: 12px 0 8px;
   min-height: 280px;
