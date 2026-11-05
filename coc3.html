@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#1a120c">
-  <title>CrateCircuit — COC 3 lab</title>
+  <title>CrateCircuit — COC 3 student lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
     <span class="rivet ne" aria-hidden="true"></span>
     <span class="rivet sw" aria-hidden="true"></span>
     <span class="rivet se" aria-hidden="true"></span>
-    <div class="tape" aria-hidden="true">COC 3 · VM ON THIS PAGE</div>
+    <div class="tape" aria-hidden="true">COC 3 · STUDENT · PHONE OK</div>
     <header class="bezel">
       <div class="brand">
         <div class="crate-mark" aria-hidden="true">
@@ -25,60 +25,39 @@
           <span class="led on"></span>
         </div>
         <div>
-          <p class="kicker">Staff crate · Servers</p>
+          <p class="kicker">Student crate · Servers</p>
           <h1><span>COC</span><i>/</i><span>3</span></h1>
         </div>
       </div>
-      <p class="who">Direct VM access</p>
+      <p class="who">Student lab</p>
     </header>
     <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main class="bay">
       <section class="intro lab">
-        <h2>Open the VM<br>from your phone.</h2>
-        <p class="lede">This page is the student door into COC 3. Use <strong>Open Azure lab</strong> on a phone. Windows Server, AD, DHCP, and DNS stay in the Azure virtual machine, not on the phone.</p>
-        <p class="warn-banner">Installers never run on this website. Sign in to Azure, open the Windows Server VM, then Connect → Bastion.</p>
+        <h2>Open the server<br>on your phone.</h2>
+        <p class="lede">Use this page only. Your teacher starts the machine. You tap a button. Windows Server stays in the cloud or VM, not on your phone.</p>
         <div class="row start-actions">
           <a class="primary" id="open-azure" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure lab</a>
         </div>
-
         <div class="vm-screen">
           <p class="kicker ink">COC3-SERVER</p>
           <iframe id="vm-frame" title="COC 3 virtual machine" hidden></iframe>
-          <p class="vm-wait" id="vm-wait">Waiting for the teacher to start the virtual machine.</p>
+          <p class="vm-wait" id="vm-wait">Waiting for your teacher to start the lab.</p>
         </div>
-        <div class="row start-actions" id="vm-actions">
+        <div class="row start-actions">
           <button class="primary" id="open-vm" type="button">Open the VM</button>
           <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
-          <button class="ghost" id="refresh-lab" type="button">Refresh lab</button>
+          <button class="ghost" id="refresh-lab" type="button">Refresh</button>
         </div>
-
-        <article class="lab-card">
-          <p class="kicker ink">Teacher · share the live VM</p>
-          <h3 class="dash-title">Point the class at the machine</h3>
-          <ol class="lab-steps">
-            <li>Create and start <strong>COC3-SERVER</strong> in VMware. Install Windows Server and roles only inside that VM.</li>
-            <li>Turn on Remote Desktop in the VM. Set the network to <strong>Bridged</strong>.</li>
-            <li>Paste the VM IP (example 192.168.1.50) or an https web-console link below. Staff password is required. All phones then get the same door.</li>
-          </ol>
-          <label for="lab-password">Staff password</label>
-          <input id="lab-password" type="password" maxlength="40" autocomplete="current-password">
-          <label for="lab-link">VM IP or https lab link</label>
-          <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://lab.example">
-          <div class="row start-actions">
-            <button class="primary" id="save-lab" type="button">Share with class</button>
-            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
-          </div>
-          <p class="muted-note" id="lab-note" hidden></p>
-        </article>
-
         <div class="row start-actions">
-          <a class="primary" href="index.html">Back to quiz</a>
+          <a class="ghost" href="index.html">Back to quiz</a>
         </div>
       </section>
     </main>
   </div>
   <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
   <script src="config.js?v=6"></script>
-  <script src="coc3.js?v=2"></script>
+  <script src="lab.js?v=1"></script>
+  <script src="coc3.js?v=3"></script>
 </body>
 </html>
