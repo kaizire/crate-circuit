@@ -118,7 +118,7 @@ function showStart() {
         <button class="ghost" id="history" type="button">My quizzes</button>
       </div>
       <div class="row start-actions">
-        <button class="ghost" id="coc3" type="button">COC 3 · Azure lab</button>
+        <button class="ghost" id="coc3" type="button">COC 3 · Student lab</button>
       </div>
       <p class="muted-note" id="history-note" hidden></p>
     </section>
