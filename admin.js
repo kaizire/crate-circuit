@@ -347,7 +347,7 @@ function renderDashboard() {
 }
 
 function labStoreUrl() {
-  return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/visits/_cratecircuitLab.json";
+  return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/visits/cratecircuit-lab.json";
 }
 
 function normalizeLabLink(value) {
