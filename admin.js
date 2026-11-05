@@ -298,17 +298,18 @@ function renderDashboard() {
           <div class="panel-head">
             <h3 class="dash-title">COC3-SERVER</h3>
           </div>
-          <p class="panel-copy">Windows Server VM. Install AD, DNS, DHCP, and File Services only inside this machine.</p>
+          <p class="panel-copy">Windows Server in Azure. Open it in the browser. Do not install Windows or VMware on this desktop.</p>
           <div class="lab-actions">
-            <a class="primary" href="lab/auto-setup-coc3.ps1" download>Auto setup server + client</a>
+            <a class="primary" id="open-azure-staff" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
             <a class="ghost" href="lab/setup-server-roles.ps1" download>Inside-server script</a>
-            <a class="ghost" id="open-azure-staff" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
             <a class="ghost" href="coc3.html" target="_blank" rel="noopener">Student phone page</a>
           </div>
           <ol class="lab-steps">
-            <li>On the lab PC, run <strong>Auto setup server + client</strong> (Right-click → Run with PowerShell). It creates and starts both VMs.</li>
-            <li>Finish Windows setup inside the SERVER window. Then run <strong>Inside-server script</strong> as Administrator in that VM (creates crate.lab, DNS, DHCP, share).</li>
-            <li>Share the server Bridged IP so phones can tap <strong>Open server</strong>.</li>
+            <li>Click <strong>Open Azure</strong>. Sign in. Create resource group <strong>crate-coc3</strong>.</li>
+            <li>Create virtual machine <strong>COC3-SERVER</strong>: image Windows Server 2022, size B2s, new virtual network. Do not install anything on this PC.</li>
+            <li>On the VM page click <strong>Connect → Bastion</strong>. The server desktop opens in the browser tab.</li>
+            <li>Inside that browser desktop, run <strong>Inside-server script</strong> as Administrator (crate.lab, DNS, file share). Azure already owns DHCP, so skip DHCP if the role fails.</li>
+            <li>Copy this Azure VM / Bastion link below and click <strong>Share server</strong>.</li>
           </ol>
           <label for="lab-link">Server IP or https link</label>
           <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://portal.azure.com">
@@ -324,16 +325,17 @@ function renderDashboard() {
           <div class="panel-head">
             <h3 class="dash-title">COC3-CLIENT</h3>
           </div>
-          <p class="panel-copy">Windows client PC. Students join the domain and test DHCP and the shared folder from this VM, not from their phone OS.</p>
+          <p class="panel-copy">Windows client in Azure, same virtual network as the server. Open it in the browser, not on this desktop.</p>
           <div class="lab-actions">
-            <a class="primary" href="lab/auto-setup-coc3.ps1" download>Auto setup server + client</a>
+            <a class="primary" id="open-azure-client" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure</a>
             <a class="ghost" href="lab/setup-client-domain.ps1" download>Inside-client script</a>
             <a class="ghost" href="coc3.html" target="_blank" rel="noopener">Student phone page</a>
           </div>
           <ol class="lab-steps">
-            <li>The same auto-setup also starts <strong>COC3-CLIENT</strong>. Finish Windows setup inside the CLIENT window.</li>
-            <li>Run <strong>Inside-client script</strong> as Administrator in that VM to join domain <strong>crate.lab</strong>.</li>
-            <li>Share the client Bridged IP so phones can tap <strong>Open client</strong>.</li>
+            <li>In Azure create a second VM <strong>COC3-CLIENT</strong>: Windows 11 Pro (or Windows 10 if your subscription still lists it). Choose the <strong>same region and virtual network</strong> as COC3-SERVER.</li>
+            <li>Connect with <strong>Bastion</strong>. That browser tab is the client PC.</li>
+            <li>Inside that tab, run <strong>Inside-client script</strong> as Administrator to join domain <strong>crate.lab</strong>.</li>
+            <li>Paste the client Azure / Bastion link below and click <strong>Share client</strong>.</li>
           </ol>
           <label for="client-link">Client IP or https link</label>
           <input id="client-link" type="text" maxlength="200" placeholder="192.168.1.51">
@@ -429,8 +431,11 @@ function bindShareField(fieldId, noteId, buttonId, key, okText, emptyText) {
 }
 
 function bindTeacherLab() {
-  const azure = document.getElementById("open-azure-staff");
-  if (azure) azure.href = azureLabHref();
+  const azureHref = azureLabHref();
+  ["open-azure-staff", "open-azure-client"].forEach((id) => {
+    const azure = document.getElementById(id);
+    if (azure) azure.href = azureHref;
+  });
   loadSharedLab().then((lab) => {
     const server = document.getElementById("lab-link");
     const client = document.getElementById("client-link");
