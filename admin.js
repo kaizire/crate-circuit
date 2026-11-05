@@ -287,13 +287,14 @@ function renderDashboard() {
         <h3 class="dash-title">2. Set up COC 3 inside the server VM</h3>
         <ol class="lab-steps">
           <li>On <strong>COC3-SERVER</strong> only: install Active Directory Domain Services, DNS, DHCP, and File Services.</li>
-          <li>Turn on Remote Desktop. Set the network adapter to <strong>Bridged</strong> so phones on school Wi‑Fi can reach it.</li>
+          <li>Turn on Remote Desktop. Set the network adapter to <strong>Bridged</strong>.</li>
+          <li>Create a <strong>student</strong> user with password <strong>crate-lab</strong>. Add that user to <strong>Remote Desktop Users</strong>. Do not give students the teacher or Administrator account.</li>
           <li>In the VM, run <strong>ipconfig</strong> and copy the IPv4 address (example 192.168.1.50).</li>
         </ol>
-        <h3 class="dash-title">3. Share the VM with phones</h3>
+        <h3 class="dash-title">3. Let phones in</h3>
         <ol class="lab-steps">
-          <li>Paste that IP below and tap <strong>Share with students</strong>.</li>
-          <li>Tell the class to open the student lab page and tap <strong>Open the VM</strong>.</li>
+          <li>Paste the IP below and tap <strong>Share with students</strong>, or write it on the board. Students can also type it themselves.</li>
+          <li>Students open the student lab page and log on as <strong>student</strong> / <strong>crate-lab</strong>. No teacher account.</li>
         </ol>
         <label for="lab-link">VM address for students</label>
         <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50">
