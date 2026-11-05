@@ -600,6 +600,30 @@ a.primary {
   display: inline-block;
 }
 
+.vm-screen {
+  margin: 12px 0 8px;
+  min-height: 280px;
+  background: #15110d;
+  border: 2px solid var(--copper);
+  box-shadow: inset 0 0 0 1px #3a2412;
+  padding: 12px;
+}
+
+.vm-screen iframe {
+  display: block;
+  width: 100%;
+  height: min(70vh, 520px);
+  border: 0;
+  background: #000;
+}
+
+.vm-wait {
+  margin: 48px 12px;
+  text-align: center;
+  color: #e0b56a;
+  font-family: var(--mono);
+}
+
 .study-function {
   margin: 0;
   padding: 16px 18px;
