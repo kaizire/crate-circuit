@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
     <span class="rivet ne" aria-hidden="true"></span>
     <span class="rivet sw" aria-hidden="true"></span>
     <span class="rivet se" aria-hidden="true"></span>
-    <div class="tape" aria-hidden="true">COC 3 · SERVER LAB · PHONE OK</div>
+    <div class="tape" aria-hidden="true">COC 3 · VM ON THIS PAGE</div>
     <header class="bezel">
       <div class="brand">
         <div class="crate-mark" aria-hidden="true">
@@ -29,40 +29,43 @@
           <h1><span>COC</span><i>/</i><span>3</span></h1>
         </div>
       </div>
-      <p class="who">Phone + VM lab</p>
+      <p class="who">Direct VM access</p>
     </header>
     <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main class="bay">
       <section class="intro lab">
-        <h2>Use your phone.<br>Install in the VM.</h2>
-        <p class="lede">Open this page on a cellphone. Windows Server, Active Directory, DHCP, and DNS install only inside the virtual machine on the lab PC — never on a phone and never on the host PC.</p>
-        <p class="warn-banner">Installers stay in COC3-SERVER and COC3-CLIENT. Students do not download or run setup files on their phones.</p>
+        <h2>Open the VM<br>from your phone.</h2>
+        <p class="lede">This page is the student door into COC 3. The Windows Server clone stays in VMware on the lab PC. Installers never run on the phone.</p>
+        <p class="warn-banner">GitHub Pages cannot store the virtual disk. Students tap Open the VM. The live machine on the lab PC appears here (https) or on the phone (school Wi‑Fi IP).</p>
+
+        <div class="vm-screen">
+          <p class="kicker ink">COC3-SERVER</p>
+          <iframe id="vm-frame" title="COC 3 virtual machine" hidden></iframe>
+          <p class="vm-wait" id="vm-wait">Waiting for the teacher to start the virtual machine.</p>
+        </div>
+        <div class="row start-actions" id="vm-actions">
+          <button class="primary" id="open-vm" type="button">Open the VM</button>
+          <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
+          <button class="ghost" id="refresh-lab" type="button">Refresh lab</button>
+        </div>
 
         <article class="lab-card">
-          <p class="kicker ink">Students · cellphone</p>
-          <h3 class="dash-title">How you join</h3>
+          <p class="kicker ink">Teacher · share the live VM</p>
+          <h3 class="dash-title">Point the class at the machine</h3>
           <ol class="lab-steps">
-            <li>Join the school Wi‑Fi.</li>
-            <li>Open this page: <strong>kaizire.github.io/crate-circuit/coc3.html</strong></li>
-            <li>Install <strong>Microsoft Remote Desktop</strong> from the App Store or Google Play (this app only views the VM; it does not install Windows).</li>
-            <li>Ask the teacher for the VM address (example: 192.168.1.50) and the student logon.</li>
-            <li>Tap Add PC → enter that address → connect. You are now inside the virtual machine.</li>
+            <li>Create and start <strong>COC3-SERVER</strong> in VMware. Install Windows Server and roles only inside that VM.</li>
+            <li>Turn on Remote Desktop in the VM. Set the network to <strong>Bridged</strong>.</li>
+            <li>Paste the VM IP (example 192.168.1.50) or an https web-console link below. Staff password is required. All phones then get the same door.</li>
           </ol>
-        </article>
-
-        <article class="lab-card">
-          <p class="kicker ink">Lab PC · virtual machine</p>
-          <h3 class="dash-title">Where every installer goes</h3>
-          <ol class="lab-steps">
-            <li>On the lab PC, open <strong>VMware Workstation</strong> (or VirtualBox). Do not run Windows Server setup on the PC desktop.</li>
-            <li>Use two VMs: <strong>COC3-SERVER</strong> and <strong>COC3-CLIENT</strong>. Create them in VMware or run the setup script on the lab PC only.</li>
-            <li>Attach the Microsoft evaluation ISO to the VM DVD drive. Start the VM and install Windows <em>in the VM window</em>.</li>
-            <li>On COC3-SERVER only: install AD DS, DNS, DHCP, and File Services. Turn on Remote Desktop. Set the network to <strong>Bridged</strong> so phones on Wi‑Fi can reach it. Write the VM IP on the board.</li>
-            <li>On COC3-CLIENT only: join the domain and test. No roles on the host PC.</li>
-          </ol>
+          <label for="lab-password">Staff password</label>
+          <input id="lab-password" type="password" maxlength="40" autocomplete="current-password">
+          <label for="lab-link">VM IP or https lab link</label>
+          <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50 or https://lab.example">
           <div class="row start-actions">
-            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Lab PC: VM setup script</a>
+            <button class="primary" id="save-lab" type="button">Share with class</button>
+            <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
           </div>
+          <p class="muted-note" id="lab-note" hidden></p>
         </article>
 
         <div class="row start-actions">
@@ -72,5 +75,7 @@
     </main>
   </div>
   <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
+  <script src="config.js?v=5"></script>
+  <script src="coc3.js?v=1"></script>
 </body>
 </html>
