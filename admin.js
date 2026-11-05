@@ -303,6 +303,7 @@ function renderDashboard() {
         <div class="row start-actions">
           <button class="primary" id="publish-vm" type="button">Share with students</button>
           <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
+          <a class="ghost" href="lab/open-vmware.cmd" download>Start VMware</a>
           <a class="ghost" href="lab/start-coc3-server.ps1" download>Start COC3-SERVER</a>
           <a class="ghost" href="lab/setup-student-user.ps1" download>Student logon script</a>
         </div>
