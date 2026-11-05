@@ -284,23 +284,26 @@ function renderDashboard() {
           <li>Attach a Windows Server ISO to <strong>COC3-SERVER</strong> and a Windows ISO to <strong>COC3-CLIENT</strong>.</li>
           <li>Start each VM and install Windows <em>inside the VM window</em>, never on the PC desktop.</li>
         </ol>
-        <h3 class="dash-title">2. Set up COC 3 inside the server VM</h3>
+        <h3 class="dash-title">2. Automate student logon and start the VM</h3>
         <ol class="lab-steps">
-          <li>On <strong>COC3-SERVER</strong> only: install Active Directory Domain Services, DNS, DHCP, and File Services.</li>
-          <li>Turn on Remote Desktop. Set the network adapter to <strong>Bridged</strong>.</li>
-          <li>Create a <strong>student</strong> user with password <strong>crate-lab</strong>. Add that user to <strong>Remote Desktop Users</strong>. Do not give students the teacher or Administrator account.</li>
-          <li>In the VM, run <strong>ipconfig</strong> and copy the IPv4 address (example 192.168.1.50).</li>
+          <li>After Windows is installed in the VM, on the lab PC run <strong>Start COC3-SERVER</strong> (download below).</li>
+          <li>That script starts the VM. To also create <strong>student</strong> / <strong>crate-lab</strong> automatically, run it in PowerShell with the VM administrator password:<br>
+            <code>powershell -ExecutionPolicy Bypass -File start-coc3-server.ps1 -GuestUser Administrator -GuestPassword YOUR_VM_ADMIN_PASSWORD</code></li>
+          <li>It turns on Remote Desktop and adds <strong>student</strong> to Remote Desktop Users. Students never use the teacher account.</li>
+          <li>Set the VM network to <strong>Bridged</strong>, then copy the IPv4 from the script output or from <strong>ipconfig</strong> in the VM.</li>
         </ol>
         <h3 class="dash-title">3. Let phones in</h3>
         <ol class="lab-steps">
-          <li>Paste the IP below and tap <strong>Share with students</strong>, or write it on the board. Students can also type it themselves.</li>
-          <li>Students open the student lab page and log on as <strong>student</strong> / <strong>crate-lab</strong>. No teacher account.</li>
+          <li>Paste the IP below and tap <strong>Share with students</strong>, or write it on the board.</li>
+          <li>Students open the student lab page and log on as <strong>student</strong> / <strong>crate-lab</strong>.</li>
         </ol>
         <label for="lab-link">VM address for students</label>
         <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50">
         <div class="row start-actions">
           <button class="primary" id="save-lab" type="button">Share with students</button>
           <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
+          <a class="ghost" href="lab/start-coc3-server.ps1" download>Start COC3-SERVER</a>
+          <a class="ghost" href="lab/setup-student-user.ps1" download>Student logon script</a>
         </div>
         <p class="muted-note" id="lab-note" hidden></p>
       </section>
