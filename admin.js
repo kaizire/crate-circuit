@@ -277,42 +277,28 @@ function renderDashboard() {
           <h3 class="dash-title">COC 3 · Teacher</h3>
           <span class="count-chip">Staff only</span>
         </div>
-        <p class="panel-copy">Students open the student lab page on their phones. You create the Azure server here.</p>
-        <h3 class="dash-title">1. Sign up</h3>
+        <p class="panel-copy">Students open the virtual machine from their phones. You run VMware on the lab PC. Do not send the class straight to Azure.</p>
+        <h3 class="dash-title">1. Create the VMs on this PC</h3>
         <ol class="lab-steps">
-          <li>Go to <a href="https://azure.microsoft.com/free/students/" target="_blank" rel="noopener">Azure for Students</a> with a school email. If that is rejected, use <a href="https://azure.microsoft.com/free/" target="_blank" rel="noopener">the free Azure account</a>.</li>
-          <li>Open <a href="https://portal.azure.com/" target="_blank" rel="noopener">portal.azure.com</a>.</li>
+          <li>Open <strong>VMware Workstation</strong>. Download <strong>Create empty VMs</strong> below if COC3-SERVER and COC3-CLIENT are not there yet.</li>
+          <li>Attach a Windows Server ISO to <strong>COC3-SERVER</strong> and a Windows ISO to <strong>COC3-CLIENT</strong>.</li>
+          <li>Start each VM and install Windows <em>inside the VM window</em>, never on the PC desktop.</li>
         </ol>
-        <h3 class="dash-title">2. Create COC3-SERVER</h3>
+        <h3 class="dash-title">2. Set up COC 3 inside the server VM</h3>
         <ol class="lab-steps">
-          <li>Search <strong>Virtual machines</strong> → <strong>Create</strong> → <strong>Azure virtual machine</strong>.</li>
-          <li>Resource group: <strong>coc3-lab</strong>. Name: <strong>COC3-SERVER</strong>. Region: <strong>Southeast Asia</strong>.</li>
-          <li>Image: <strong>Windows Server 2022 Datacenter</strong>. Size: <strong>Standard B2s</strong>.</li>
-          <li>Username: <strong>coc3admin</strong>. Save the password.</li>
-          <li>Public inbound ports: <strong>None</strong>. Do not open RDP to the internet.</li>
-          <li><strong>Review + create</strong> → wait until it is <strong>Running</strong>.</li>
+          <li>On <strong>COC3-SERVER</strong> only: install Active Directory Domain Services, DNS, DHCP, and File Services.</li>
+          <li>Turn on Remote Desktop. Set the network adapter to <strong>Bridged</strong> so phones on school Wi‑Fi can reach it.</li>
+          <li>In the VM, run <strong>ipconfig</strong> and copy the IPv4 address (example 192.168.1.50).</li>
         </ol>
-        <h3 class="dash-title">3. Open it in the browser</h3>
+        <h3 class="dash-title">3. Share the VM with phones</h3>
         <ol class="lab-steps">
-          <li>Click the VM → <strong>Connect</strong> → <strong>Bastion</strong>. Use Developer (free) if offered.</li>
-          <li>RDP, username <strong>coc3admin</strong> → <strong>Connect</strong>. The desktop is the lab.</li>
+          <li>Paste that IP below and tap <strong>Share with students</strong>.</li>
+          <li>Tell the class to open the student lab page and tap <strong>Open the VM</strong>.</li>
         </ol>
-        <h3 class="dash-title">4. Install COC 3 inside Azure only</h3>
-        <ol class="lab-steps">
-          <li>Install Active Directory Domain Services, DNS, DHCP, and File Services in that desktop.</li>
-          <li>Give the class one lab Microsoft account. Do not share your personal Microsoft password.</li>
-          <li>Tell students to open <strong>coc3.html</strong> on their phones. After class, <strong>Stop</strong> the VM.</li>
-        </ol>
-        <h3 class="dash-title">Optional · school PC VMware</h3>
-        <ol class="lab-steps">
-          <li>Install Windows Server only inside the VM, never on the PC desktop.</li>
-          <li>Paste an https console link or VM IP below so the student page can open it.</li>
-        </ol>
-        <label for="lab-link">Student lab link</label>
-        <input id="lab-link" type="text" maxlength="200" placeholder="https://portal.azure.com/">
+        <label for="lab-link">VM address for students</label>
+        <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50">
         <div class="row start-actions">
           <button class="primary" id="save-lab" type="button">Share with students</button>
-          <a class="ghost" href="https://portal.azure.com/" target="_blank" rel="noopener">Open Azure</a>
           <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
         </div>
         <p class="muted-note" id="lab-note" hidden></p>
@@ -380,14 +366,14 @@ async function bindTeacherLab() {
       if (data && data.consoleUrl) field.value = data.consoleUrl;
     }
   } catch (error) {
-    field.value = CONFIG.labConsoleUrl || "https://portal.azure.com/";
+    field.value = CONFIG.labConsoleUrl || "";
   }
-  if (!field.value) field.value = CONFIG.labConsoleUrl || "https://portal.azure.com/";
+  if (!field.value) field.value = CONFIG.labConsoleUrl || "";
   save.addEventListener("click", async () => {
     const link = normalizeLabLink(field.value);
     if (!link) {
       note.hidden = false;
-      note.textContent = "Paste the Azure portal or VM link students should open.";
+      note.textContent = "Paste the VM IP, for example 192.168.1.50.";
       return;
     }
     try {
@@ -399,7 +385,7 @@ async function bindTeacherLab() {
       if (!response.ok) throw new Error("Could not save. Allow read and write on lab in Firebase rules.");
       note.hidden = false;
       note.classList.remove("warn-note");
-      note.textContent = "Saved. Students tap Open Azure lab on the student page.";
+      note.textContent = "Saved. Students tap Open the VM on the student lab page.";
     } catch (error) {
       note.hidden = false;
       note.classList.add("warn-note");
