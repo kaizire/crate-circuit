@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Tektur:wght@500;600;700;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
   <div class="shop-floor" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
     <span class="rivet ne" aria-hidden="true"></span>
     <span class="rivet sw" aria-hidden="true"></span>
     <span class="rivet se" aria-hidden="true"></span>
-    <div class="tape" aria-hidden="true">COC 3 · STUDENT · PHONE OK</div>
+    <div class="tape" aria-hidden="true">COC 3 · SERVER + CLIENT · PHONE OK</div>
     <header class="bezel">
       <div class="brand">
         <div class="crate-mark" aria-hidden="true">
@@ -29,26 +29,38 @@
           <h1><span>COC</span><i>/</i><span>3</span></h1>
         </div>
       </div>
-      <p class="who">Student lab</p>
+      <p class="who">Server + client</p>
     </header>
     <div class="drive-slots" aria-hidden="true"><span></span><span></span><span></span></div>
     <main class="bay">
       <section class="intro lab">
-        <h2>Open the server<br>on your phone.</h2>
-        <p class="lede">Use this page only. Your teacher starts the machine. You tap a button. Windows Server stays in the cloud or VM, not on your phone.</p>
+        <h2>Server and client<br>on your phone.</h2>
+        <p class="lede">Two machines: <strong>COC3-SERVER</strong> and <strong>COC3-CLIENT</strong>. Your teacher starts both. You only tap Open. Nothing installs on this phone.</p>
         <div class="row start-actions">
           <a class="primary" id="open-azure" href="https://portal.azure.com" target="_blank" rel="noopener">Open Azure lab</a>
-        </div>
-        <div class="vm-screen">
-          <p class="kicker ink">COC3-SERVER</p>
-          <iframe id="vm-frame" title="COC 3 virtual machine" hidden></iframe>
-          <p class="vm-wait" id="vm-wait">Waiting for your teacher to start the lab.</p>
-        </div>
-        <div class="row start-actions">
-          <button class="primary" id="open-vm" type="button">Open the VM</button>
-          <a class="ghost" id="open-rdp" href="#">Remote Desktop app</a>
           <button class="ghost" id="refresh-lab" type="button">Refresh</button>
         </div>
+
+        <div class="vm-screen">
+          <p class="kicker ink">COC3-SERVER</p>
+          <iframe id="server-frame" title="COC 3 server" hidden></iframe>
+          <p class="vm-wait" id="server-wait">Waiting for the server.</p>
+        </div>
+        <div class="row start-actions">
+          <button class="primary" id="open-server" type="button">Open server</button>
+          <a class="ghost" id="server-rdp" href="#">Remote Desktop</a>
+        </div>
+
+        <div class="vm-screen">
+          <p class="kicker ink">COC3-CLIENT</p>
+          <iframe id="client-frame" title="COC 3 client" hidden></iframe>
+          <p class="vm-wait" id="client-wait">Waiting for the client PC.</p>
+        </div>
+        <div class="row start-actions">
+          <button class="primary" id="open-client" type="button">Open client</button>
+          <a class="ghost" id="client-rdp" href="#">Remote Desktop</a>
+        </div>
+
         <div class="row start-actions">
           <a class="ghost" href="index.html">Back to quiz</a>
         </div>
@@ -56,8 +68,8 @@
     </main>
   </div>
   <p class="foot-link"><a href="index.html">CrateCircuit quiz</a></p>
-  <script src="config.js?v=6"></script>
-  <script src="lab.js?v=1"></script>
-  <script src="coc3.js?v=3"></script>
+  <script src="config.js?v=7"></script>
+  <script src="lab.js?v=2"></script>
+  <script src="coc3.js?v=4"></script>
 </body>
 </html>
