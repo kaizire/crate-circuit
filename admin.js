@@ -347,7 +347,7 @@ function renderDashboard() {
 }
 
 function labStoreUrl() {
-  return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/lab.json";
+  return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/visits/_cratecircuitLab.json";
 }
 
 function normalizeLabLink(value) {
@@ -384,9 +384,9 @@ async function bindTeacherLab() {
       const response = await fetch(labStoreUrl(), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ consoleUrl: link, updatedAt: new Date().toISOString() })
+        body: JSON.stringify({ kind: "lab", consoleUrl: link, updatedAt: new Date().toISOString() })
       });
-      if (!response.ok) throw new Error("Could not save. Allow read and write on lab in Firebase rules.");
+      if (!response.ok) throw new Error("Could not save the VM address. Try again in a moment.");
       note.hidden = false;
       note.classList.remove("warn-note");
       note.textContent = "Saved. Students tap Open the VM on the student lab page.";
