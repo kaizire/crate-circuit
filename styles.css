@@ -1170,6 +1170,15 @@ a.primary {
   font-size: 13px;
 }
 
+.wipe-all {
+  background: #3a1612;
+  color: #ffd4cc;
+  border-color: #e25a48;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .danger:hover {
   background: var(--red-soft);
   border-color: var(--red);
