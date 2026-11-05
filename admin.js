@@ -297,10 +297,11 @@ function renderDashboard() {
           <li>Paste the IP below and tap <strong>Share with students</strong>, or write it on the board.</li>
           <li>Students open the student lab page and log on as <strong>student</strong> / <strong>crate-lab</strong>.</li>
         </ol>
-        <label for="lab-link">VM address for students</label>
-        <input id="lab-link" type="text" maxlength="200" placeholder="192.168.1.50">
+        <p class="lede">If Share fails on this page, open <a href="share-vm.html">share-vm.html</a>.</p>
+        <label for="publish-ip">VM address for students</label>
+        <input id="publish-ip" type="text" maxlength="200" placeholder="192.168.1.50">
         <div class="row start-actions">
-          <button class="primary" id="save-lab" type="button">Share with students</button>
+          <button class="primary" id="publish-vm" type="button">Share with students</button>
           <a class="ghost" href="lab/create-coc3-vms.ps1" download>Create empty VMs</a>
           <a class="ghost" href="lab/start-coc3-server.ps1" download>Start COC3-SERVER</a>
           <a class="ghost" href="lab/setup-student-user.ps1" download>Student logon script</a>
@@ -347,7 +348,7 @@ function renderDashboard() {
 }
 
 function labStoreUrl() {
-  return String((CONFIG.firebase && CONFIG.firebase.databaseURL) || "").replace(/\/$/, "") + "/visits/cratecircuit-lab.json";
+  return "https://crate-circuit-default-rtdb.firebaseio.com/visits/cratecircuit-lab.json";
 }
 
 function normalizeLabLink(value) {
@@ -359,15 +360,15 @@ function normalizeLabLink(value) {
 }
 
 async function bindTeacherLab() {
-  const field = document.getElementById("lab-link");
+  const field = document.getElementById("publish-ip");
   const note = document.getElementById("lab-note");
-  const save = document.getElementById("save-lab");
+  const save = document.getElementById("publish-vm");
   if (!field || !save) return;
   try {
     const response = await fetch(labStoreUrl(), { cache: "no-store" });
     if (response.ok) {
       const data = await response.json();
-      if (data && data.consoleUrl) field.value = data.consoleUrl;
+      if (data && data.consoleUrl) field.value = String(data.consoleUrl).replace(/^https?:\/\//i, "");
     }
   } catch (error) {
     field.value = CONFIG.labConsoleUrl || "";
@@ -381,12 +382,26 @@ async function bindTeacherLab() {
       return;
     }
     try {
-      const response = await fetch(labStoreUrl(), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kind: "lab", consoleUrl: link, updatedAt: new Date().toISOString() })
+      const payload = JSON.stringify({
+        kind: "lab",
+        visitId: "cratecircuit-lab",
+        name: "_lab",
+        consoleUrl: link,
+        updatedAt: new Date().toISOString()
       });
-      if (!response.ok) throw new Error("Could not save the VM address. Try again in a moment.");
+      let response = await fetch(labStoreUrl(), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: payload
+      });
+      if (!response.ok) {
+        response = await fetch(labStoreUrl(), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: payload
+        });
+      }
+      if (!response.ok) throw new Error("Could not save here. Open share-vm.html instead.");
       note.hidden = false;
       note.classList.remove("warn-note");
       note.textContent = "Saved. Students tap Open the VM on the student lab page.";
